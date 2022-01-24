@@ -679,5 +679,6 @@ void NFCAPP_meterAdjustResp(uint8 *body, int bodyLen);
 void NFCAPP_meterAdjustReq();
 void NFCAPP_clearAsyncCmd();
 void NFCAPP_continueSend(byte *p, int len);
+void jumpToBSL();
 
 #endif // _MESSAGE_HEADER_
