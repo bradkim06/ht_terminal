@@ -800,10 +800,6 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 		APP_runMetering(IMMEDIATE_METERING);
 		return (events ^ APP_EVENT_SENSOR_REED);
 	}
-	if (events & APP_EVENT_FW_UPDATE) {
-		jumpToBSL();
-		return (events ^ APP_EVENT_FW_UPDATE);
-	}
 
 	if (events & APP_EVENT_NFC_WAIT) {
 		NFC_init();

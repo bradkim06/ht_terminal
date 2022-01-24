@@ -27,8 +27,6 @@
 #define NFC_RC_SERVER_ACCESS 2
 #define NFC_RC_FAIL 3
 
-#define CELLPHONE_NOMAL_RESPONSE 0
-
 extern Config_t conf;
 extern uint8 AppTaskId;
 extern Metering_t Metering;
@@ -1002,11 +1000,8 @@ void recvFwUpdateReq(byte *data, uint8 len)
 
 			sendFwUpdateResp(result, p->reqMode);
 		} else if (p->reqMode == READY_BSL) {
-			if (conf.bslModel) { 
-				result = CELLPHONE_NOMAL_RESPONSE;
-				sendFwUpdateResp(result, p->reqMode);
-
-				OSAL_startEventTimer(AppTaskId, APP_EVENT_FW_UPDATE, (uint32)1500);
+			if (!conf.bslModel) {
+				jumpToBSL();
 			}
 		}
 	}
