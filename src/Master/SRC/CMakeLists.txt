@@ -8,7 +8,7 @@ add_compile_definitions(NBIOT_MODEM_BC95G)
 add_compile_definitions(NDEBUG)
 add_compile_definitions(NBIOT_LG_TYPE)
 # add_compile_definitions(AUX_REPEATER)
-set(PROJECT_ROOT /mnt/c/Users/User/workspace_v8/terminalV1/Master/SRC)
+set(PROJECT_ROOT /mnt/c/Users/User/workspace_v8/term/src/Master/SRC)
 project(terminalV1)
 
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "*.h" "*.c")
