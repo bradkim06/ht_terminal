@@ -1002,7 +1002,7 @@ void recvFwUpdateReq(byte *data, uint8 len)
 
 			sendFwUpdateResp(result, p->reqMode);
 		} else if (p->reqMode == READY_BSL) {
-			if (conf.bslModel) { 
+			if (conf.bslModel) {
 				result = CELLPHONE_NOMAL_RESPONSE;
 				sendFwUpdateResp(result, p->reqMode);
 

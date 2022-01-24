@@ -36,7 +36,7 @@ static struct {
 	int taskId;
 	int meteringType;
 	int lastError;
-    int meteringResult;
+	int meteringResult;
 	uint8 lastRssi;
 	Date_t lastAccessTime;
 	SlaveAccessState_t state; // 현재 slave access state
@@ -84,8 +84,8 @@ static void turnOff_cc1200()
 static void send_pdaGroupScanReq(int longPreamble, int retryCount)
 {
 	turnOn_cc1200();
-	SLAVE_DBG("Send PDA_GROUP_SCAN_REQ (%s, retry:%d)\n",
-		  longPreamble ? "LONG" : "SHORT", retryCount);
+	SLAVE_DBG("Send PDA_GROUP_SCAN_REQ (%s, retry:%d)\n", longPreamble ? "LONG" : "SHORT",
+		  retryCount);
 
 	uchar msg[0x100];
 	memset(msg, 0, 0x100);
@@ -98,21 +98,20 @@ static void send_pdaGroupScanReq(int longPreamble, int retryCount)
 	RTC_read(&date);
 
 	memcpy(p->year, &date.year, 2);
-	p->mon =  date.mon;
-	p->day =  date.day;
+	p->mon = date.mon;
+	p->day = date.day;
 	p->hour = date.hour;
-	p->min =  date.min;
-	p->sec =  date.sec;
-	p->waitSec = 16;    // TODO - Smart Phone App에서 설정된 시간에 맞추어야 함.
+	p->min = date.min;
+	p->sec = date.sec;
+	p->waitSec = 16; // TODO - Smart Phone App에서 설정된 시간에 맞추어야 함.
 
 	uint8 ackFlag = retryCount > 1 ? NWK_HDR_FLAG_DATA_REQ : NWK_HDR_FLAG_DATA_RESP;
-	CC1200_dataRequest(conf.slaveNwk, ackFlag, retryCount, msg,
-			   sizeof(PdaGroupScanReq_t));
+	CC1200_dataRequest(conf.slaveNwk, ackFlag, retryCount, msg, sizeof(PdaGroupScanReq_t));
 
 	uint32 timeout = 13000;
 	OSAL_startEventTimer(slaveAccessCtx.taskId, SLAVE_EVENT_SLAVE_ACCESS_TIMEOUT, timeout);
 }
-       
+
 static void send_pdaMasterSlaveMeterReq(int longPreamble, int retryCount)
 {
 	turnOn_cc1200();
@@ -130,9 +129,9 @@ static void send_pdaMasterSlaveMeterReq(int longPreamble, int retryCount)
 			   sizeof(PdaMasterSlaveMeterReq_t));
 
 	uint32 timeout = 3000 + retryCount * 3000;
-    if(longPreamble) {
-        timeout += 6000;
-    }
+	if (longPreamble) {
+		timeout += 6000;
+	}
 	OSAL_startEventTimer(slaveAccessCtx.taskId, SLAVE_EVENT_SLAVE_ACCESS_TIMEOUT, timeout);
 }
 
@@ -153,9 +152,9 @@ static void send_amiMasterSlaveCheckReq(int longPreamble, int retryCount)
 			   sizeof(AmiMasterSlaveCheckReq_t));
 
 	uint32 timeout = 3000 + retryCount * 3000;
-    if(longPreamble) {
-        timeout += 6000;
-    }
+	if (longPreamble) {
+		timeout += 6000;
+	}
 
 	OSAL_startEventTimer(slaveAccessCtx.taskId, SLAVE_EVENT_SLAVE_ACCESS_TIMEOUT, timeout);
 }
@@ -186,14 +185,14 @@ static void send_amiMasterSlaveMeterReq(int longPreamble, int retryCount)
 	CC1200_dataRequest(conf.slaveNwk, ackFlag, retryCount, msg,
 			   sizeof(AmiMasterSlaveMeterReq_t));
 
-    uint32 timeout = 3000 + retryCount * 3000;
-    if(longPreamble) {
-        timeout += 6000;
-    }
+	uint32 timeout = 3000 + retryCount * 3000;
+	if (longPreamble) {
+		timeout += 6000;
+	}
 
-	if(slaveAccessCtx.state == SLAVE_ACCESS_GET_DATA) {
-        slaveAccessCtx.meteringResult = SLAVE_METERING_COMM_ERR;
-    }
+	if (slaveAccessCtx.state == SLAVE_ACCESS_GET_DATA) {
+		slaveAccessCtx.meteringResult = SLAVE_METERING_COMM_ERR;
+	}
 	OSAL_startEventTimer(slaveAccessCtx.taskId, SLAVE_EVENT_SLAVE_ACCESS_TIMEOUT, timeout);
 }
 
@@ -275,14 +274,13 @@ static void close_slave()
 
 static void finish_slave_access(BOOL isSuccess)
 {
-
-	if(slaveAccessCtx.state == SLAVE_ACCESS_READ_METER) {
-        // 즉시 검침시의 첫번째 단계 종료
+	if (slaveAccessCtx.state == SLAVE_ACCESS_READ_METER) {
+		// 즉시 검침시의 첫번째 단계 종료
 		slaveAccessCtx.state = SLAVE_ACCESS_GET_DATA;
 		slaveAccessCtx.meteringResult = SLAVE_METERING_COMM_ERR;
 		send_pdaMasterSlaveMeterReq(SHORT_PREAMBLE, 3);
-        return;
-    }
+		return;
+	}
 
 	SLAVE_DBG("Slave access is finish, %s\n", (isSuccess) ? "SUCCESS" : "FAIL");
 
@@ -301,7 +299,7 @@ BOOL SLAVE_metering(uint8 meteringType)
 		SLAVE_DBG("Slave is working (state=%d), cannot metering\n", slaveAccessCtx.state);
 		return FALSE;
 	}
-    slaveAccessCtx.meteringResult = SLAVE_METERING_STARTED;
+	slaveAccessCtx.meteringResult = SLAVE_METERING_STARTED;
 
 	SLAVE_DBG("Current metering type (%02x)\n", meteringType);
 	slaveAccessCtx.meteringType = meteringType;
@@ -498,18 +496,18 @@ void recv_pdaGroupDataReport(uint32 srcAddr, uint8 *pData, int len)
 	uint8 meterData[4];
 
 	PdaGroupDataReportStd_t *pSTD = (PdaGroupDataReportStd_t *)pData;
-    if(pSTD->moreFlag != 0) {   // Metering Failed
-	    if (slaveAccessCtx.meteringType == PERIODIC_METERING) {
-		    // Slave가 long preamble로 access된 직후에는 10초 동안 대기 상태를 유지하므로
-		    // 여기는 short preamble을 사용해도 괜찮음.
-		    slaveAccessCtx.state = SLAVE_ACCESS_GET_DATA;
-		    send_amiMasterSlaveMeterReq(SHORT_PREAMBLE, 3);
-	    } else {
-            slaveAccessCtx.meteringResult = SLAVE_METERING_MT_DOWN;
-		    finish_slave_access(FALSE);
-	    }
-        return;
-    }
+	if (pSTD->moreFlag != 0) { // Metering Failed
+		if (slaveAccessCtx.meteringType == PERIODIC_METERING) {
+			// Slave가 long preamble로 access된 직후에는 10초 동안 대기 상태를 유지하므로
+			// 여기는 short preamble을 사용해도 괜찮음.
+			slaveAccessCtx.state = SLAVE_ACCESS_GET_DATA;
+			send_amiMasterSlaveMeterReq(SHORT_PREAMBLE, 3);
+		} else {
+			slaveAccessCtx.meteringResult = SLAVE_METERING_MT_DOWN;
+			finish_slave_access(FALSE);
+		}
+		return;
+	}
 
 	// 보조중계기의 metertype은 slave에서 보내준 것과 동일하게 해야 함.
 	if (pSTD->meterType != conf.meterType) {
@@ -570,27 +568,27 @@ void recv_pdaGroupDataReport(uint32 srcAddr, uint8 *pData, int len)
 		slaveAccessCtx.state = SLAVE_ACCESS_GET_DATA;
 		send_amiMasterSlaveMeterReq(SHORT_PREAMBLE, 3);
 	} else {
-        slaveAccessCtx.meteringResult = SLAVE_METERING_OK;
+		slaveAccessCtx.meteringResult = SLAVE_METERING_OK;
 		finish_slave_access(TRUE);
 	}
 }
 
 void recv_amiNodeEventAlarm(uint32 srcAddr, uint8 *pData, int len)
 {
-    // AMI_MASTER_SLAVE_METER_REQ(주기 검침)를 수신한 Slave는 다음과 같이 응답함
-    // 1) 주기 검침 데이터가 있거나(정상), Slave의 검침 기록이 없음(MT_DOWN) - AMI_MULTI_DATA_REPORT로 응답
-    // 2) Slave가 직전의 계량기 검침에 실패함(MT_DOWN) - AMI_NODE_EVENT_ALARM으로 응답
+	// AMI_MASTER_SLAVE_METER_REQ(주기 검침)를 수신한 Slave는 다음과 같이 응답함
+	// 1) 주기 검침 데이터가 있거나(정상), Slave의 검침 기록이 없음(MT_DOWN) - AMI_MULTI_DATA_REPORT로 응답
+	// 2) Slave가 직전의 계량기 검침에 실패함(MT_DOWN) - AMI_NODE_EVENT_ALARM으로 응답
 
-    // 그러나 AMI_MASTER_SLAVE_METER_REQ 메시지는 시간 동기용으로도 사용되므로 이 경우에는
-    // Slave로부터 어떤 응답이든 받기만 하면 동기 성공임.
-    
+	// 그러나 AMI_MASTER_SLAVE_METER_REQ 메시지는 시간 동기용으로도 사용되므로 이 경우에는
+	// Slave로부터 어떤 응답이든 받기만 하면 동기 성공임.
+
 	SLAVE_DBG("Recv AMI_NODE_EVENT_ALARM (%02X)\n", *(pData + 1));
 
-    if(slaveAccessCtx.state == SLAVE_ACCESS_GET_DATA) {
-        SLAVE_DBG("Meter Down\n");
-        slaveAccessCtx.meteringResult = SLAVE_METERING_MT_DOWN;
-	    finish_slave_access(FALSE);
-    } else {    // slaveAccessCtx.state = SLAVE_ACCESS_SET_TIME_SYNC;
+	if (slaveAccessCtx.state == SLAVE_ACCESS_GET_DATA) {
+		SLAVE_DBG("Meter Down\n");
+		slaveAccessCtx.meteringResult = SLAVE_METERING_MT_DOWN;
+		finish_slave_access(FALSE);
+	} else { // slaveAccessCtx.state = SLAVE_ACCESS_SET_TIME_SYNC;
 		SLAVE_DBG("slave time sync\n");
 		slaveDevice.timeSync = 1;
 		finish_slave_access(TRUE);
@@ -652,20 +650,20 @@ void recv_amiMultiDataReport(uint32 srcAddr, uint8 *pData, int len)
 			p->nData, p->nodeBatt / 10, p->nodeBatt % 10, p->mi, p->ri,
 			unit.meterStatus);
 
-        // 검침데이터 4바이트가 모두 0xFF이면 검침불량
-        int mtDown = 1;
-        for(int i = 0; i < 4; i++) {
-            if(unit.meterData[i] != 0xFF) {
-                mtDown = 0;
-                break;
-            }
-        }
+		// 검침데이터 4바이트가 모두 0xFF이면 검침불량
+		int mtDown = 1;
+		for (int i = 0; i < 4; i++) {
+			if (unit.meterData[i] != 0xFF) {
+				mtDown = 0;
+				break;
+			}
+		}
 
-        if(mtDown || p->nData == 0) {
-            slaveAccessCtx.meteringResult = SLAVE_METERING_MT_DOWN;
+		if (mtDown || p->nData == 0) {
+			slaveAccessCtx.meteringResult = SLAVE_METERING_MT_DOWN;
 			finish_slave_access(FALSE);
-            return;
-        }
+			return;
+		}
 
 		if (p->nData) {
 			printf("    %2d) %04d-%02d-%02d %02d:%02d - %02x%02x%02x%02x\n", 1,
@@ -708,7 +706,7 @@ void recv_amiMultiDataReport(uint32 srcAddr, uint8 *pData, int len)
 
 		if (valid) {
 			// Network로 보고 절차 개시
-            slaveAccessCtx.meteringResult = SLAVE_METERING_OK;
+			slaveAccessCtx.meteringResult = SLAVE_METERING_OK;
 			finish_slave_access(TRUE);
 		} else {
 			// 최초 부팅 시 시간동기화에 실패할 경우 발생.
@@ -730,7 +728,7 @@ void SLAVE_runMessage(uint32 SrcAddr, byte *data, uint8 len, uint8 rssi)
 	// printRxMsg(SrcAddr, data, len);
 	slaveAccessCtx.lastRssi = rssi;
 
-    SLAVE_DBG("slave message received (mtype: %02X, len = %d)\n", len, *data);
+	SLAVE_DBG("slave message received (mtype: %02X, len = %d)\n", len, *data);
 
 	switch (data[0]) {
 	case MSG_PDA_GROUP_DATA_REPORT:
@@ -754,11 +752,11 @@ void SLAVE_runMessage(uint32 SrcAddr, byte *data, uint8 len, uint8 rssi)
 		recv_amiMasterSlaveCheckReport(SrcAddr, data, len);
 		break;
 
-    case MSG_AMI_NODE_EVENT_ALARM:
-		// AMI_MASTER_SLAVE_METER_REQ에 대한 응답 - 주기 검침: Slave의 검침 실패 
+	case MSG_AMI_NODE_EVENT_ALARM:
+		// AMI_MASTER_SLAVE_METER_REQ에 대한 응답 - 주기 검침: Slave의 검침 실패
 		OSAL_stopEventTimer(slaveAccessCtx.taskId, SLAVE_EVENT_SLAVE_ACCESS_TIMEOUT);
-        recv_amiNodeEventAlarm(SrcAddr, data, len);
-        break;
+		recv_amiNodeEventAlarm(SrcAddr, data, len);
+		break;
 
 	default:
 		break;

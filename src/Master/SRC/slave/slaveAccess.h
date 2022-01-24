@@ -43,11 +43,11 @@ typedef struct {
 } SlaveAccessInfo_t;
 
 typedef enum {
-    SLAVE_METERING_IDLE = 0,
-    SLAVE_METERING_STARTED,
-    SLAVE_METERING_OK,
-    SLAVE_METERING_MT_DOWN,
-    SLAVE_METERING_COMM_ERR,
+	SLAVE_METERING_IDLE = 0,
+	SLAVE_METERING_STARTED,
+	SLAVE_METERING_OK,
+	SLAVE_METERING_MT_DOWN,
+	SLAVE_METERING_COMM_ERR,
 } slaveMeteringResult_t;
 
 //=======================================
@@ -63,10 +63,10 @@ typedef enum {
 // AMI master <--> AMI slave간  Message ID
 //=======================================
 // Slave 검침 실패 - 주기 검침에 대해 검침 실패를 알려주는 메시지
-#define MSG_AMI_NODE_EVENT_ALARM    0x04
+#define MSG_AMI_NODE_EVENT_ALARM 0x04
 
 // Slave가 미터를 즉시 읽도록 지시하기
-#define MSG_PDA_GROUP_SCAN_REQ  0x1E // master --> slave
+#define MSG_PDA_GROUP_SCAN_REQ 0x1E // master --> slave
 
 // Slave 장치 상태 확인 정보 읽어 오기
 #define MSG_AMI_MASTER_SLAVE_CHECK_REQ 0x47 // master --> slave

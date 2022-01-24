@@ -15,10 +15,10 @@
 #define NBIOT_INTERVAL_REQ 0x50
 #define NBIOT_DATA_REPORT 0x70
 #else
-#define NBIOT_DATA_REPORT       0x70
-#define NBIOT_INTERVAL_REQ      0x50
-#define NBIOT_CHANGE_R_RANGE    0x20
-#define NBIOT_ACK               0x10
+#define NBIOT_DATA_REPORT 0x70
+#define NBIOT_INTERVAL_REQ 0x50
+#define NBIOT_CHANGE_R_RANGE 0x20
+#define NBIOT_ACK 0x10
 #endif
 
 #define NBIOT_QA_MSG_VER 1
@@ -147,7 +147,7 @@ typedef struct {
 	uchar resetCount[2];
 } NbiotReset_t;
 
-#if 0   // sholee
+#if 0 // sholee
 typedef struct {
 	uchar protocol; // 1 -  1
 	uchar len; // 1 -  2
@@ -178,10 +178,10 @@ typedef struct {
 
 typedef struct {
 	uchar protocol; // 1 -  1
-	uchar len;      // 1 -  2
-	uchar mtype;    // 1 -  3
-	uchar mi;       // 1  - 4
-	uchar ri;       // 1  - 5
+	uchar len; // 1 -  2
+	uchar mtype; // 1 -  3
+	uchar mi; // 1  - 4
+	uchar ri; // 1  - 5
 	uchar checksum; // 1  - 6
 } NbiotIntervalReq_t;
 
@@ -189,14 +189,14 @@ typedef struct {
 	uchar protocol; // 1 -  1
 	uchar len; // 1 -  2
 	uchar mtype; // 1 -  3
-	uchar range;    // 1  - 4
+	uchar range; // 1  - 4
 	uchar checksum; // 1  - 5
 } NbiotRepRange_t;
 
 typedef struct {
 	uchar protocol; // 1 -  1
-	uchar len;      // 1 -  2
-	uchar mtype;    // 1 -  3
+	uchar len; // 1 -  2
+	uchar mtype; // 1 -  3
 	uchar checksum; // 1  - 5
 } NbiotAck_t;
 

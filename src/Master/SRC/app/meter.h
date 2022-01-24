@@ -241,7 +241,7 @@ typedef struct {
 	uint8 meterSerial[4];
 	MeterUnitData_t unit;
 #if defined(AUX_REPEATER)
-    uint8 noResponseFromSlave;
+	uint8 noResponseFromSlave;
 #endif
 } MeterTempData_t;
 
@@ -258,7 +258,7 @@ typedef struct {
 	uint8 meterType;
 	uint8 success;
 #if defined(AUX_REPEATER)
-    uint8 slaveMeteringError;
+	uint8 slaveMeteringError;
 #endif
 } Metering_t;
 
