@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "tdd.h"
 #include "nbiotResponse.h"
 
 extern Config_t conf;
@@ -340,6 +341,7 @@ static int parse_pf_downlink(char *p)
 		}
 		modemComm.dlDataLen = len;
 
+		modemCtx.waitDl = FALSE;
 		valid = 1;
 	} while (0);
 
@@ -788,6 +790,12 @@ void MODEM_response(char *pHead, int len)
 		}
 		break;
 
+	case AT_CMD_IDX_QLWULDATAEX:
+		if (parseQLWULDATAEX(pHead, &modemCtx)) {
+			isRleaseBusy = TRUE;
+		}
+		break;
+
 	case AT_CMD_IDX_DETACH_NW:
 		if (isAckOk) {
 			isRleaseBusy = TRUE;
@@ -851,10 +859,9 @@ unsigned char parse_cereg(char *p, ModemContext_t *modemPtr)
 
 	while (token != NULL) {
 		int state = atoi(token);
-#ifdef TDD_DEBUG
-		printf("token : %-10s pos : %-2d state : %-4d len : %-2ld\n", token, pos, state,
-		       strlen(token));
-#endif
+		tddPrint("token : %-10s pos : %-2d state : %-4d len : %-2ld\n", token, pos, state,
+			 strlen(token));
+
 		if ((pos == CEREG_STATUS_POS) && (strlen(token) == 1)) {
 			if (state == MODEM_CELLREG_ATTACHED) {
 				status = MODEM_CELLREG_ATTACHED;
@@ -869,21 +876,50 @@ unsigned char parse_cereg(char *p, ModemContext_t *modemPtr)
 		token = strtok(NULL, ",");
 	}
 
-#ifdef TDD_DEBUG
-	printf("attach status : %d\n", status);
-#endif
+	tddPrint("attach status : %d\n", status);
 
 	if (status != MODEM_CELLREG_ATTACHED) {
 		modemPtr->lwm2m.regFinish = 0;
 		modemPtr->lwm2m.obsObj10250 = 0;
 		modemPtr->lwm2m.obsObj16241 = 0;
 
-#ifdef TDD_DEBUG
-		printf("flag clear regFinish : %d obj10250 : %d obj16241 : %d\n",
-		       modemPtr->lwm2m.regFinish, modemPtr->lwm2m.obsObj10250,
-		       modemPtr->lwm2m.obsObj16241);
-#endif
+		tddPrint("flag clear regFinish : %d obj10250 : %d obj16241 : %d\n",
+			 modemPtr->lwm2m.regFinish, modemPtr->lwm2m.obsObj10250,
+			 modemPtr->lwm2m.obsObj16241);
 	}
 
 	return status;
+}
+
+BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr)
+{
+#define HAVE_NOT_BEEN_SENT 0
+#define WAIT_RESPONSE_PLATFORM 1
+#define SENT_FAILED 2
+#define TIMEOUT 3
+#define SEND_SUCCESS 4
+#define GOT_RESET_MSG 5
+
+#define LWM2M_UPLINK_STATUS "+QLWULDATASTATUS:"
+
+	tddPrint("recv : %s\n", pHead);
+	char *p = NULL;
+	BOOL retValue = FALSE;
+
+	if ((p = strstr(pHead, LWM2M_UPLINK_STATUS)) != NULL) {
+		retValue = TRUE;
+
+		p += strlen(LWM2M_UPLINK_STATUS);
+		int status = atoi(p);
+		tddPrint("status : %d\n", status);
+
+		if (status == SEND_SUCCESS) {
+			tddPrint("uplink ok, wait downlink\n");
+			modemPtr->waitDl = TRUE;
+		} else {
+			tddPrint("uplink fail\n");
+		}
+	}
+
+	return retValue;
 }

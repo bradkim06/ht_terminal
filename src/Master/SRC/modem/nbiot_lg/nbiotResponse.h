@@ -5,5 +5,6 @@
 #include "common_header.h"
 
 unsigned char parse_cereg(char *p, ModemContext_t *modemPtr);
+BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr);
 
 #endif

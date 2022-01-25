@@ -2271,6 +2271,9 @@
       <name>$PROJ_DIR$\SRC\test\shell.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\SRC\test\tdd.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\SRC\test\test.c</name>
     </file>
   </group>

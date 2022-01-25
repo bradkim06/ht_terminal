@@ -122,7 +122,8 @@ static AtCmd_t AtCmdSetFOTA = { AT_CMD_IDX_SET_FOTA, "AT+QLWFOTAIND" };
 static AtCmd_t AtCmdRunRegister = { AT_CMD_IDX_RUN_REGISTER, "AT+QLWSREGIND" };
 /* static AtCmd_t AtCmdRunNmStatus = { AT_CMD_IDX_GET_NM_STATUS, "AT+NMSTATUS?" }; */
 #if defined(NBIOT_LG_TYPE)
-static AtCmd_t AtCmdRunDataNoti = { AT_CMD_IDX_RUN_DATA_NOTI, "AT+QLWULDATA" };
+// static AtCmd_t AtCmdRunDataNoti = { AT_CMD_IDX_RUN_DATA_NOTI, "AT+QLWULDATA" };
+static AtCmd_t AtCmdULDATAEX = { AT_CMD_IDX_QLWULDATAEX, "AT+QLWULDATAEX" };
 /* static AtCmd_t AtCmdGetDataStatus = { AT_CMD_IDX_GET_DATA_STATUS, "AT+QLWULDATASTATUS?" }; */
 #endif
 
@@ -887,8 +888,8 @@ static ModemStep_t transfer()
 		modemCtx.status.psmOn = 0;
 
 		modemCtx.errCode = MODEM_ERROR_PF_UL_FAIL;
-		sendAtCommand(AT_CMD_DATA_SEND_TIMEOUT, AT_CMD_DATA_SEND_RETRY, &AtCmdRunDataNoti,
-			      "=0,%d,%s", len, data);
+		sendAtCommand(AT_CMD_DATA_SEND_TIMEOUT, AT_CMD_DATA_SEND_RETRY, &AtCmdULDATAEX,
+			      "=0,%d,%s,0x0100,0", len, data);
 
 		StepFlowIndex.transfer++;
 	} break;
@@ -900,10 +901,14 @@ static ModemStep_t transfer()
 	} break;
 
 	case 2: {
+		if (METER_getNumberOfStoredData() && modemCtx.waitDl) {
+			// 정상적 주기보고 동작시 검침데이터 초기화
+			printf_ts("Uplink ok delete stored data\n");
+			METER_clearStoredData();
+		}
+
 		if (modemComm.dlDataLen > 0) {
 			MODEM_checkDlMessage((void *)modemComm.dlData, modemComm.dlDataLen);
-			// 정상적 주기보고 동작시 검침데이터 초기화
-			METER_clearStoredData();
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
 			StepFlowIndex.transfer++;
 		} else if (modemCtx.lwm2m.fotaDownReq) {

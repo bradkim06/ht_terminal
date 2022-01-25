@@ -44,6 +44,7 @@
 #define AT_CMD_IDX_GET_NM_STATUS 37
 #define AT_CMD_IDX_GET_DATA_STATUS 38
 #define AT_CMD_IDX_GET_REPORT_PSM 39
+#define AT_CMD_IDX_QLWULDATAEX 40
 
 #define MODEM_CELLREG_NOT_REG 0
 #define MODEM_CELLREG_ATTACHED 1
@@ -158,6 +159,7 @@ typedef struct {
 	int dlCnt;
 	int pfUlCnt;
 	int pfDlCnt;
+    BOOL waitDl;
 	uchar errLog[CNT_ERROR_LOG][LEN_ERROR_LOG];
 } ModemContext_t;
 
