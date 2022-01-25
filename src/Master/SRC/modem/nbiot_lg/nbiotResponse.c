@@ -1,59 +1,29 @@
-#include <msp430.h>
-#include <ctype.h>
-#include <time.h>
+#include <string.h>
+#include <stdlib.h>
 
-#include "common_header.h"
-#include "uart.h"
-#include "check_meter_misc.h"
-
-#include "osal_Timer.h"
-#include "app.h"
-#include "rtcAlarm.h"
-#include "lcdDriver.h"
-#include "modem.h"
-#include "message.h"
-#include "nbiotModem.h"
+#include "nbiotResponse.h"
 
 extern Config_t conf;
 extern Modem_t modem;
 
-static void parse_cereg(char *p)
-{
-#define PATTERN_CEREG_ATTACHED 1
-#define PATTERN_CEREG_NOT_REG 2
-#define PATTERN_CEREG_REJECTED 3
-#define PATTERN_CEREG_UNKNOWN 4
-#define PATTERN_CEREG_ROAMING 5
+#ifdef TDD_TEST
+#include <stdio.h>
 
-#define CEREG_STATUS_POS 1
-#define CEREG_REJECT_CAUSE_POS 6
-	int pos = 0;
-	char *token = strtok(p, ",");
-	while (token != NULL) {
-		if ((pos == CEREG_STATUS_POS) && (strlen(token) == 1)) {
-			int state = atoi(token);
-			if (state == PATTERN_CEREG_ATTACHED) {
-				modemCtx.status.cellreg = MODEM_CELLREG_ATTACHED;
-				return;
-			} else {
-				// PSM On -> Off 전환 시 Cellreg 변화 체크
-				if (state == PATTERN_CEREG_REJECTED) {
-					modemCtx.status.cellreg = MODEM_CELLREG_REJECTED;
-				} else {
-					modemCtx.status.cellreg = MODEM_CELLREG_NOT_REG;
-				}
-				modemCtx.lwm2m.regFinish = 0;
-				modemCtx.lwm2m.obsObj10250 = 0;
-				modemCtx.lwm2m.obsObj16241 = 0;
-			}
-		}
+#else
 
-		token = strtok(NULL, ",");
-		if (++pos > CEREG_STATUS_POS) {
-			return;
-		}
-	}
-}
+#include <msp430.h>
+#include <ctype.h>
+#include <time.h>
+
+#include "uart.h"
+#include "check_meter_misc.h"
+
+#include "modem.h"
+#include "osal_Timer.h"
+#include "app.h"
+#include "rtcAlarm.h"
+#include "lcdDriver.h"
+#include "message.h"
 
 static int parse_imei(char *p)
 {
@@ -104,13 +74,11 @@ static int parse_imsi(char *p)
 			} else if (strncmp(modem.imsiStr, IMSI_MCC_MNC_UPLUS,
 					   strlen(IMSI_MCC_MNC_UPLUS)) == 0) {
 				modem.modemType = MODEM_TYPE_UPLUS;
-#if defined(NBIOT_MODEM_BC95G)
 #define IMSI_UPLUS_VALID IMSI_MCC_MNC_UPLUS "12"
 				if (strncmp(modem.imsiStr, IMSI_UPLUS_VALID,
 					    strlen(IMSI_UPLUS_VALID)) != 0) {
 					valid = 0;
 				}
-#endif
 			} else {
 				modem.modemType = MODEM_TYPE_UNKNOWN;
 				valid = 0;
@@ -146,15 +114,7 @@ static int parse_iccid(char *p)
 static int parse_ncdp(char *p)
 {
 	char addr[22];
-#if defined(NBIOT_LG_TYPE)
 	snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp, conf.serverPort);
-#else
-	if (modemCtx.proc.runFota) {
-		snprintf(addr, sizeof(addr), "%s,%d", conf.fotaIp, conf.fotaPort);
-	} else {
-		snprintf(addr, sizeof(addr), "0.0.0.0,%d", conf.fotaPort);
-	}
-#endif
 
 	int matched = 0;
 	if (strncmp((const char *)p, (const char *)addr, strlen(addr)) != 0) {
@@ -169,11 +129,7 @@ static int parse_ncdp(char *p)
 static int parse_lwm2m_server(char *p)
 {
 	char addr[22];
-#if defined(NBIOT_LG_TYPE)
 	snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp, conf.serverPort);
-#else
-	snprintf(addr, sizeof(addr), "%s,%d", conf.fotaIp, conf.fotaPort);
-#endif
 
 	int matched = 0;
 	if (strncmp((const char *)p, (const char *)addr, strlen(addr)) != 0) {
@@ -188,13 +144,6 @@ static int parse_lwm2m_server(char *p)
 static int parse_bs_param(char *p)
 {
 	int matched = 0;
-#if defined(NBIOT_MODEM_TPB23)
-	if (strncmp((const char *)p, (const char *)modem.bsParam, strlen(modem.bsParam)) != 0) {
-		printf_ts("LWM2M : bootstrap parameter is not matched \n");
-	} else {
-		matched = 1;
-	}
-#else
 	int len = LEN_MODEM_BS_PARAM;
 	char str[LEN_MODEM_BS_PARAM];
 	memcpy(str, p, len);
@@ -215,7 +164,6 @@ static int parse_bs_param(char *p)
 	} else {
 		matched = 1;
 	}
-#endif
 	return matched;
 }
 
@@ -533,11 +481,7 @@ void MODEM_response(char *pHead, int len)
 		modemCtx.lwm2m.fotaFinish = 1;
 	}
 
-#if defined(NBIOT_MODEM_TPB23)
-#define PATTERN_SERVER_NOTIFY "+MLWEVTIND="
-#else
 #define PATTERN_SERVER_NOTIFY "+QLWEVTIND:"
-#endif
 	p = pHead;
 	do {
 		if (p = strstr(p, PATTERN_SERVER_NOTIFY)) {
@@ -545,11 +489,7 @@ void MODEM_response(char *pHead, int len)
 		}
 	} while (p);
 
-#if defined(NBIOT_MODEM_TPB23)
-#define PATTERN_PF_DL "+MLWDLDATA="
-#else
 #define PATTERN_PF_DL "+NNMI:"
-#endif
 	if (p = strstr(pHead, PATTERN_PF_DL)) {
 		parse_pf_downlink(p + strlen(PATTERN_PF_DL));
 		modemCtx.pfDlCnt++;
@@ -652,9 +592,9 @@ void MODEM_response(char *pHead, int len)
 		break;
 
 	case AT_CMD_IDX_GET_NW_ALARM:
-#define PATTERN_CEREG_PREFIX "+CEREG:"
+#define PATTERN_CEREG_PREFIX "+CEREG:5"
 		if ((p = strstr(pHead, PATTERN_CEREG_PREFIX))) {
-			parse_cereg(p);
+			modemCtx.status.cellreg = parse_cereg(p, &modemCtx);
 		}
 
 		if (modemCtx.status.cellreg == MODEM_CELLREG_ATTACHED) {
@@ -716,15 +656,9 @@ void MODEM_response(char *pHead, int len)
 			// In this case that first read when is not set
 			isRleaseBusy = TRUE;
 		} else {
-#if defined(NBIOT_MODEM_TPB23)
-#define PATTERN_READ_EPN "ASN"
-#else
 #define PATTERN_READ_EPN "+QLWEPNS: "
-#endif
 			if (p = strstr(pHead, PATTERN_READ_EPN)) {
-#if defined(NBIOT_MODEM_BC95G)
 				p += strlen(PATTERN_READ_EPN);
-#endif
 				if (!parse_ep_name(p)) {
 					modemCtx.proc.runInit = 1;
 				}
@@ -741,15 +675,9 @@ void MODEM_response(char *pHead, int len)
 			// In this case that first read when is not set
 			isRleaseBusy = TRUE;
 		} else {
-#if defined(NBIOT_MODEM_TPB23)
-#define PATTERN_READ_BS_PARAM "serviceCode"
-#else
 #define PATTERN_READ_BS_PARAM "+QLWMBSPS: "
-#endif
 			if (p = strstr(pHead, PATTERN_READ_BS_PARAM)) {
-#if defined(NBIOT_MODEM_BC95G)
 				p += strlen(PATTERN_READ_BS_PARAM);
-#endif
 				if (!parse_bs_param(p)) {
 					modemCtx.proc.runInit = 1;
 				}
@@ -905,4 +833,57 @@ void MODEM_response(char *pHead, int len)
 	if (isRleaseBusy) {
 		modemCtx.status.busy = 0;
 	}
+}
+
+#endif
+
+// TDD_TEST
+
+unsigned char parse_cereg(char *p, ModemContext_t *modemPtr)
+{
+#define CEREG_STATUS_POS 1
+#define CEREG_REJECT_CAUSE_POS 6
+#define ATTACH_CEREG_PREFIX "CEREG:5"
+
+	int pos = 0;
+	char *token = strtok(p, ",");
+	unsigned char status = MODEM_CELLREG_NOT_REG;
+
+	while (token != NULL) {
+		int state = atoi(token);
+#ifdef TDD_DEBUG
+		printf("token : %-10s pos : %-2d state : %-4d len : %-2ld\n", token, pos, state,
+		       strlen(token));
+#endif
+		if ((pos == CEREG_STATUS_POS) && (strlen(token) == 1)) {
+			if (state == MODEM_CELLREG_ATTACHED) {
+				status = MODEM_CELLREG_ATTACHED;
+			} else if (pos == CEREG_STATUS_POS) {
+				status = state;
+			}
+		}
+
+		if (++pos > CEREG_STATUS_POS) {
+			break;
+		}
+		token = strtok(NULL, ",");
+	}
+
+#ifdef TDD_DEBUG
+	printf("attach status : %d\n", status);
+#endif
+
+	if (status != MODEM_CELLREG_ATTACHED) {
+		modemPtr->lwm2m.regFinish = 0;
+		modemPtr->lwm2m.obsObj10250 = 0;
+		modemPtr->lwm2m.obsObj16241 = 0;
+
+#ifdef TDD_DEBUG
+		printf("flag clear regFinish : %d obj10250 : %d obj16241 : %d\n",
+		       modemPtr->lwm2m.regFinish, modemPtr->lwm2m.obsObj10250,
+		       modemPtr->lwm2m.obsObj16241);
+#endif
+	}
+
+	return status;
 }

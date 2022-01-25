@@ -1,12 +1,16 @@
 #ifndef _COMMON_HEADER_
 #define _COMMON_HEADER_
 
+#ifndef TDD_TEST
+
 #include <msp430.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "device.h"
+
+#endif
 
 // Error Code
 #define ERROR_CODE_NONE 0 // Á¤»ó

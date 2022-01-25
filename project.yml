@@ -34,16 +34,23 @@
     - +:test/**
     - -:test/support
   :source:
-    - src/Master/SRC/**
+    - src/Master/SRC/modem/nbiot_lg/nbiotResponse.c
   :support:
     - test/support
   :libraries: []
+  :include:
+    - src/Master/SRC/modem/nbiot_lg/**
+    - src/Master/SRC/app/**
+    - src/Master/SRC/dev/**
 
 :defines:
   # in order to add common defines:
   #  1) remove the trailing [] from the :common: section
   #  2) add entries to the :common: section (e.g. :test: has TEST defined)
-  :common: &common_defines []
+  :common: &common_defines
+    - TDD_TEST
+    - NBIOT_MODEM_BC95G
+    # - TDD_DEBUG
   :test:
     - *common_defines
     - TEST

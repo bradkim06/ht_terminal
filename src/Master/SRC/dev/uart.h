@@ -29,6 +29,7 @@
 #ifndef __UART_H__
 #define __UART_H__
 
+#include "common_header.h"
 #include "device.h"
 
 #define LCD_TX_BUF_LEN 0x40
