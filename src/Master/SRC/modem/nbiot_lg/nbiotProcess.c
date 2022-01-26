@@ -16,6 +16,9 @@
 #include "message.h"
 #include "nbiotModem.h"
 
+// AT command deregister delay
+#define DEREGISTER_DELAY 5000
+
 // AT command default timeout/retry
 #define AT_CMD_DEFAULT_TIMEOUT 5000
 #define AT_CMD_DEFAULT_RETRY 4
@@ -766,8 +769,6 @@ static ModemStep_t updateQa()
 
 	if (modemCtx.stepReset) {
 		StepFlowIndex.updateQa = 0;
-		modemCtx.lwm2m.regError = 0;
-		modemCtx.lwm2m.regRetry = 0;
 	}
 
 	static uint32 startEventTimeMsec = 0;
@@ -830,14 +831,7 @@ static ModemStep_t updateQa()
 		memset(modemCtx.errLog, 0, sizeof(modemCtx.errLog));
 		sendAtCommand(AT_CMD_DEFAULT_TIMEOUT, AT_CMD_DEFAULT_RETRY, &AtCmdSocketClose,
 			      "=%d", modemCtx.socket);
-		if ((modemCtx.lwm2m.regError == 1) && (modemCtx.lwm2m.regRetry == 0)) {
-			printf_ts("regErr : %d, regRetry : %d \n", modemCtx.lwm2m.regError,
-				  modemCtx.lwm2m.regRetry);
-			StepFlowIndex.updateQa = 0;
-			modemCtx.lwm2m.regRetry = 1;
-		} else {
-			StepFlowIndex.updateQa++;
-		}
+		StepFlowIndex.updateQa++;
 	} break;
 
 	default: {
@@ -867,9 +861,6 @@ static ModemStep_t transfer()
 
 	if (modemCtx.stepReset) {
 		StepFlowIndex.transfer = 0;
-		modemCtx.lwm2m.regError = 0;
-		modemCtx.lwm2m.regRetry = 0;
-
 		printf_ts("transfer count : %d\n", ++transfer_count);
 	}
 
@@ -923,13 +914,6 @@ static ModemStep_t transfer()
 			} else {
 				OSAL_startEventTimer(AppTaskId, APP_EVENT_MODEM_PROCESS,
 						     MODEM_EVENT_INTERVAL);
-				if ((modemCtx.lwm2m.regError == 1) &&
-				    (modemCtx.lwm2m.regRetry == 0)) {
-					printf_ts("regErr : %d, regRetry : %d \n",
-						  modemCtx.lwm2m.regError, modemCtx.lwm2m.regRetry);
-					StepFlowIndex.transfer = 0;
-					modemCtx.lwm2m.regRetry = 1;
-				}
 			}
 		}
 	} break;
@@ -1019,8 +1003,8 @@ static ModemStep_t certify()
 	default: {
 		if (!modemCtx.lwm2m.bsFinish) {
 			printf_ts("PF : Fail to bootstrap\n");
-			memset(&modemComm, 0,
-			       sizeof(modemComm)); // 이전 command retry 방지
+			// 이전 command retry 방지
+			memset(&modemComm, 0, sizeof(modemComm));
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_TIMEOUT);
 		} else {
 			if (!modemCtx.lwm2m.regFinish || !modemCtx.lwm2m.obsObj10250) {
@@ -1198,7 +1182,7 @@ static ModemStep_t detachNw()
 		// FOTA 완료 시 기존 인증절차도 초기화 되므로 De-register를 할 필요가 없음.
 		// 다만, 단말 F/W에서 진행여부를 판단하는 Flag이므로 초기화는 안함.
 		// if (modemCtx.lwm2m.regFinish) {
-		// 	sendNoRespAtCommand(AT_CMD_COMM_TIMEOUT, &AtCmdRunRegister, "=1");
+		// 	sendNoRespAtCommand(DEREGISTER_DELAY, &AtCmdRunRegister, "=1");
 		// }
 		sendAtCommand(AT_CMD_COMM_TIMEOUT, AT_CMD_COMM_DETACH_RETRY, &AtCmdDetachNw, "=0");
 
@@ -1253,7 +1237,7 @@ static ModemStep_t retry()
 	case 0: {
 		if (modemCtx.status.cellreg == MODEM_CELLREG_ATTACHED) {
 			if (modemCtx.lwm2m.regFinish) {
-				sendNoRespAtCommand(AT_CMD_COMM_TIMEOUT, &AtCmdRunRegister, "=1");
+				sendNoRespAtCommand(DEREGISTER_DELAY, &AtCmdRunRegister, "=1");
 			}
 			sendAtCommand(AT_CMD_COMM_TIMEOUT, AT_CMD_COMM_DETACH_RETRY, &AtCmdDetachNw,
 				      "=0");
@@ -1333,12 +1317,11 @@ void MODEM_detach()
      * 서버/기지국 응답을 대기하지 않고 일정 Delay 후 종료한다.
      * 해당 동작은 UDP 기반이거나 예외처리 시 허용되는 동작이기 때문에 가능하다.
      */
-#define DEREGISTER_DELAY_MS 5000
 #define DETACH_DELAY_MS 5000
 
 	if (modemCtx.lwm2m.regFinish) {
 		// De-Register 전송.
-		sendNoRespAtCommand(DEREGISTER_DELAY_MS, &AtCmdRunRegister, "=1");
+		sendNoRespAtCommand(DEREGISTER_DELAY, &AtCmdRunRegister, "=1");
 	}
 	// Detach 전송.
 	sendNoRespAtCommand(DETACH_DELAY_MS, &AtCmdDetachNw, "=0");

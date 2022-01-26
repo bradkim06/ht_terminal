@@ -186,6 +186,7 @@ static int parse_server_notify(char *p)
 	if (*p == '0') {
 		printf_ts("LWM2M : register finish \n");
 		modemCtx.lwm2m.regFinish = cerify = 1;
+		modemCtx.lwm2m.regDelete = 0;
 	} else if (*p == '1') {
 		printf_ts("LWM2M : register delete \n");
 		modemCtx.lwm2m.regDelete = 1;
@@ -212,11 +213,7 @@ static int parse_server_notify(char *p)
 		modemCtx.lwm2m.fotaUpgradeReq = 1;
 	} else if (*p == '8') {
 		printf_ts("LWM2M : observe object 16241 \n");
-		if (modemCtx.lwm2m.obsObj16241) {
-			modemCtx.lwm2m.regError = 1;
-		} else {
-			modemCtx.lwm2m.obsObj16241 = 1;
-		}
+		modemCtx.lwm2m.obsObj16241 = 1;
 	} else if (*p == '9') {
 		printf_ts("LWM2M : cancel object 10250 \n");
 		modemCtx.lwm2m.cxlObj10250 = 1;
