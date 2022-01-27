@@ -1,3 +1,21 @@
+/**
+ * @file tdd_parseCEREG.c
+ * @brief AT+CEREG? Command의 Response String Parsing Test
+ * Response : +CEREG:<n>,<stat>[,[<tac>],[<ci>],[<AcT>],[<rac>][,[<cause_type>],[<reject_cause>][,[<Active-Time>],[<Periodic-TAU>]]]]
+ * <stat> Integer type. The EPS registration status.
+     0 Not registered, UE is not currently searching an operator to register to
+     1 Registered, home network
+     2 Not registered, but UE is currently trying to attach or searching an operator to register to
+     3 Registration denied
+     4 Unknown (e.g. out of E-UTRAN coverage)
+     5 Registered, roaming
+ * @caution Attach Status가 바뀌면 모뎀이 자동으로 알려주는 unsolicited result String은 <n>이 없다.
+ * unsolicited result String은 해당 함수에서 Parsing하지 않는다.
+ * @author Kim Junsu
+ * @version 
+ * @date 2022-01-28
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +42,11 @@ void tearDown()
 	free(string);
 }
 
+/**
+ * @brief Parse CEREG Test전 ModemContext 초기화
+ *
+ * @param modemPtr 모뎀 상태 구조체
+ */
 static void setModemAttachStatus(ModemContext_t *modemPtr)
 {
 	modemPtr->status.cellreg = 0;
@@ -32,6 +55,12 @@ static void setModemAttachStatus(ModemContext_t *modemPtr)
 	modemPtr->lwm2m.obsObj16241 = 1;
 }
 
+/**
+ * @brief Attach Status에 따른 lwm2m Status Test
+ *
+ * @param result Attach Status Result
+ * @param modemPtr 모뎀 상태 구조체
+ */
 static void checkLWM2MStatus(unsigned char result, ModemContext_t *modemPtr)
 {
 	if (result != 1) {
@@ -41,6 +70,13 @@ static void checkLWM2MStatus(unsigned char result, ModemContext_t *modemPtr)
 	}
 }
 
+/**
+ * @brief Attach Test Function
+ *
+ * @param expect Attach Status return
+ * @param testName Test Case NAme
+ * @param str Test Input String
+ */
 static void testFunction(unsigned char expect, char *testName, char *str)
 {
 	tddPrint("\n============ %s Test Case ============\n", testName);

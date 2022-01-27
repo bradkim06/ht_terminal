@@ -1,3 +1,19 @@
+/**
+ * @file tdd_parseQLWULDATAEX.c
+ * @brief QLWULDATAEX는 LwM2M Data Uplink결과를 Comfirmable한다.
+ * 모뎀은 Uplink 결과를 "+QLWULDATASTATUS:<status>"로 알려준다.
+ * <status> Integer type. Status of CON data sending.
+    0 Have not been sent
+    1 Sent, waiting response of IoT platform
+    2 Sent failed
+    3 Timeout
+    4 Success
+    5 Got reset message
+ * @author Kim Junsu
+ * @version 1.00
+ * @date 2022-01-28
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -904,8 +904,6 @@ BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr)
 	BOOL retValue = FALSE;
 
 	if ((p = strstr(pHead, LWM2M_UPLINK_STATUS)) != NULL) {
-		retValue = TRUE;
-
 		p += strlen(LWM2M_UPLINK_STATUS);
 		int status = atoi(p);
 		tddPrint("status : %d\n", status);
@@ -913,6 +911,7 @@ BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr)
 		if (status == SEND_SUCCESS) {
 			tddPrint("uplink ok, wait downlink\n");
 			modemPtr->waitDl = TRUE;
+			retValue = TRUE;
 		} else {
 			tddPrint("uplink fail\n");
 		}

@@ -25,7 +25,7 @@
 
 // QLWULDATA timeout/retry
 #define AT_CMD_DATA_SEND_TIMEOUT 10000
-#define AT_CMD_DATA_SEND_RETRY 1
+#define AT_CMD_DATA_SEND_RETRY 2
 
 // NPSMR timeout/retry
 #define AT_CMD_CHECK_PSM_TIMEOUT 5000
@@ -894,23 +894,18 @@ static ModemStep_t transfer()
 	case 2: {
 		if (METER_getNumberOfStoredData() && modemCtx.waitDl) {
 			// 정상적 주기보고 동작시 검침데이터 초기화
-			printf_ts("Uplink ok delete stored data\n");
 			METER_clearStoredData();
 		}
 
 		if (modemComm.dlDataLen > 0) {
 			MODEM_checkDlMessage((void *)modemComm.dlData, modemComm.dlDataLen);
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
-			StepFlowIndex.transfer++;
-		} else if (modemCtx.lwm2m.fotaDownReq) {
-			// Downlink 대기 중 FOTA request 수신 시 처리.
-			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
 			StepFlowIndex.transfer = END_STEP_FLOW_INDEX;
 		} else {
 			if (TIMER_getMsecDiff(startEventTimeMsec) >= AT_CMD_LWM2M_DL_WAIT) {
-				printf_ts("DL : LWM2M downlink req timeout\n");
+				// 다운링크 Timeout
 				OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
-				StepFlowIndex.transfer++;
+				StepFlowIndex.transfer = END_STEP_FLOW_INDEX;
 			} else {
 				OSAL_startEventTimer(AppTaskId, APP_EVENT_MODEM_PROCESS,
 						     MODEM_EVENT_INTERVAL);
@@ -918,16 +913,12 @@ static ModemStep_t transfer()
 		}
 	} break;
 
-	case 3: {
-		nextStep = MODEM_STEP_DETACH_NW;
-	} break;
-
 	case END_STEP_FLOW_INDEX:
 	default: {
-		if (modemCtx.proc.updateReg) {
-			nextStep = MODEM_STEP_DETACH_NW;
+		if (modemCtx.lwm2m.fotaDownReq && modemCtx.proc.runFota) {
+			nextStep = MODEM_STEP_FOTA;
 		} else {
-			nextStep = (modemCtx.proc.runFota) ? MODEM_STEP_FOTA : MODEM_STEP_IDLE;
+			nextStep = MODEM_STEP_DETACH_NW;
 		}
 	} break;
 	}
