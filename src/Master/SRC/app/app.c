@@ -1,3 +1,5 @@
+#ifdef TDD_TEST
+#else
 #include <msp430.h>
 #include <ctype.h>
 
@@ -94,9 +96,10 @@ void APP_showConfig(Config_t *p)
 #define DEBUG_JTAG 1
 #define DEBUG_METER 2
 #define DEBUG_STATUS_STR(x)                                                                        \
-	(((x) == DEBUG_OFF) ?                                                                      \
-		 "OFF" :                                                                           \
-		 ((x) == DEBUG_JTAG) ? "JTAG" : ((x) == DEBUG_METER) ? "METER" : "UNKNOWN")
+	(((x) == DEBUG_OFF)   ? "OFF" :                                                            \
+	 ((x) == DEBUG_JTAG)  ? "JTAG" :                                                           \
+	 ((x) == DEBUG_METER) ? "METER" :                                                          \
+				      "UNKNOWN")
 	printf(" [ Debug Out  ] %s(%s)\n", p->debugPrint ? "On" : "Off",
 	       DEBUG_STATUS_STR(p->debugPrint));
 #if defined(AUX_REPEATER)
@@ -564,18 +567,6 @@ void APP_runMetering(int meteringType)
 #endif
 }
 
-int APP_checkTimeInterval(int h, int bt, int interval)
-{
-	int result = 0;
-
-	int hour = h + 24 - bt;
-	if ((hour % interval) == 0) {
-		result = 1; // report required.
-	}
-
-	return result;
-}
-
 // NFC tag 설정 확인 및 복구 code.
 void APP_runPeriodicCheckNFC()
 {
@@ -827,4 +818,19 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	return (0);
+}
+
+#endif
+
+// TDD_TEST
+int APP_checkTimeInterval(int h, int bt, int interval)
+{
+	int result = 0;
+
+	int hour = h + 24 - bt;
+	if ((hour % interval) == 0) {
+		result = 1; // report required.
+	}
+
+	return result;
 }

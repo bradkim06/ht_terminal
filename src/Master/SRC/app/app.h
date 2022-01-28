@@ -1,3 +1,6 @@
+#ifdef TDD_TEST
+int APP_checkTimeInterval(int h, int bt, int interval);
+#else
 #ifndef _AMIAPP_HEADER_
 #define _AMIAPP_HEADER_
 
@@ -43,7 +46,6 @@ extern uint8 AppTaskId;
 
 void APP_init(uint8 taskId);
 event32_t APP_tasks(uint8 taskId, event32_t events);
-int APP_checkTimeInterval(int h, int bt, int interval);
 void APP_prepareToSleep();
 
 void REBOOT_SYSTEM(void);
@@ -59,4 +61,5 @@ void APP_slaveMeteringCompleted();
 void APP_slaveMeteringFailed(int resultCode);
 #endif
 
+#endif
 #endif

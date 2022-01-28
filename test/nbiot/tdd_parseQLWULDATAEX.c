@@ -53,7 +53,7 @@ void test_parseQLWULDATAEX()
 	testFunction(1, 1, "Success(4)", string);
 
 	sprintf(string, "+QLWULDATASTATUS:3");
-	testFunction(1, 0, "Wrong Status", string);
+	testFunction(0, 0, "Wrong Status", string);
 
 	sprintf(string, "+TESTTESTTEST");
 	testFunction(0, 0, "Wrong String", string);
