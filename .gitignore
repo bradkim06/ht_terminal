@@ -57,3 +57,4 @@ Debug/
 settings/
 Build/
 *.dep
+.ccls-cache/

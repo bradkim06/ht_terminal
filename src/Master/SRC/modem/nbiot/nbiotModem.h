@@ -1,3 +1,4 @@
+#ifndef NBIOT_LG_TYPE
 #ifndef __NBIOT_MODEM_H__
 #define __NBIOT_MODEM_H__
 
@@ -184,3 +185,4 @@ BOOL MODEM_process();
 void MODEM_response(char *pHead, int len);
 
 #endif // __NBIOT_MODEM_H__
+#endif

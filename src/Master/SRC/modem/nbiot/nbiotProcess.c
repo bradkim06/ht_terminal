@@ -1,3 +1,4 @@
+#ifndef NBIOT_LG_TYPE
 #include <msp430.h>
 #include <ctype.h>
 #include <time.h>
@@ -1438,3 +1439,4 @@ BOOL MODEM_process()
 
 	return TRUE;
 }
+#endif

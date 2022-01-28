@@ -1,3 +1,4 @@
+#ifndef NBIOT_LG_TYPE
 #ifndef _LORA_MODEM_H_
 #define _LORA_MODEM_H_
 
@@ -120,3 +121,4 @@ BOOL MODEM_process(int appProcess);
 void MODEM_response(char *pHead, int len);
 
 #endif // _LORA_MODEM_H_
+#endif
