@@ -35,7 +35,7 @@ static char *string;
 void setUp()
 {
 	memset(&modem, 0, sizeof(ModemContext_t));
-	string = malloc(sizeof(char) * 500);
+	string = malloc(sizeof(char) * 1000);
 }
 void tearDown()
 {
@@ -61,12 +61,12 @@ static void setModemAttachStatus(ModemContext_t *modemPtr)
  * @param result Attach Status Result
  * @param modemPtr 모뎀 상태 구조체
  */
-static void checkLWM2MStatus(unsigned char result, ModemContext_t *modemPtr)
+static void checkLWM2MStatus(unsigned char result, ModemContext_t *modemPtr, char *msg)
 {
 	if (result != 1) {
-		TEST_ASSERT_FALSE_MESSAGE(modemPtr->lwm2m.regFinish, "regFinish flag clear fail");
-		TEST_ASSERT_FALSE_MESSAGE(modemPtr->lwm2m.obsObj10250, "obj10250 flag clear fail");
-		TEST_ASSERT_FALSE_MESSAGE(modemPtr->lwm2m.obsObj16241, "obj16241 flag clear fail");
+		TEST_ASSERT_FALSE_MESSAGE(modemPtr->lwm2m.regFinish, msg);
+		TEST_ASSERT_FALSE_MESSAGE(modemPtr->lwm2m.obsObj10250, msg);
+		TEST_ASSERT_FALSE_MESSAGE(modemPtr->lwm2m.obsObj16241, msg);
 	}
 }
 
@@ -79,17 +79,21 @@ static void checkLWM2MStatus(unsigned char result, ModemContext_t *modemPtr)
  */
 static void testFunction(unsigned char expect, char *testName, char *str)
 {
-	tddPrint("\n============ %s Test Case ============\n", testName);
-	tddPrint("input string : %s\n", str);
+	result = 0;
+	char msg[1000] = "";
+	sprintf(msg, "%s", testName);
+
 	setModemAttachStatus(&modem);
 	char *p = NULL;
 	if ((p = strstr(string, PATTERN_CEREG_PREFIX)) == NULL) {
-		tddPrint("+CEREG:5 not find\n");
-		return;
+		// sprintf(msg, "Input : %s, unsolicited result String Pass", str);
+		// TEST_MESSAGE(msg);
+		TEST_ASSERT_EQUAL_INT_MESSAGE(0, result, msg);
 	}
 	result = parse_cereg(p, &modem);
-	TEST_ASSERT_EQUAL_INT_MESSAGE(expect, result, "attach status fail");
-	checkLWM2MStatus(result, &modem);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(expect, result, msg);
+	checkLWM2MStatus(result, &modem, msg);
 }
 
 void test_parse_cereg()
@@ -113,10 +117,10 @@ void test_parse_cereg()
 	/* +CEREG:1은 모뎀이 Attach Status가 변경되면 자동으로 알리는 상황으로 이
      * 함수에서 처리해도 상관없으나 코드 일관성을 위해 처리하지 않는다. */
 	sprintf(string, "..+CEREG:1,213D,0318886E,9,,,,..");
-	testFunction(0, "Modem Attach 상태 변경 자동 알림", string);
+	testFunction(0, "unsolicited result String", string);
 
 	sprintf(string, "..+CCLK:21/06/10,17:22:58+36....OK....+CEREG:5,2,213D,0318886E,9,,,,..");
-	testFunction(2, "다른 Response 섞이고, Attach 실패", string);
+	testFunction(2, "Other Response Mix, Attach Fail", string);
 
 	sprintf(string, "..+CEREG:1,213D,0318886E,9,,,,....NUESTATS:RADIO,Signal "
 			"power:-737....NUESTATS:RADIO,Total power:-668....NUESTATS:RADIO,TX "
@@ -126,5 +130,5 @@ void test_parse_cereg()
 			"CEREG:5,1,213D,0318886E,9,,,,....OK..NUESTATS:RADIO,EARFCN:2590...."
 			"NUESTATS:RADIO,PCI:133....NUESTATS:RADIO,RSRQ:-108....NUESTATS:RADIO,"
 			"OPERATOR MODE:2....NUESTATS:RADIO,CURRENT BAND:5....OK..");
-	testFunction(1, "다른 Response 섞이고, Attach 성공", string);
+	testFunction(1, "Other Response Mix, Attach Success", string);
 }

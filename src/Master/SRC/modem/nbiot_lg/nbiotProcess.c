@@ -861,6 +861,7 @@ static ModemStep_t transfer()
 
 	if (modemCtx.stepReset) {
 		StepFlowIndex.transfer = 0;
+		modemCtx.waitDl = FALSE;
 		printf_ts("transfer count : %d\n", ++transfer_count);
 	}
 

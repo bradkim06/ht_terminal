@@ -53,7 +53,7 @@
   :test:
     - *common_defines
     - TEST
-    - TDD_DEBUG
+    # - TDD_DEBUG
   :test_preprocess:
     - *common_defines
     - TEST
