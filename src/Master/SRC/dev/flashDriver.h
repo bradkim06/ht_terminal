@@ -107,5 +107,6 @@ void ip2hexArray(char *ip, uint8 *hexIp);
 #if defined(AUX_REPEATER)
 int getFirstZeroPosition(uint32 nwk_addr);
 #endif
+void distributingReportTime(int serialBase, Config_t *config);
 
 #endif //__FLASH_DRIVER_H__

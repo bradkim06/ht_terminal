@@ -34,6 +34,7 @@
     - -:test/support
   :source:
     - src/Master/SRC/modem/nbiot_lg/nbiotResponse.c
+    - src/Master/SRC/dev/flashDriver.c
   :support:
     - test/support
   :libraries: []
@@ -42,6 +43,8 @@
     - src/Master/SRC/app/**
     - src/Master/SRC/dev/**
     - src/Master/SRC/test/**
+    # - src/Master/SRC/misc/**
+    # - src/Master/SRC/osal/**
 
 :defines:
   # in order to add common defines:
@@ -53,7 +56,7 @@
   :test:
     - *common_defines
     - TEST
-    # - TDD_DEBUG
+    - TDD_DEBUG
   :test_preprocess:
     - *common_defines
     - TEST

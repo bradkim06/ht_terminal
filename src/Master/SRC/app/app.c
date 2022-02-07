@@ -1,5 +1,4 @@
-#ifdef TDD_TEST
-#else
+#ifndef TDD_TEST
 #include <msp430.h>
 #include <ctype.h>
 

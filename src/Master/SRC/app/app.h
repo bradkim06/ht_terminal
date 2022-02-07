@@ -1,6 +1,5 @@
-#ifdef TDD_TEST
 int APP_checkTimeInterval(int h, int bt, int interval);
-#else
+#ifndef TDD_TEST
 #ifndef _AMIAPP_HEADER_
 #define _AMIAPP_HEADER_
 
