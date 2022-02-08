@@ -81,12 +81,14 @@
     - module_generator
     - gcov
 :gcov:
-  :html_report: true
-  :html_report_type: detailed
   :reports:
     - HtmlDetailed
-:gcovr:
-  :html_artifact_filename: test
+  :html_report: true
+  :html_report_type: detailed
+  :gcovr:
+    :html_absolute_paths: true
+    :print_summary: true
+    :report_include: "^src"
 ...
 # Add -gcov to the plugins list to make sure of the gcov plugin
 # You will need to have gcov and gcovr both installed to make it work.

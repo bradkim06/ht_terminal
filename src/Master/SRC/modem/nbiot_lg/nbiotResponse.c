@@ -7,11 +7,7 @@
 extern Config_t conf;
 extern Modem_t modem;
 
-#ifdef TDD_TEST
-#include <stdio.h>
-
-#else
-
+#ifndef TDD_TEST
 #include <msp430.h>
 #include <ctype.h>
 #include <time.h>
@@ -856,17 +852,9 @@ unsigned char parse_cereg(char *p, ModemContext_t *modemPtr)
 
 	while (token != NULL) {
 		int state = atoi(token);
-#ifdef TDD_TEST
-		tddPrint("token : %-10s pos : %-2d state : %-4d len : %-2ld\n", token, pos, state,
-			 strlen(token));
-#endif
 
 		if ((pos == CEREG_STATUS_POS) && (strlen(token) == 1)) {
-			if (state == MODEM_CELLREG_ATTACHED) {
-				status = MODEM_CELLREG_ATTACHED;
-			} else if (pos == CEREG_STATUS_POS) {
-				status = state;
-			}
+			status = state;
 		}
 
 		if (++pos > CEREG_STATUS_POS) {
@@ -875,20 +863,10 @@ unsigned char parse_cereg(char *p, ModemContext_t *modemPtr)
 		token = strtok(NULL, ",");
 	}
 
-#ifdef TDD_TEST
-	tddPrint("attach status : %d\n", status);
-#endif
-
 	if (status != MODEM_CELLREG_ATTACHED) {
 		modemPtr->lwm2m.regFinish = 0;
 		modemPtr->lwm2m.obsObj10250 = 0;
 		modemPtr->lwm2m.obsObj16241 = 0;
-
-#ifdef TDD_TEST
-		tddPrint("flag clear regFinish : %d obj10250 : %d obj16241 : %d\n",
-			 modemPtr->lwm2m.regFinish, modemPtr->lwm2m.obsObj10250,
-			 modemPtr->lwm2m.obsObj16241);
-#endif
 	}
 
 	return status;
@@ -915,7 +893,6 @@ BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr)
 		if (status == SEND_SUCCESS) {
 			modemPtr->waitDl = TRUE;
 			retValue = TRUE;
-		} else {
 		}
 	}
 

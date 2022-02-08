@@ -98,6 +98,11 @@ static void testFunction(unsigned char expect, char *testName, char *str)
 
 void test_parse_cereg()
 {
+	// null token
+	char *p = "";
+	result = parse_cereg(p, &modem);
+	TEST_ASSERT_EQUAL_INT(0, 0);
+
 	// 정상적인 Attach Case
 	sprintf(string, "..+CEREG:5,1,213D,0318886E,9,,,,....OK..");
 	testFunction(1, "Attach Success", string);
