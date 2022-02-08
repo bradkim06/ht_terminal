@@ -1,3 +1,14 @@
+/**
+ * @file tdd_distributeReportTime.c
+ * @brief 보고시간 분산 기능 Test
+ * 일련번호 끝 4자리, 보고주기(reportRange)로 아래 식으로 분산됨
+ * serialBase = 0537, baseTime = (537%300)/50 = 4, 
+ * reportMin = ((537%300)%50)+5 = 42 reportSec = ((537/300)%4) * 15 = 0
+ * @author Kim Junsu
+ * @version 1.00
+ * @date 2022-02-08
+ */
+
 #include <string.h>
 #include <stdio.h>
 

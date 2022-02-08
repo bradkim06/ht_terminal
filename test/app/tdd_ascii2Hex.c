@@ -1,3 +1,11 @@
+/**
+ * @file tdd_ascii2Hex.c
+ * @brief ascii char to Hex Test
+ * @author Kim Junsu
+ * @version 1.00
+ * @date 2022-02-08
+ */
+
 #include "unity.h"
 #include "flashDriver.h"
 #include "tdd.h"
