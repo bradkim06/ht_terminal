@@ -58,3 +58,4 @@ settings/
 Build/
 *.dep
 .ccls-cache/
+.clangd/
