@@ -13,15 +13,15 @@
 /**
  * @brief Define firmware main version. It depends on the product family.
  */
-#if defined(NBIOT_MODEM_TPB23)
-#if defined(AUX_REPEATER)
-#define FW_VER_MAIN "6"
-#define FIRMWARE_VER "U" FW_VER_MAIN "19" //TODO
-#else
-#define FW_VER_MAIN "2"
-#define FIRMWARE_VER "U" FW_VER_MAIN "19" //TODO
-#endif
-#elif defined(NBIOT_MODEM_BC95G)
+// #if defined(NBIOT_MODEM_TPB23)
+// #if defined(AUX_REPEATER)
+// #define FW_VER_MAIN "6"
+// #define FIRMWARE_VER "U" FW_VER_MAIN "19" //TODO
+// #else
+// #define FW_VER_MAIN "2"
+// #define FIRMWARE_VER "U" FW_VER_MAIN "19" //TODO
+// #endif
+#if defined(NBIOT_MODEM_BC95G)
 #if defined(AUX_REPEATER)
 #define FW_VER_MAIN "7"
 #define FIRMWARE_VER "U" FW_VER_MAIN "19" //TODO

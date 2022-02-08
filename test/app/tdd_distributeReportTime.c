@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 #include "unity.h"
 #include "common_header.h"
@@ -29,18 +30,6 @@ void tearDown()
 {
 }
 
-// static void report(Config_t *conf)
-// {
-// 	tddPrint("reportMin : %d intervalBase : %d reportInterval : %d\n", conf->reportMin,
-// 		 conf->intervalBaseTime, conf->reportInterval);
-// 	for (int h = 0; h < 24; h++) {
-// 		if (APP_checkTimeInterval(h, conf->intervalBaseTime, conf->reportInterval)) {
-// 			tddPrint("%d ", h);
-// 		}
-// 	}
-// 	tddPrint("\n");
-// }
-//
 static void testFunction(inputData_t *data)
 {
 	char msg[100] = "";

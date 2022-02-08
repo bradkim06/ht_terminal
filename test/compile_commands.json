@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/bradkim06/workspace/term/test/build",
+  "command": "/usr/bin/cc -DNBIOT_LG_TYPE -DNBIOT_MODEM_BC95G -DNDEBUG -D__MSP430F5419A__ -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/app -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/dev -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/misc -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/osal -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/test -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/tdd_checkTimeInterval.c.o   -c /home/bradkim06/workspace/term/test/app/tdd_checkTimeInterval.c",
+  "file": "/home/bradkim06/workspace/term/test/app/tdd_checkTimeInterval.c"
+},
+{
+  "directory": "/home/bradkim06/workspace/term/test/build",
+  "command": "/usr/bin/cc -DNBIOT_LG_TYPE -DNBIOT_MODEM_BC95G -DNDEBUG -D__MSP430F5419A__ -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/app -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/dev -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/misc -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/osal -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/test -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/tdd_distributeReportTime.c.o   -c /home/bradkim06/workspace/term/test/app/tdd_distributeReportTime.c",
+  "file": "/home/bradkim06/workspace/term/test/app/tdd_distributeReportTime.c"
+},
+{
+  "directory": "/home/bradkim06/workspace/term/test/build",
+  "command": "/usr/bin/cc -DNBIOT_LG_TYPE -DNBIOT_MODEM_BC95G -DNDEBUG -D__MSP430F5419A__ -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/app -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/dev -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/misc -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/osal -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/test -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg/uuid    -std=gnu99 -o CMakeFiles/App.dir/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c.o   -c /home/bradkim06/workspace/term/test/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c",
+  "file": "/home/bradkim06/workspace/term/test/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c"
+},
+{
+  "directory": "/home/bradkim06/workspace/term/test/build",
+  "command": "/usr/bin/cc -DNBIOT_LG_TYPE -DNBIOT_MODEM_BC95G -DNDEBUG -D__MSP430F5419A__ -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/app -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/dev -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/misc -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/osal -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/test -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg/uuid    -std=gnu99 -o CMakeFiles/App.dir/nbiot/tdd_parseCEREG.c.o   -c /home/bradkim06/workspace/term/test/nbiot/tdd_parseCEREG.c",
+  "file": "/home/bradkim06/workspace/term/test/nbiot/tdd_parseCEREG.c"
+},
+{
+  "directory": "/home/bradkim06/workspace/term/test/build",
+  "command": "/usr/bin/cc -DNBIOT_LG_TYPE -DNBIOT_MODEM_BC95G -DNDEBUG -D__MSP430F5419A__ -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/app -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/dev -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/misc -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/osal -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/test -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg -I/mnt/c/Users/User/workspace_v8/term/src/Master/SRC/modem/nbiot_lg/uuid    -std=gnu99 -o CMakeFiles/App.dir/nbiot/tdd_parseQLWULDATAEX.c.o   -c /home/bradkim06/workspace/term/test/nbiot/tdd_parseQLWULDATAEX.c",
+  "file": "/home/bradkim06/workspace/term/test/nbiot/tdd_parseQLWULDATAEX.c"
+}
+]

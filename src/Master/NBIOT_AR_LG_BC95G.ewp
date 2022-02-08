@@ -1383,7 +1383,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>11111</state>
+          <state>00000</state>
         </option>
         <option>
           <name>CCObjUseModuleName</name>
@@ -1507,7 +1507,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -1516,7 +1516,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>CInput</name>
@@ -1888,11 +1888,11 @@
         </option>
         <option>
           <name>XclOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>XclFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\lnk430F5419A.xcl</state>
+          <state>$TOOLKIT_DIR$\config\linker\lnk430f5419a_iotTerminal.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -2198,6 +2198,9 @@
     <name>DEV</name>
     <file>
       <name>$PROJ_DIR$\SRC\dev\battery.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SRC\dev\dataFlash.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\SRC\dev\flashDriver.c</name>
