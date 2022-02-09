@@ -1,8 +1,12 @@
-#include <msp430.h>
 #include <time.h>
+#include "common_header.h"
+#include "rtcAlarm.h"
+#include "tdd.h"
+
+#ifndef TDD_TEST
+#include <msp430.h>
 
 #include "RTC.h"
-#include "common_header.h"
 #include "MSP430FlashUtil.h"
 
 #include "port_desc.h"
@@ -17,7 +21,6 @@
 #include "app.h"
 #include "flashDriver.h"
 #include "meter.h"
-#include "rtcAlarm.h"
 #include "modem.h"
 
 // 정의된 RTC 타이머 이벤트 개수.
@@ -26,9 +29,6 @@
 #else
 #define RTC_ALARM_COUNT 3
 #endif
-
-#define YEAR_MIN 2017
-#define YEAR_MAX 2100
 
 #define ALARM_TYPE_STR(x)                                                                          \
 	(((x) == RTC_ALARM_METERING) ? "metering" :                                                \
@@ -41,34 +41,6 @@ static Date_t TimeSyncDate;
 
 static RtcAlarm_t AlarmList[RTC_ALARM_COUNT];
 static RtcAlarm_t *NextAlarm = NULL;
-
-int RTC_isValidDate(Date_t *date)
-{
-	int valid = 0;
-
-	do {
-		if (date->year < YEAR_MIN || date->year > YEAR_MAX) {
-			break;
-		}
-
-		if (date->mon < 1 || date->mon > 12) {
-			break;
-		}
-
-		if (date->day < 1 || date->day > 31) {
-			break;
-		}
-
-		if (date->hour > 23 || date->min > 59 || date->sec > 59) {
-			break;
-		}
-
-		valid = 1;
-
-	} while (0);
-
-	return valid;
-}
 
 static void setDefaultRTC(Date_t *date)
 {
@@ -302,60 +274,6 @@ void RTC_incDateTime(Date_t *p, uint16 secOffset)
 	p->year++;
 }
 
-long RTC_calcSecDiff(Date_t *prev, Date_t *next)
-{
-	if (RTC_isValidDate(prev) == 0 || RTC_isValidDate(next) == 0) {
-		return 0x0FFFFFFF;
-	}
-
-	struct tm time;
-
-	time.tm_year = prev->year - 1900;
-	time.tm_mon = prev->mon - 1;
-	time.tm_mday = prev->day;
-	time.tm_hour = prev->hour;
-	time.tm_min = prev->min;
-	time.tm_sec = prev->sec;
-
-	long prevTime = (uint32)(mktime(&time));
-
-	time.tm_year = next->year - 1900;
-	time.tm_mon = next->mon - 1;
-	time.tm_mday = next->day;
-	time.tm_hour = next->hour;
-	time.tm_min = next->min;
-	time.tm_sec = next->sec;
-
-	long nextTime = (uint32)(mktime(&time));
-
-	return nextTime - prevTime;
-}
-
-int RTC_calcMinDiff(Date_t *prev, Date_t *next)
-{
-	long secDiff = RTC_calcSecDiff(prev, next);
-	return (int)(secDiff / 60);
-}
-
-int RTC_calcHourDiff(Date_t *prev, Date_t *next)
-{
-	uint8 prevMin = prev->min;
-	uint8 nextMin = next->min;
-	uint8 prevSec = prev->sec;
-	uint8 nextSec = next->sec;
-
-	prev->min = next->min = 0;
-	prev->sec = next->sec = 0;
-	int hourDiff = RTC_calcMinDiff(prev, next) / 60;
-
-	prev->min = prevMin;
-	next->min = nextMin;
-	prev->sec = prevSec;
-	next->sec = nextSec;
-
-	return hourDiff;
-}
-
 int RTC_isTimeSync()
 {
 	return TimeSyncFlag;
@@ -543,4 +461,90 @@ void RTC_runAlarm()
 		printf_ts("unknow alarm type(%d)\n", alarmType);
 		APP_prepareToSleep();
 	}
+}
+
+#endif
+int RTC_isValidDate(Date_t *date)
+{
+	int valid = 0;
+
+	do {
+		if (date->year < YEAR_MIN || date->year > YEAR_MAX) {
+			break;
+		}
+
+		if (date->mon < 1 || date->mon > 12) {
+			break;
+		}
+
+		if (date->day < 1 || date->day > 31) {
+			break;
+		}
+
+		if (date->hour > 23 || date->min > 59 || date->sec > 59) {
+			break;
+		}
+
+		valid = 1;
+
+	} while (0);
+
+	return valid;
+}
+
+long RTC_calcSecDiff(Date_t *prev, Date_t *next)
+{
+	if (RTC_isValidDate(prev) == 0 || RTC_isValidDate(next) == 0) {
+		return 0x0FFFFFFF;
+	}
+
+	struct tm prev_time = { 0 };
+
+	prev_time.tm_year = prev->year - 1900;
+	prev_time.tm_mon = prev->mon - 1;
+	prev_time.tm_mday = prev->day;
+	prev_time.tm_hour = prev->hour;
+	prev_time.tm_min = prev->min;
+	prev_time.tm_sec = prev->sec;
+
+	time_t prevTime = mktime(&prev_time);
+
+	struct tm next_time = { 0 };
+
+	next_time.tm_year = next->year - 1900;
+	next_time.tm_mon = next->mon - 1;
+	next_time.tm_mday = next->day;
+	next_time.tm_hour = next->hour;
+	next_time.tm_min = next->min;
+	next_time.tm_sec = next->sec;
+
+	time_t nextTime = mktime(&next_time);
+
+	return nextTime - prevTime;
+}
+
+int RTC_calcMinDiff(Date_t *prev, Date_t *next)
+{
+	long secDiff = RTC_calcSecDiff(prev, next);
+	return (int)(secDiff / 60);
+}
+
+int RTC_calcHourDiff(Date_t *prev, Date_t *next)
+{
+	uint8 prevMin = prev->min;
+	uint8 nextMin = next->min;
+	uint8 prevSec = prev->sec;
+	uint8 nextSec = next->sec;
+
+	prev->min = next->min = 0;
+	prev->sec = next->sec = 0;
+	int minDiff = RTC_calcMinDiff(prev, next);
+	int hourDiff = minDiff / 60;
+
+	prev->min = prevMin;
+	next->min = nextMin;
+	prev->sec = prevSec;
+	next->sec = nextSec;
+
+	return hourDiff;
 }

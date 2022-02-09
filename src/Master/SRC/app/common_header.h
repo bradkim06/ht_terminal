@@ -1,14 +1,14 @@
 #ifndef _COMMON_HEADER_
 #define _COMMON_HEADER_
 
-#ifndef TDD_TEST
-
-#include <msp430.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "device.h"
+
+#ifndef TDD_TEST
+
+#include <msp430.h>
 
 #endif
 
@@ -40,12 +40,14 @@
 
 #define TERM_MODEL_STRING_LEN 8
 #define TERM_MODEL_STRING(x)                                                                       \
-	((x) == TERM_MODEL_HAT_114W ? "HAT-114W" :                                                 \
-	 (x) == TERM_MODEL_HAT_124W ? "HAT-124W" :                                                 \
-	 (x) == TERM_MODEL_HTM_115W ? "HTM-115W" :                                                 \
-	 (x) == TERM_MODEL_HAT_314W ? "HAT-314W" :                                                 \
-	 (x) == TERM_MODEL_HAT_435W ? "HAT-435W" :                                                 \
-					    "UNKNOWN")
+	((x) == TERM_MODEL_HAT_114W ?                                                              \
+		 "HAT-114W" :                                                                      \
+		 (x) == TERM_MODEL_HAT_124W ?                                                      \
+		 "HAT-124W" :                                                                      \
+		 (x) == TERM_MODEL_HTM_115W ?                                                      \
+		 "HTM-115W" :                                                                      \
+		 (x) == TERM_MODEL_HAT_314W ? "HAT-314W" :                                         \
+					      (x) == TERM_MODEL_HAT_435W ? "HAT-435W" : "UNKNOWN")
 
 #define TERM_HAS_LCD(x) ((x) == TERM_MODEL_HAT_114W)
 #define SMART_WATER_METER(x) ((x) == TERM_MODEL_HTM_115W)

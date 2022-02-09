@@ -1,24 +1,25 @@
-#include <msp430.h>
-
-#include "RTC.h"
+#include "meter.h"
 #include "common_header.h"
+#include "uart.h"
+#include "check_meter_misc.h"
+#include "RTC.h"
 #include "MSP430FlashUtil.h"
 
-#include "port_desc.h"
-#include "check_meter_misc.h"
-#include "uart.h"
 #include "lcdDriver.h"
 #include "battery.h"
 
-#include "osal_Timer.h"
 #include "Task_Mgr.h"
 
 #include "app.h"
 #include "flashDriver.h"
-#include "meter.h"
 #include "rtcAlarm.h"
 #include "nfcProtocol.h"
+#include "tdd.h"
 
+#ifndef TDD_TEST
+#include <msp430.h>
+#include "port_desc.h"
+#include "osal_Timer.h"
 #define METER_INTERRUPT_HIGH()                                                                     \
 	do {                                                                                       \
 		P10SEL &= ~0x10, P10DIR |= 0x10, P10OUT |= 0x10;                                   \
@@ -39,32 +40,35 @@
 		P10REN |= 0x20;                                                                    \
 		P10OUT |= 0x20;                                                                    \
 	} while (0);
+#endif
 
 extern uint8 AppProcess;
 
-// ¸®¼Â Á÷ÈÄ ¶Ç´Â ÀÚ¼®À» ´òÀ» ¶§ ÀĞ¾î¿Â µ¥ÀÌÅÍ ÀúÀå ¿µ¿ª
+// ë¦¬ì…‹ ì§í›„ ë˜ëŠ” ìì„ì„ ëŒ”ì„ ë•Œ ì½ì–´ì˜¨ ë°ì´í„° ì €ì¥ ì˜ì—­
 MeterTempData_t TempMeterData;
 
-//ÁÖ±â °ËÄ§ µ¥ÀÌÅÍ ÀúÀå ¿µ¿ª
+//ì£¼ê¸° ê²€ì¹¨ ë°ì´í„° ì €ì¥ ì˜ì—­
 MeterStoredData_t StoredMeterData;
 
 #pragma inline
-static void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
+void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
 {
-	// DataÀÇ year´Â RTCÀÇ year¿¡¼­ 2000À» »©¼­ »ç¿ë
-	pData->year = pDate->year - 2000;
-	pData->mon = pDate->mon;
-	pData->day = pDate->day;
-	pData->hour = pDate->hour;
-	pData->min = pDate->min;
-	pData->sec = (isIgnoreSec == TRUE) ? 0 : pDate->sec;
-	pData->isTimeSync = RTC_isTimeSync();
+	if (RTC_isValidDate(pDate)) {
+		// Dataì˜ yearëŠ” RTCì˜ yearì—ì„œ 2000ì„ ë¹¼ì„œ ì‚¬ìš©
+		pData->year = pDate->year - 2000;
+		pData->mon = pDate->mon;
+		pData->day = pDate->day;
+		pData->hour = pDate->hour;
+		pData->min = pDate->min;
+		pData->sec = (isIgnoreSec == TRUE) ? 0 : pDate->sec;
+		pData->isTimeSync = RTC_isTimeSync();
+	}
 }
 
 #pragma inline
 static void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
 {
-	// RTCÀÇ year´Â DataÀÇ year¿¡¼­ 2000À» ´õÇØ¾ß ÇÔ.
+	// RTCì˜ yearëŠ” Dataì˜ yearì—ì„œ 2000ì„ ë”í•´ì•¼ í•¨.
 	pDate->year = pData->year + 2000;
 	pDate->mon = pData->mon;
 	pDate->day = pData->day;
@@ -73,6 +77,30 @@ static void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnor
 	pDate->sec = (isIgnoreSec == TRUE) ? 0 : pData->sec;
 }
 
+static int checkInterval(MeterUnitData_t *after, MeterUnitData_t *before, int si)
+{
+	Date_t prev;
+	copyDateFromData(before, &prev, TRUE);
+
+	Date_t next;
+	copyDateFromData(after, &next, TRUE);
+
+	int elapsed = 0;
+	if (conf.isShortInterval) {
+		if (RTC_calcMinDiff(&prev, &next) >= si) {
+			elapsed = 1;
+		}
+	} else {
+		int hourDiff = RTC_calcHourDiff(&prev, &next);
+		if (hourDiff >= si) {
+			elapsed = 1;
+		}
+	}
+
+	return elapsed;
+}
+
+#ifndef TDD_TEST
 char *METER_getMeterName(int meterType)
 {
 	char *name = "Unknown";
@@ -277,28 +305,6 @@ MeterUnitData_t *METER_getStoredData(int index)
 	return NULL;
 }
 
-static int checkInterval(MeterUnitData_t *after, MeterUnitData_t *before, int si)
-{
-	Date_t prev;
-	copyDateFromData(before, &prev, TRUE);
-
-	Date_t next;
-	copyDateFromData(after, &next, TRUE);
-
-	int elapsed = 0;
-	if (conf.isShortInterval) {
-		if (RTC_calcMinDiff(&prev, &next) >= si) {
-			elapsed = 1;
-		}
-	} else {
-		if (RTC_calcHourDiff(&prev, &next) >= si) {
-			elapsed = 1;
-		}
-	}
-
-	return elapsed;
-}
-
 /**
  * @brief Save meter data in Flash with date
  *
@@ -314,64 +320,6 @@ void METER_saveInFlash(Date_t *pDate, MeterUnitData_t *pUnit)
 	} else {
 		printf("Meter Data Store in Flash : Not synchronized RTC Time\n");
 	}
-}
-
-/**
- * @brief Save meter data in RAM memory. (If num of data is max, compress saved datas)
- *
- * @param pDate meter data time
- * @param pUnit meter data
- */
-void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
-{
-	insertDateToData(pDate, pUnit, TRUE);
-
-	MeterStoredData_t *p = &StoredMeterData;
-	printf("%d data, saveInterval = %d\n", p->nData, p->saveInterval);
-	if (p->nData != 0 && checkInterval(pUnit, &p->unit[0], p->saveInterval) == 0) {
-		printf("within saveInterval - not saved\n");
-		return;
-	}
-
-#if LORA_DEVICE
-	int nMaxData = NUM_LORA_STORED_DATA;
-#else // NBIOT_DEVICE
-	int nMaxData = NUM_NBIOT_STORED_DATA;
-#endif
-
-	if (p->nData >= nMaxData) {
-		switch (p->saveInterval) {
-		case 1:
-		case 2:
-			// ÇÏ³ª °É·¯ ÇÏ³ª¾¿ ¾ø¾Ú - Â¦¼ö ¹øÂ° °ÍÀº ¹«Á¶°Ç Áö¿ì°í,
-			// È¦¼ö ¹øÂ° °ÍÀº 1->0, 3->1, 5->2, 7->3, 9->4¿Í °°ÀÌ ÀÌµ¿ÇÔ.
-			// °á°úÀûÀ¸·Î µ¥ÀÌÅÍÀÇ °¹¼ö´Â Àı¹İÀÌ µÊ
-			for (int i = 0; i < p->nData; i++) {
-				if ((i % 2) == 0) {
-					memset(&p->unit[i], 0, sizeof(MeterUnitData_t));
-				} else {
-					memcpy(&p->unit[(i - 1) / 2], &p->unit[i],
-					       sizeof(MeterUnitData_t));
-				}
-			}
-			p->nData /= 2;
-			p->saveInterval *= 2;
-			break;
-
-		default:
-			p->nData = nMaxData - 1;
-			break;
-		}
-	}
-
-	if (p->nData) {
-		for (int i = p->nData - 1; i >= 0; i--) {
-			memcpy(&p->unit[i + 1], &p->unit[i], sizeof(MeterUnitData_t));
-		}
-	}
-
-	memcpy(&p->unit[0], pUnit, sizeof(MeterUnitData_t));
-	p->nData++;
 }
 
 void METER_collectStoredData()
@@ -390,7 +338,7 @@ void METER_collectStoredData()
 	}
 
 	MeterUnitData_t lastDiff;
-	// Oldest data¿¡ ´ëÇÑ collect¸¦ À§ÇØ Last diff data¸¦ º¹»ç.
+	// Oldest dataì— ëŒ€í•œ collectë¥¼ ìœ„í•´ Last diff dataë¥¼ ë³µì‚¬.
 	memcpy(&lastDiff, &p->lastDiffUnit, sizeof(MeterUnitData_t));
 
 	// MT_DOWN meter data collection
@@ -403,30 +351,30 @@ void METER_collectStoredData()
 
 		if (METER_isAllFF(current->meterData, 4)) {
 			if (next == NULL) {
-				// Last °ªÀÌ MT DOWN ÀÎ °æ¿ì ÀÌÀü °ËÄ§ °ªÀ» copy
+				// Last ê°’ì´ MT DOWN ì¸ ê²½ìš° ì´ì „ ê²€ì¹¨ ê°’ì„ copy
 				if (METER_isAllFF(prev->meterData, 4) == FALSE) {
 					bcd2int(prev->meterData, &prevMeter, 4);
 					currentMeter = prevMeter;
 
-					// Meter data, Meter status º¹»ç
+					// Meter data, Meter status ë³µì‚¬
 					int2bcd(&currentMeter, current->meterData, 4);
 					current->meterStatus = prev->meterStatus;
 					count++;
 				}
 			} else {
-				// ÇöÀç °ªÀÌ MT DOWN ÀÌÁö¸¸, ÀÌÀü °ª°ú ´ÙÀ½ °ªÀÌ À¯È¿ÇÒ °æ¿ì.
+				// í˜„ì¬ ê°’ì´ MT DOWN ì´ì§€ë§Œ, ì´ì „ ê°’ê³¼ ë‹¤ìŒ ê°’ì´ ìœ íš¨í•  ê²½ìš°.
 				if ((METER_isAllFF(next->meterData, 4) == FALSE) &&
 				    (METER_isAllFF(prev->meterData, 4) == FALSE)) {
 					bcd2int(prev->meterData, &prevMeter, 4);
 					bcd2int(next->meterData, &nextMeter, 4);
 					if (prevMeter > nextMeter) {
-						// PREV-NEXT °ªÀÌ BACKFLOWÀÎ °æ¿ì NEXT °ªÀ» ÇÒ´ç.
+						// PREV-NEXT ê°’ì´ BACKFLOWì¸ ê²½ìš° NEXT ê°’ì„ í• ë‹¹.
 						currentMeter = nextMeter;
 					} else {
 						currentMeter = (prevMeter + nextMeter) / 2;
 					}
 
-					// Meter data, Meter status º¹»ç
+					// Meter data, Meter status ë³µì‚¬
 					int2bcd(&currentMeter, current->meterData, 4);
 					current->meterStatus = prev->meterStatus;
 					count++;
@@ -435,7 +383,7 @@ void METER_collectStoredData()
 		}
 	}
 
-	// Next collect¸¦ À§ÇØ Last data¸¦ º¹»ç.
+	// Next collectë¥¼ ìœ„í•´ Last dataë¥¼ ë³µì‚¬.
 	memcpy(&p->lastDiffUnit, &p->unit[0], sizeof(MeterUnitData_t));
 
 	if (count > 0) {
@@ -473,7 +421,7 @@ void METER_saveMeterInfo(uint8 *serial, uint8 caliberDp, uint8 dif, uint8 vif)
 {
 	if (memcmp(serial, StoredMeterData.meterSerial, 4) ||
 	    caliberDp != StoredMeterData.caliberDp) {
-		// data¸¦ Ã³À½ ÀĞÀº °ÍÀÌ°Å³ª Áß°£¿¡ °è·®±â°¡ ±³Ã¼µÈ °ÍÀÓ
+		// dataë¥¼ ì²˜ìŒ ì½ì€ ê²ƒì´ê±°ë‚˜ ì¤‘ê°„ì— ê³„ëŸ‰ê¸°ê°€ êµì²´ëœ ê²ƒì„
 		METER_clearStoredData();
 		memcpy(StoredMeterData.meterSerial, serial, 4);
 		StoredMeterData.caliberDp = caliberDp;
@@ -518,7 +466,7 @@ BOOL read_std_d_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	pUnit->icon.rArrow = (pUnit->meterStatus & 0x40) ? 1 : 0;
 	pUnit->icon.fArrow = 0; // always 0
 	pUnit->icon.m3 = 1;
-	pUnit->icon.notUsed = 0; // Ç¥ÁØ ÇÁ·ÎÅäÄİ¿¡´Â ¹Ì»ç¿ë ¾øÀ½.
+	pUnit->icon.notUsed = 0; // í‘œì¤€ í”„ë¡œí† ì½œì—ëŠ” ë¯¸ì‚¬ìš© ì—†ìŒ.
 	pUnit->icon.leak = (pUnit->meterStatus & 0x20) ? 1 : 0;
 
 	uint8 serial[4];
@@ -533,7 +481,7 @@ BOOL read_std_d_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	return SUCCESS;
 }
 
-// ½ÅÇÑ ´ë¿ë·® °è·®±â´Â °è·®±âÀÇ serial no°¡ 6¹ÙÀÌÆ®ÀÓ
+// ì‹ í•œ ëŒ€ìš©ëŸ‰ ê³„ëŸ‰ê¸°ëŠ” ê³„ëŸ‰ê¸°ì˜ serial noê°€ 6ë°”ì´íŠ¸ì„
 // Data format of Shinhan Meter
 //  byte 0 - IRQ_ACK(always 0x06)
 //  byte 1 - STX(always 0x02)
@@ -546,7 +494,7 @@ BOOL read_std_d_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 //  byte 15 - ETX(always 0x03)
 //  byte 16 - checksum (XORed value of byte 1 ~ 13)
 
-// ½ÅÇÑ ¼Ò¿ë·® °è·®±â´Â °è·®±âÀÇ serial no°¡ 4¹ÙÀÌÆ®ÀÓ
+// ì‹ í•œ ì†Œìš©ëŸ‰ ê³„ëŸ‰ê¸°ëŠ” ê³„ëŸ‰ê¸°ì˜ serial noê°€ 4ë°”ì´íŠ¸ì„
 // Data format of Shinhan Meter
 //  byte 0 - IRQ_ACK(always 0x06)
 //  byte 1 - STX(always 0x02)
@@ -602,7 +550,7 @@ BOOL read_shinhan_d_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 
 #if 0
     if(dataValid == 0) {
-        // data°¡ ¸ğµÎ 0ÀÌ¸é Àß¸øµÈ µ¥ÀÌÅÍ·Î Ã³¸®ÇÔ.
+        // dataê°€ ëª¨ë‘ 0ì´ë©´ ì˜ëª»ëœ ë°ì´í„°ë¡œ ì²˜ë¦¬í•¨.
         printf("Meter value is 0 - ignored\n");
         return FAIL;
     }
@@ -610,10 +558,10 @@ BOOL read_shinhan_d_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 
 	pUnit->meterStatus = rxBuf[12 + offset];
 	if ((pUnit->meterStatus & 0xC0) == 0xC0) {
-		// statusÀÇ ºñÆ® 7, 6, 2, 0¿¡ µû¶ó ½ÅÇÑÁ¦Ç°°ú ½ÅÇÑ¸ğµå ÇÏÀÌÅØÁ¦Ç°À» ±¸ºĞ
-		// (ÀÌµé ºñÆ®°¡ ½ÅÇÑÀº ¸ğµÎ 0, ÇÏÀÌÅØÀº ¸ğµÎ 1)
+		// statusì˜ ë¹„íŠ¸ 7, 6, 2, 0ì— ë”°ë¼ ì‹ í•œì œí’ˆê³¼ ì‹ í•œëª¨ë“œ í•˜ì´í…ì œí’ˆì„ êµ¬ë¶„
+		// (ì´ë“¤ ë¹„íŠ¸ê°€ ì‹ í•œì€ ëª¨ë‘ 0, í•˜ì´í…ì€ ëª¨ë‘ 1)
 
-		pUnit->meterStatus &= ~0xC5; // ¼ö½ÅÃø¿¡¼­ µ¿ÀÏÇÏ°Ô Ã³¸®ÇÏµµ·Ï mask out
+		pUnit->meterStatus &= ~0xC5; // ìˆ˜ì‹ ì¸¡ì—ì„œ ë™ì¼í•˜ê²Œ ì²˜ë¦¬í•˜ë„ë¡ mask out
 	}
 
 	pUnit->icon.lowBatt = rxBuf[11 + offset] < 2 ? 1 : 0;
@@ -698,9 +646,9 @@ BOOL read_mns_d_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	}
 
 	pUnit->meterStatus = 0;
-	uchar caliberDp = 0x13; // MNS´Â Ç×»ó 15mm/¼Ò¼ıÁ¡ 3ÀÚ¸®
+	uchar caliberDp = 0x13; // MNSëŠ” í•­ìƒ 15mm/ì†Œìˆ«ì  3ìë¦¬
 
-	// mns´Â »óÅÂÁ¤º¸¸¦ Á¦°øÇÏÁö ¾ÊÀ½
+	// mnsëŠ” ìƒíƒœì •ë³´ë¥¼ ì œê³µí•˜ì§€ ì•ŠìŒ
 	pUnit->icon.lowBatt = 0;
 	pUnit->icon.rArrow = 0;
 	pUnit->icon.fArrow = 0;
@@ -761,7 +709,7 @@ BOOL read_onetl_meter(uint8 *rxBuf, int len, MeterUnitData_t *pUnit)
 
 		pUnit->meterStatus = pMsg->status;
 		pUnit->icon.lowBatt = (pUnit->meterStatus & 0x03 == ONETL_STATUS_BATT_FULL) ? 0 : 1;
-		// »óÅÂÁ¤º¸ÀÇ °æ¿ì ¹èÅÍ¸®¸¦ Á¦¿ÜÇÏ°í ¾øÀ½.
+		// ìƒíƒœì •ë³´ì˜ ê²½ìš° ë°°í„°ë¦¬ë¥¼ ì œì™¸í•˜ê³  ì—†ìŒ.
 		pUnit->icon.rArrow = 0;
 		pUnit->icon.fArrow = 0; // always 0
 		pUnit->icon.m3 = 1; // Unit is m3
@@ -773,7 +721,7 @@ BOOL read_onetl_meter(uint8 *rxBuf, int len, MeterUnitData_t *pUnit)
 			serial[i] = pMsg->serial[3 - i];
 		}
 
-		uchar decimalPoint = 0x03; // ¼Ò¼öÁ¡ 3ÀÚ¸®
+		uchar decimalPoint = 0x03; // ì†Œìˆ˜ì  3ìë¦¬
 		METER_saveMeterInfo(serial, decimalPoint, 0, 0);
 	} break;
 
@@ -793,7 +741,7 @@ BOOL read_onetl_meter(uint8 *rxBuf, int len, MeterUnitData_t *pUnit)
 
 		pUnit->meterStatus = pMsg->status;
 		pUnit->icon.lowBatt = (pUnit->meterStatus & 0x03 == ONETL_STATUS_BATT_FULL) ? 0 : 1;
-		// »óÅÂÁ¤º¸ÀÇ °æ¿ì ¹èÅÍ¸®¸¦ Á¦¿ÜÇÏ°í ¾øÀ½.
+		// ìƒíƒœì •ë³´ì˜ ê²½ìš° ë°°í„°ë¦¬ë¥¼ ì œì™¸í•˜ê³  ì—†ìŒ.
 		pUnit->icon.rArrow = 0;
 		pUnit->icon.fArrow = 0; // always 0
 		pUnit->icon.m3 = 0; // Unit is MWh
@@ -805,7 +753,7 @@ BOOL read_onetl_meter(uint8 *rxBuf, int len, MeterUnitData_t *pUnit)
 			serial[i] = pMsg->serial[3 - i];
 		}
 
-		uchar decimalPoint = 0x03; // ¼Ò¼öÁ¡ 3ÀÚ¸®
+		uchar decimalPoint = 0x03; // ì†Œìˆ˜ì  3ìë¦¬
 		METER_saveMeterInfo(serial, decimalPoint, 0, 0);
 	} break;
 
@@ -864,7 +812,7 @@ BOOL METER_ontel_sendRequest(uint8 meterType)
 	pMsg->bcc = bcc;
 
 	METER_enable(meterType);
-	MISC_delayMs(50); // ¹®¼­»óÀ¸·Î´Â ¾øÀ¸³ª ÃÖÃÊ PULL-UP ÈÄ ÀÏÁ¤ delay °ªÀÌ ÇÊ¿ä.
+	MISC_delayMs(50); // ë¬¸ì„œìƒìœ¼ë¡œëŠ” ì—†ìœ¼ë‚˜ ìµœì´ˆ PULL-UP í›„ ì¼ì • delay ê°’ì´ í•„ìš”.
 
 	UART_send(UART_A3, &msg, sizeof(OntelReq_t), FALSE);
 	return TRUE;
@@ -1203,4 +1151,66 @@ BOOL METER_bypassResp()
 	// 5 - stx1,l1field, l2field, stx2, etx
 	NFCAPP_meterAdjustResp(buf + 4, len - 5);
 	return SUCCESS;
+}
+#endif
+
+// TDD Test
+
+/**
+ * @brief Save meter data in RAM memory. (If num of data is max, compress saved datas)
+ *
+ * @param pDate meter data time
+ * @param pUnit meter data
+ */
+void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
+{
+	insertDateToData(pDate, pUnit, TRUE);
+
+	MeterStoredData_t *p = &StoredMeterData;
+	if (p->saveInterval == 0 || p->saveInterval > 24) {
+		p->saveInterval = 1;
+	}
+
+	int interval = checkInterval(pUnit, &p->unit[0], p->saveInterval);
+
+	if (interval) {
+#if LORA_DEVICE
+		int nMaxData = NUM_LORA_STORED_DATA;
+#else // NBIOT_DEVICE
+		int nMaxData = NUM_NBIOT_STORED_DATA;
+#endif
+
+		if (p->nData >= nMaxData) {
+			switch (p->saveInterval) {
+				// saveInterval Max 4(ìˆ˜ìì› ê³µì‚¬ ìš”êµ¬ì‚¬í•­)
+			case 1:
+			case 2:
+				// í•˜ë‚˜ ê±¸ëŸ¬ í•˜ë‚˜ì”© ì—†ì•° - ì§ìˆ˜ ë²ˆì§¸ ê²ƒì€ ë¬´ì¡°ê±´ ì§€ìš°ê³ ,
+				// í™€ìˆ˜ ë²ˆì§¸ ê²ƒì€ 1->0, 3->1, 5->2, 7->3, 9->4ì™€ ê°™ì´ ì´ë™í•¨.
+				// ê²°ê³¼ì ìœ¼ë¡œ ë°ì´í„°ì˜ ê°¯ìˆ˜ëŠ” ì ˆë°˜ì´ ë¨
+				for (int i = 0; i < p->nData; i++) {
+					if ((i % 2) == 0) {
+						memset(&p->unit[i], 0, sizeof(MeterUnitData_t));
+					} else {
+						memcpy(&p->unit[(i - 1) / 2], &p->unit[i],
+						       sizeof(MeterUnitData_t));
+					}
+				}
+				p->nData /= 2;
+				p->saveInterval *= 2;
+				break;
+
+			default:
+				p->nData = nMaxData - 1;
+				break;
+			}
+		}
+
+		for (int i = p->nData - 1; i >= 0; i--) {
+			memcpy(&p->unit[i + 1], &p->unit[i], sizeof(MeterUnitData_t));
+		}
+
+		memcpy(&p->unit[0], pUnit, sizeof(MeterUnitData_t));
+		p->nData++;
+	}
 }

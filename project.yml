@@ -35,6 +35,8 @@
   :source:
     - src/Master/SRC/modem/nbiot_lg/nbiotResponse.c
     - src/Master/SRC/dev/flashDriver.c
+    - src/Master/SRC/app/meter.c
+    - src/Master/SRC/app/rtcAlarm.c
   :support:
     - test/support
   :libraries: []
@@ -43,8 +45,8 @@
     - src/Master/SRC/app/**
     - src/Master/SRC/dev/**
     - src/Master/SRC/test/**
-    # - src/Master/SRC/misc/**
-    # - src/Master/SRC/osal/**
+    - src/Master/SRC/misc/**
+    - src/Master/SRC/osal/**
 
 :defines:
   # in order to add common defines:
@@ -53,6 +55,7 @@
   :common: &common_defines
     - TDD_TEST
     - NBIOT_MODEM_BC95G
+    - NBIOT_LG_TYPE
   :test:
     - *common_defines
     - TEST
@@ -89,6 +92,13 @@
     :html_absolute_paths: true
     :print_summary: true
     :report_include: "^src"
+
+# :tools:
+#   :gcov:
+#     :compiler:
+#       :execute: gcc
+#         :arguments:
+#           - -std=c99
 ...
 # Add -gcov to the plugins list to make sure of the gcov plugin
 # You will need to have gcov and gcovr both installed to make it work.

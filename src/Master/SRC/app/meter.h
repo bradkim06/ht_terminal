@@ -658,5 +658,6 @@ int METER_needNewMetering(int secLimit);
 void METER_bypassReq(uint8 *body, int bodyLen);
 BOOL METER_bypassResp();
 void METER_saveMeterInfo(uint8 *serial, uint8 caliberDp, uint8 dif, uint8 vif);
+void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec);
 
 #endif //__METER_H__

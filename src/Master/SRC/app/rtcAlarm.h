@@ -4,6 +4,9 @@
 #include "common_header.h"
 #include "meter.h"
 
+#define YEAR_MIN 2017
+#define YEAR_MAX 2100
+
 // RTC 타이머 이벤트(= Alarm)
 typedef enum {
 	RTC_ALARM_METERING, // 매 시간 0분에 발생하는 검침 이벤트
