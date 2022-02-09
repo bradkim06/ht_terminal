@@ -161,6 +161,15 @@ void initPort()
 		PORT_SENSOR_IE |= BM(PORT_SENSOR_REED); // Interrupt enabled
 		PORT_SENSOR_IES &= ~BM(PORT_SENSOR_REED); // Low/Hi edge
 		PORT_SENSOR_IFG &= ~BM(PORT_SENSOR_REED); // IFG cleared
+
+#if defined(AUX_REPEATER)
+        if(MISC_findPushButton()) {
+            PORT1_DIR &= ~BM(PORT_LCD_SWITCH);     // Set to Input
+            PORT1_IE  |=  BM(PORT_LCD_SWITCH);     // Interrupt enabled
+            PORT1_IES |=  BM(PORT_LCD_SWITCH);     // Hi/Low edge
+            PORT1_IFG &= ~BM(PORT_LCD_SWITCH);     // IFG cleared
+        }
+#endif
 	}
 
 #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO)

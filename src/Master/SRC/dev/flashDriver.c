@@ -330,6 +330,7 @@ void FLASH_readConfigInfo(Config_t *config)
 {
 	config->termModel = MISC_getDeviceType();
 	config->bslModel = MISC_getBslType();
+    config->havePushButton = MISC_findPushButton();
 
 	// read others
 	FlashConfig_t flashConfig;

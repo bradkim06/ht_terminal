@@ -5,6 +5,7 @@
 
 int MISC_getDeviceType(void);
 int MISC_getBslType();
+int MISC_findPushButton();
 int MISC_NfcPortSelect(void);
 void MISC_delayUs(uint32 timeout);
 void MISC_delayMs(uint32 timeout);

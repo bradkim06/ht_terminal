@@ -1014,6 +1014,7 @@ void recvFwUpdateReq(byte *data, uint8 len)
 
 void recvPeriodMeterReq(byte *data, uint8 len)
 {
+#if !defined(AUX_REPEATER)
 	NfcPeriodMeterReq_t *pReq = (NfcPeriodMeterReq_t *)data;
 
 	uint16 yearFrom = ((pReq->from_year[1] << 8) | pReq->from_year[0]) - 2000;
@@ -1025,10 +1026,12 @@ void recvPeriodMeterReq(byte *data, uint8 len)
 	uint16 dayTo = pReq->to_day;
 
 	dataFlash_sendData((uint8)yearFrom, monFrom, dayFrom, (uint8)yearTo, monTo, dayTo);
+#endif
 }
 
 void recvFlashDateListReq(byte *data, uint8 len)
 {
+#if !defined(AUX_REPEATER)
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
 
@@ -1047,10 +1050,12 @@ void recvFlashDateListReq(byte *data, uint8 len)
 
 	int msgLen = sizeof(NfcFlashDateListReport_t) - ((5 - p->nMonth) * 6);
 	send(msg, msgLen);
+#endif
 }
 
 void recvFlashDataReq(byte *data, uint8 len)
 {
+#if !defined(AUX_REPEATER)
 	NfcFlashDataReq_t *p = (NfcFlashDataReq_t *)data;
 
 	byte msg[64];
@@ -1074,6 +1079,7 @@ void recvFlashDataReq(byte *data, uint8 len)
 			send(msg, sizeof(NfcFlashDataReport_t));
 		}
 	}
+#endif
 }
 
 void recvServerConnectReq(byte *data, uint8 len)

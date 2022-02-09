@@ -22,6 +22,27 @@ int MISC_getBslType()
 	return type;
 }
 
+int MISC_findPushButton()
+{
+	int found = 1;
+
+	// check push button
+	P8DIR &= ~0x08;
+	P8REN |= 0x08;
+	P8OUT |= 0x08;
+
+	MISC_delayUs(10);
+	if (P8IN & 0x08) {
+		found = 0;
+	}
+
+	P8REN &= ~0x08;
+	P8DIR |= 0x08;
+	P8OUT &= ~0x08;
+
+	return found;
+}
+
 int MISC_NfcPortSelect(void)
 {
 	int port = 7;

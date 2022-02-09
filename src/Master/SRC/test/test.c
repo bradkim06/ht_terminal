@@ -1077,7 +1077,9 @@ void TEST_run()
 	printf("===========================================\n");
 	printf("\n");
 
+#if !defined(AUX_REPEATER)
 	dataFlash_init();
+#endif
 
 	SHELL_init();
 	SHELL_run();

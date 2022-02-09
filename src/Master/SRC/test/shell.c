@@ -800,14 +800,17 @@ void SHELL_run()
 			break;
 
 		case CMDN_ES:
+#if !defined(AUX_REPEATER)
 			if (numOfCmdArgs >= 1) {
 				dataFlash_eraseSector(cmdArgs[0]);
 			} else {
 				goto SHELL_CMD_ERROR;
 			}
+#endif
 			break;
 
 		case CMDN_GD:
+#if !defined(AUX_REPEATER)
 			if (numOfCmdArgs >= 1) {
 				if (numOfCmdArgs >= 2) {
 					dataFlash_genData(SHELL_decimal(cmdArgs[0]),
@@ -818,21 +821,27 @@ void SHELL_run()
 			} else {
 				goto SHELL_CMD_ERROR;
 			}
+#endif
 			break;
 
 		case CMDN_MAP:
+#if !defined(AUX_REPEATER)
 			dataFlash_displayMapSector();
+#endif
 			break;
 
 		case CMDN_DDS:
+#if !defined(AUX_REPEATER)
 			if (numOfCmdArgs >= 1) {
 				dataFlash_displayDataSector(SHELL_decimal(cmdArgs[0]));
 			} else {
 				goto SHELL_CMD_ERROR;
 			}
+#endif
 			break;
 
 		case CMDN_RD:
+#if !defined(AUX_REPEATER)
 			if (numOfCmdArgs >= 4) {
 				dataFlash_readData(SHELL_decimal(cmdArgs[0]),
 						   SHELL_decimal(cmdArgs[1]),
@@ -841,6 +850,7 @@ void SHELL_run()
 			} else {
 				goto SHELL_CMD_ERROR;
 			}
+#endif
 			break;
 
 		default:

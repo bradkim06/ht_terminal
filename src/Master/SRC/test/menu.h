@@ -244,33 +244,58 @@ const ShellCommandSet_t CmdSet[] = {
 	},
 
 #define CMDN_PCTX 40
-	{ "pctx",
-	  "pctx ch(0~20) level                * [RF424] transmit carrier (0:10dBm, 1:5dBm, 2:-10dBm)" },
+	{   
+        "pctx",
+	    "pctx ch(0~20) level                * [RF424] transmit carrier (0:10dBm, 1:5dBm, 2:-10dBm)" 
+    },
 
 #define CMDN_PTX 41
-	{ "ptx", "ptx ch(0~20) level len(30~80)      * [RF424] test tx" },
+	{   
+        "ptx", 
+        "ptx ch(0~20) level len(30~80)      * [RF424] test tx" 
+    },
 
 #define CMDN_PRX 42
-	{ "prx", "prx ch(0~20)                       * [RF424] test rx" },
+	{ 
+        "prx", 
+        "prx ch(0~20)                       * [RF424] test rx" 
+    },
 
 #define CMDN_RID 43
-	{ "rid", "rid                                * [RF424] read pan, nwk & slave id" },
+	{ 
+        "rid", 
+        "rid                                * [RF424] read pan, nwk & slave id" 
+    },
 
 #define CMDN_WID 44
-	{ "wid", "wid pan nwk slaveId                * [RF424] write pan, nwk & slave id" },
+	{ 
+        "wid", 
+        "wid pan nwk slaveId                * [RF424] write pan, nwk & slave id" 
+    },
 
 #define CMDN_RMSG 45
-	{ "rmsg", "rmsg ch(0~20)                      * [RF424] receive message" },
+	{ 
+        "rmsg", 
+        "rmsg ch(0~20)                      * [RF424] receive message" 
+    },
 
 #define CMDN_SCAN 46
-	{ "scan",
-	  "scan CH_GROUP                      * [RF424] scan carrier(1:1~5, 2:6~10, 3:11~15, 4:16~20)" },
+	{ 
+        "scan",
+	    "scan CH_GROUP                      * [RF424] scan carrier(1:1~5, 2:6~10, 3:11~15, 4:16~20)" 
+    },
 
 #define CMDN_RSSI 47
-	{ "rssi", "rssi ch(0~20)                      * [RF424] check rssi" },
+	{ 
+        "rssi", 
+        "rssi ch(0~20)                      * [RF424] check rssi" 
+    },
 
 #define CMDN_POWER 48
-	{ "power", "power ch(0~20)                     * [RF424] check rx power" },
+	{ 
+        "power", 
+        "power ch(0~20)                     * [RF424] check rx power" 
+    },
 
 #define CMDN_RI_CTRL 49
 	{
@@ -279,19 +304,34 @@ const ShellCommandSet_t CmdSet[] = {
 	},
 
 #define CMDN_ES 50
-	{ "es", "es sector                          * erase one or all data sector" },
+	{ 
+        "es", 
+        "es sector                          * [114W/124W] erase one or all data sector" 
+    },
 
 #define CMDN_MAP 51
-	{ "map", "map                                * display map sector" },
+	{ 
+        "map", 
+        "map                                * [114W/124W] display map sector" 
+    },
 
 #define CMDN_DDS 52
-	{ "dds", "dds sector                         * display data sector" },
+	{   
+        "dds", 
+        "dds sector                         * [114W/124W] display data sector" 
+    },
 
 #define CMDN_GD 53
-	{ "gd", "gd count [skip]                    * generate data" },
+	{ 
+        "gd", 
+        "gd count [skip]                    * [114W/124W] generate data" 
+    },
 
 #define CMDN_RD 54
-	{ "rd", "rd year mon day nDays              * read saved data" },
+	{ 
+        "rd", 
+        "rd year mon day nDays              * [114W/124W] read saved data" 
+    },
 
 #if LORA_DEVICE
 #define CMDN_PWAEUI 55

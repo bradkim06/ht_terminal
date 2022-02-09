@@ -52,7 +52,7 @@
 
 #define PORT_MODEM_POWER 0
 #define PORT_SENSOR_REED 1
-#define PORT_LCD_SWITCH 2
+#define PORT_LCD_SWITCH 6
 #define PORT_PULSE_DATA_1 3
 #define PORT_CC1200_GPIO3 0 // Not use this pin (old version)
 #define PORT_CC1200_GPIO0 7

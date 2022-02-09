@@ -158,6 +158,21 @@ __interrupt void Port_1(void)
 		NFC_recvMessage();
 		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
 	}
+
+#if defined(AUX_REPEATER)
+    if(PORT1_IFG & BM(PORT_LCD_SWITCH)){
+        PORT1_IFG &= ~BM(PORT_LCD_SWITCH); 
+        if(conf.havePushButton) {
+		    OSAL_stopEventTimer(AppTaskId, APP_EVENT_SENSOR_REED);
+		    if (TEST_isTestMode() == TRUE) {
+			    OSAL_startEventTimer(AppTaskId, APP_EVENT_SENSOR_REED, (uint32)10);
+		    } else {
+			    OSAL_startEventTimer(AppTaskId, APP_EVENT_SENSOR_REED, (uint32)500);
+		    }
+            WAKEUP_DEVICE();    
+        }
+    }
+#endif
 }
 
 // Port 2 interrupt service routine - Reed, Tamper, Flood
@@ -358,7 +373,9 @@ void APP_init(uint8 taskId)
 		PRINT_disable();
 	}
 	// Flash memory에 저장된 데이터 점검
+#if !defined(AUX_REPEATER)
 	dataFlash_init();
+#endif
 
 	MODEM_initialization();
 
@@ -686,9 +703,11 @@ static void meteringRecvResp()
 	if (result == TRUE) {
 		meteringUpdateData(TRUE, &unit);
 		meteringCompleted();
+#if !defined(AUX_REPEATER)
 		if (RTC_isTimeSync()) {
 			dataFlash_save((uint8 *)&unit, METER_getMeterCaliber_dp());
 		}
+#endif
 	} else {
 		meteringRetry();
 	}
