@@ -240,18 +240,6 @@ void bcd2int(uint8 *pBCD, uint32 *pInt, uint8 nDigit)
 	*pInt = value;
 }
 
-void int2bcd(uint32 *pInt, uint8 *pBCD, uint8 nDigit)
-{
-	uint32 value = *pInt;
-	uint8 temp = 0;
-
-	for (int i = 0; i < nDigit; i++) {
-		temp = value % 100;
-		value /= 100;
-		*(pBCD + (nDigit - 1 - i)) = (temp / 10) * 0x10 + (temp % 10);
-	}
-}
-
 #if defined(AUX_REPEATER)
 int getFirstZeroPosition(uint32 nwk_addr)
 {
@@ -330,7 +318,7 @@ void FLASH_readConfigInfo(Config_t *config)
 {
 	config->termModel = MISC_getDeviceType();
 	config->bslModel = MISC_getBslType();
-    config->havePushButton = MISC_findPushButton();
+	config->havePushButton = MISC_findPushButton();
 
 	// read others
 	FlashConfig_t flashConfig;
@@ -407,11 +395,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	// config->reportMin = (serialBase % 50) + 5;
 }
 
-uint8 ascii2BCD(char a, char b)
-{
-	return (ascii2Hex(a) * 0x10 + ascii2Hex(b));
-}
-
 void ip2hexArray(char *ip, uint8 *hexIp)
 {
 	char *p = ip;
@@ -443,6 +426,24 @@ void FLASH_updateResetCount(Config_t *config)
 }
 
 #endif
+
+uint8 ascii2BCD(char a, char b)
+{
+	return (ascii2Hex(a) * 0x10 + ascii2Hex(b));
+}
+
+// TDD_TEST
+void int2bcd(uint32 *pInt, uint8 *pBCD, uint8 nDigit)
+{
+	uint32 value = *pInt;
+	uint8 temp = 0;
+
+	for (int i = 0; i < nDigit; i++) {
+		temp = value % 100;
+		value /= 100;
+		*(pBCD + (nDigit - 1 - i)) = (temp / 10) * 0x10 + (temp % 10);
+	}
+}
 
 uint8 ascii2Hex(char ch)
 {

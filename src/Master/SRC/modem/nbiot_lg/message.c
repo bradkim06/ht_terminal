@@ -1,14 +1,17 @@
+#ifndef TDD_TEST
 #include <msp430.h>
+#include "port_desc.h"
+#include "osal_Timer.h"
+#endif
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
 
 #include "common_header.h"
-#include "port_desc.h"
 #include "uart.h"
 #include "check_meter_misc.h"
+#include "flashDriver.h"
 
-#include "osal_Timer.h"
 #include "app.h"
 #include "meter.h"
 #include "lcdDriver.h"
@@ -21,8 +24,9 @@
 #include "test.h"
 
 extern uint8 AppProcess;
-extern Modem_t modem;
 extern Config_t conf;
+extern Modem_t modem;
+#ifndef TDD_TEST
 
 static uchar cal_checksum(uchar *p, int len)
 {
@@ -367,52 +371,6 @@ int MODEM_errData(uchar *buf, int pfUlCnt, int pfDlCnt, int udpUlCnt, int udpDlC
 	return dataLen;
 }
 
-int MODEM_qaData(uchar *buf)
-{
-	NbiotQaReportToLg_t *p = (NbiotQaReportToLg_t *)buf;
-	memset(buf, 0, sizeof(NbiotQaReportToLg_t));
-
-	// Set message version
-	p->msgVer = NBIOT_QA_MSG_VER;
-
-	// Set CTN
-	MODEM_copyCtn(p->ctn);
-
-	// Set battery voltage (2byte BCD)
-	p->batt[0] = NBIOT_QA_BATT_VOLTAGE;
-	p->batt[1] = (BATT_getVoltage() / 10);
-	p->batt[2] = ((BATT_getVoltage() % 10) << 4);
-
-	// Set serving CID
-	uint32 cgi = SWAP32(modem.modemQuality.cgi);
-	memcpy(p->cgi, &cgi, LEN_NBIOT_QA_CGI);
-
-	// Set RSRP (2byte BCD)
-	uint32 rsrp = abs(modem.modemQuality.rsrp) / 10;
-	int2bcd(&rsrp, p->rsrp, LEN_NBIOT_QA_RSRP);
-
-	// Set SNR (1byte 음수/양수 설정, 1byte BCD)
-	uint32 snr = abs(modem.modemQuality.snr) / 10;
-	p->sinr[0] = (modem.modemQuality.snr > 0) ? 0 : 1;
-	int2bcd(&snr, &p->sinr[1], LEN_NBIOT_QA_SINR - 1);
-
-	// Set model name
-	char *model = TERM_MODEL_STRING(conf.termModel);
-	p->model[0] = TERM_MODEL_STRING_LEN; // sizeof(model);
-	memcpy(&p->model[1], model, p->model[0]);
-
-	// Set firmware version
-	p->fwVer[0] = FIRMWARE_VER_LEN;
-	memcpy(&p->fwVer[1], FIRMWARE_VER, p->fwVer[0]);
-
-	// Set TX power (1byte 음수/양수 설정, 1byte BCD)
-	uint32 txPower = abs(modem.modemQuality.txPower) / 10;
-	p->txPower[0] = (modem.modemQuality.txPower > 0) ? 0 : 1;
-	int2bcd(&txPower, &p->txPower[1], LEN_NBIOT_QA_TX_POWER - 1);
-
-	return sizeof(NbiotQaReportToLg_t);
-}
-
 #if 0 // sholee - 더 이상 사용하지 않음
 int MODEM_sendJoin(uchar *buf)
 {
@@ -621,4 +579,52 @@ int MODEM_checkDlMessage(uchar *buf, int len)
 	}
 
 	return resultOK;
+}
+#endif
+
+// TDD_TEST
+int MODEM_qaData(uchar *buf)
+{
+	NbiotQaReportToLg_t *p = (NbiotQaReportToLg_t *)buf;
+	memset(buf, 0, sizeof(NbiotQaReportToLg_t));
+
+	// Set message version
+	p->msgVer = NBIOT_QA_MSG_VER;
+
+	// Set CTN
+	MODEM_copyCtn(p->ctn);
+
+	// Set battery voltage (2byte BCD)
+	p->batt[0] = NBIOT_QA_BATT_VOLTAGE;
+	p->batt[1] = (BATT_getVoltage() / 10);
+	p->batt[2] = ((BATT_getVoltage() % 10) << 4);
+
+	// Set serving CID
+	uint32 cgi = SWAP32(modem.modemQuality.cgi);
+	memcpy(p->cgi, &cgi, LEN_NBIOT_QA_CGI);
+
+	// Set RSRP (2byte BCD)
+	uint32 rsrp = abs(modem.modemQuality.rsrp) / 10;
+	int2bcd(&rsrp, p->rsrp, LEN_NBIOT_QA_RSRP);
+
+	// Set SNR (1byte 음수/양수 설정, 1byte BCD)
+	uint32 snr = abs(modem.modemQuality.snr) / 10;
+	p->sinr[0] = (modem.modemQuality.snr > 0) ? 0 : 1;
+	int2bcd(&snr, &p->sinr[1], LEN_NBIOT_QA_SINR - 1);
+
+	// Set model name
+	char *model = TERM_MODEL_STRING(conf.termModel);
+	p->model[0] = TERM_MODEL_STRING_LEN; // sizeof(model);
+	memcpy(&p->model[1], model, p->model[0]);
+
+	// Set firmware version
+	p->fwVer[0] = FIRMWARE_VER_LEN;
+	memcpy(&p->fwVer[1], FIRMWARE_VER, p->fwVer[0]);
+
+	// Set TX power (1byte 음수/양수 설정, 1byte BCD)
+	uint32 txPower = abs(modem.modemQuality.txPower) / 10;
+	p->txPower[0] = (modem.modemQuality.txPower > 0) ? 0 : 1;
+	int2bcd(&txPower, &p->txPower[1], LEN_NBIOT_QA_TX_POWER - 1);
+
+	return sizeof(NbiotQaReportToLg_t);
 }

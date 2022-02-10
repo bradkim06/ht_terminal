@@ -4,6 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef TDD_TEST
 #include "common_header.h"
 #include "RTC.h"
 #include "port_desc.h"
@@ -173,3 +174,4 @@ int BATT_getLevel()
 
 	return level;
 }
+#endif

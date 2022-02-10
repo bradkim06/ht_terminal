@@ -1,3 +1,4 @@
+#ifndef NBIOT_LG_TYPE
 #include <msp430.h>
 #include <ctype.h>
 #include <time.h>
@@ -671,3 +672,4 @@ int MODEM_recvResetReq(uchar *buf, int len)
 
 	return 0;
 }
+#endif

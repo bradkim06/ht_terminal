@@ -1,30 +1,33 @@
+#include "common_header.h"
+#include "modem.h"
+
+#ifndef TDD_TEST
 #include <msp430.h>
+#include "port_desc.h"
+#include "osal_Timer.h"
+
 #include <ctype.h>
 #include <time.h>
-
-#include "common_header.h"
-#include "port_desc.h"
 #include "uart.h"
 #include "check_meter_misc.h"
 
-#include "flashDriver.h"
-#include "osal_Timer.h"
 #include "app.h"
 #include "meter.h"
 #include "lcdDriver.h"
 #include "shell.h"
 #include "rtcAlarm.h"
-#include "modem.h"
 #include "message.h"
 #include "nbiotModem.h"
 #include "assert.h"
 #include "battery.h"
 #include "test.h"
-
-extern Config_t conf;
-extern uint8 AppProcess;
+#endif
 
 Modem_t modem;
+
+#ifndef TDD_TEST
+extern Config_t conf;
+extern uint8 AppProcess;
 
 /**
  * @brief MODEM init flag print macro (only debug)
@@ -523,17 +526,6 @@ void MODEM_copyImsi(uchar *imsi)
 {
 	str2BcdForImeiAndImsi(imsi, modem.imsiStr);
 }
-void MODEM_copyCtn(uchar *ctn)
-{
-	// 11자리의 CTN을 BCD로 변환 시 가장 앞자리 0을 1byte로 할당한다.
-	// EX :  012-1234-5678 -> 0x00 0x12 0x12 0x34 0x56 0x78
-	char *p = modem.ctnStr;
-	int len = sizeof(modem.ctnStr) / 2;
-	*(ctn + 0) = ascii2BCD('0', '0');
-	for (int i = 1; i < len; i++) {
-		*(ctn + i) = ascii2BCD(*(p + i * 2 - 1), *(p + i * 2));
-	}
-}
 
 void MODEM_copyIccid(uchar *iccid)
 {
@@ -661,4 +653,18 @@ void MODEM_copyLastAccessTime(uint8 *p)
 	*(p + 4) = modem.lastAccessTime.hour;
 	*(p + 5) = modem.lastAccessTime.min;
 	*(p + 6) = modem.lastAccessTime.sec;
+}
+#endif
+
+// TDD_TEST
+void MODEM_copyCtn(uchar *ctn)
+{
+	// 11자리의 CTN을 BCD로 변환 시 가장 앞자리 0을 1byte로 할당한다.
+	// EX :  012-1234-5678 -> 0x00 0x12 0x12 0x34 0x56 0x78
+	char *p = modem.ctnStr;
+	int len = sizeof(modem.ctnStr) / 2;
+	*(ctn + 0) = ascii2BCD('0', '0');
+	for (int i = 1; i < len; i++) {
+		*(ctn + i) = ascii2BCD(*(p + i * 2 - 1), *(p + i * 2));
+	}
 }
