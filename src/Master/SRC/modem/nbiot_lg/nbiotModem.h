@@ -103,7 +103,8 @@ typedef union {
 			updateReg : 1, // Flag to set whether Register Update is necessary in CERTIFY step
 			updateQa : 1, // Flag to set whether Update QA is necessary after attached
 			runFota : 1, // Flag to set whether to check FOTA request.
-			reserved : 3;
+			initialReport : 1, // Flag to set whether to check initial Report, For LGU QA Report
+			reserved : 2;
 	};
 } ModemProc_t;
 
@@ -157,7 +158,7 @@ typedef struct {
 	int dlCnt;
 	int pfUlCnt;
 	int pfDlCnt;
-    BOOL waitDl;
+	BOOL waitDl;
 	uchar errLog[CNT_ERROR_LOG][LEN_ERROR_LOG];
 } ModemContext_t;
 

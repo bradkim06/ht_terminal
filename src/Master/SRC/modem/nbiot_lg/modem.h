@@ -32,6 +32,7 @@
 #define LEN_MODEM_UUID 36
 #define LEN_MODEM_CTN 11
 #define LEN_MODEM_SERVICE_CODE 4
+#define LEN_MODEM_FW_VER 14
 
 #define LEN_MAX_AT_DATA MODEM_TX_BUF_LEN
 #define LEN_MAX_DL_DATA 0x20
@@ -83,6 +84,7 @@ typedef struct {
 	Date_t lastAttachTime;
 	ModemNwStatus_t lastAttachStatus;
 	ModemType_t modemType;
+	char FwVer[LEN_MODEM_FW_VER + 1];
 } Modem_t;
 
 void MODEM_turnOff();

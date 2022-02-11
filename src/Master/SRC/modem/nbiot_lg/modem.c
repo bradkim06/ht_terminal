@@ -205,6 +205,9 @@ void MODEM_initialization()
 	memset(&modem, 0, sizeof(modem));
 	memset(&modemCtx, 0, sizeof(modemCtx));
 	memset(&modemComm, 0, sizeof(modemComm));
+
+	// LGU+ QA Report V1.75, UE INFO 필드 초기보고시 0x01
+	modemCtx.proc.initialReport = 1;
 }
 
 void MODEM_enable()
@@ -460,6 +463,8 @@ void MODEM_open(int process)
 
 void MODEM_close()
 {
+	modemCtx.proc.initialReport = 0;
+
 	// 단말기 sleep mode 인 경우 sleep disable.
 	if (conf.sleepMode) {
 		modemCtx.status.psmOn = 0;

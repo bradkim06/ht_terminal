@@ -776,15 +776,9 @@ void MODEM_response(char *pHead, int len)
 		}
 		break;
 
-	case AT_CMD_IDX_RUN_DATA_NOTI:
-		if (isAckOk) {
-			isRleaseBusy = TRUE;
-			modemCtx.pfUlCnt++;
-		}
-		break;
-
 	case AT_CMD_IDX_QLWULDATAEX:
 		if (parseQLWULDATAEX(pHead, &modemCtx)) {
+			modemCtx.pfUlCnt++;
 			isRleaseBusy = TRUE;
 		}
 		break;
@@ -804,6 +798,12 @@ void MODEM_response(char *pHead, int len)
 		}
 		break;
 
+	case AT_CMD_IDX_GET_FW_REV:
+		if (parseQGMR(pHead, &modem)) {
+			isRleaseBusy = TRUE;
+		}
+		break;
+
 	case AT_CMD_IDX_SET_PSM:
 	case AT_CMD_IDX_SET_BAND:
 	case AT_CMD_IDX_SET_RESELECT:
@@ -815,7 +815,6 @@ void MODEM_response(char *pHead, int len)
 	case AT_CMD_IDX_SOCKET_CLOSE:
 	case AT_CMD_IDX_SET_RF_CTRL:
 	case AT_CMD_IDX_SET_NW_ALARM:
-	case AT_CMD_IDX_GET_FW_REV:
 	case AT_CMD_IDX_SET_REPORT_PSM:
 	case AT_CMD_IDX_SET_LWM2M_SERVER:
 	case AT_CMD_IDX_SWITCH_LWM2M:
@@ -894,6 +893,27 @@ BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr)
 			modemPtr->waitDl = TRUE;
 			retValue = TRUE;
 		}
+	}
+
+	return retValue;
+}
+
+BOOL parseQGMR(const char *pHead, Modem_t *modemPtr)
+{
+	char *p = NULL;
+	BOOL retValue = FALSE;
+#define PATTERN_MODEM_FW_VER "BC95G"
+	if (p = strstr(pHead, PATTERN_MODEM_FW_VER)) {
+		char *token = strtok(p, ".");
+		int strLen = strlen(token);
+
+		if (strLen < LEN_MODEM_FW_VER) {
+			snprintf(modemPtr->FwVer, strLen + 1, "%s", token);
+		} else {
+			snprintf(modemPtr->FwVer, LEN_MODEM_FW_VER + 1, "%s", token);
+		}
+
+		retValue = TRUE;
 	}
 
 	return retValue;

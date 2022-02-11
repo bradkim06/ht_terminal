@@ -2,6 +2,7 @@
 #include <msp430.h>
 #include "port_desc.h"
 #include "osal_Timer.h"
+#include "battery.h"
 #endif
 #include <ctype.h>
 #include <time.h>
@@ -20,8 +21,8 @@
 #include "modem.h"
 #include "nbiotModem.h"
 #include "message.h"
-#include "battery.h"
 #include "test.h"
+#include "tdd.h"
 
 extern uint8 AppProcess;
 extern Config_t conf;
@@ -583,6 +584,14 @@ int MODEM_checkDlMessage(uchar *buf, int len)
 #endif
 
 // TDD_TEST
+
+/**
+ * @brief LGU+ 품질리포트 Version 1.75
+ * See Detail Description README.md
+ * @param buf QA Report Message buf
+ *
+ * @return msg size
+ */
 int MODEM_qaData(uchar *buf)
 {
 	NbiotQaReportToLg_t *p = (NbiotQaReportToLg_t *)buf;
@@ -618,13 +627,31 @@ int MODEM_qaData(uchar *buf)
 	memcpy(&p->model[1], model, p->model[0]);
 
 	// Set firmware version
-	p->fwVer[0] = FIRMWARE_VER_LEN;
-	memcpy(&p->fwVer[1], FIRMWARE_VER, p->fwVer[0]);
+	// tddPrint("modem fw ver len : %d\n", strlen(modem.FwVer));
+	p->fwVer[0] = LEN_NBIOT_QA_FW_VER - 1;
+	// deviceVer/modemVer
+	char version[LEN_NBIOT_QA_FW_VER - 1] = "";
+	snprintf(version, p->fwVer[0] + 1, "%s/%s", FIRMWARE_VER, modem.FwVer);
+	memcpy(&p->fwVer[1], version, p->fwVer[0]);
 
 	// Set TX power (1byte 음수/양수 설정, 1byte BCD)
 	uint32 txPower = abs(modem.modemQuality.txPower) / 10;
 	p->txPower[0] = (modem.modemQuality.txPower > 0) ? 0 : 1;
 	int2bcd(&txPower, &p->txPower[1], LEN_NBIOT_QA_TX_POWER - 1);
+
+	// 위치좌표, Neighbor Cell ID 지원안함 PASS
+
+	// UE INFO BAND5(LTE), 고정형
+#define UE_INFO_BC95G 0x42
+	p->ueInfo = (UE_INFO_BC95G + (modemCtx.proc.initialReport & 0x01));
+
+	// PORT INFO 사용안함 PASS
+
+	// Reserved 0xF1F1F1
+#define QA_RESERVED 0xF1
+	for (int i = 0; i < sizeof(p->reserved); i++) {
+		p->reserved[i] = QA_RESERVED;
+	}
 
 	return sizeof(NbiotQaReportToLg_t);
 }

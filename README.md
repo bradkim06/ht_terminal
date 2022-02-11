@@ -22,15 +22,15 @@
 - [ ] 수자원 공사 보고주기 분할(최대 4일치) on/off 옵션 처리
   - 김영일 부장님 스마트폰 프로토콜 추가 필요
 - [x] 일련 번호 시간 분산 테스트 이상없음
-- [x] 보조중계기 P/F 버전 구현 / 테스트
+- [ ] 보조중계기 P/F 버전 구현 / 테스트
+  - [ ] 김용태 대리 체크리스트 찾기 & 테스트
+  - [ ] 강나루 대리 보조중계기 기능 Merge Test 필요
+    - [ ] Push 버튼 동작 확인
+    - [ ] Revision 1.9 LPM3 확인
 - [x] AT+QLWULDATAEX 기능 추가, 테스트
 - [ ] OTA, RCT 측정시 QREGSWT = 2 필요 (?)
 
 #### Sub
-
-- [ ] 강나루 대리 보조중계기 기능 Merge Test 필요
-  - [ ] Push 버튼 동작 확인
-  - [ ] Revision 1.9 LPM3 확인
 
 # 단말기 변경 이력
 
@@ -39,11 +39,16 @@
 LGU+의 요청사항 (신규 제품의 NW 품질리포트는 변경된 버전으로 반영 필요.)
 
 - 변경사항
-  - Msg Version 1 -> 4
-  - FW 버전필드 (통신 모듈 버전 추가 필요)
-  - UE INFO 필드 추가
-  - PORT INFO 필드 추가
-  - Reserve 필드 추가
+  - [x] Msg Struct 변경
+    - [x] Msg Version 1 -> 4
+    - [x] FW 버전필드 (통신 모듈 버전 추가 필요)
+      - [x] Length 20byte 변경
+      - [x] Modem Firmware Version Add
+    - [x] UE INFO 필드 추가
+    - [x] PORT INFO 필드 추가, 0x000000
+    - [x] Reserve 필드 추가, 0xF1F1F1
+
+`malloc 사용을 회피하기 위해 20Byte 고정으로 함. AT+QGMR로 응답하는 modem Version String은 현재 14보다 길기 때문에 20byte 고정도 문제없음. Modem Version String이 14보다 작은 경우는 Test Code로 검증했으며 msg size는 20이므로 공백 문자가 채워짐. Test Code상으로는 이상 없음.`
 
 | No        | 항목        | Byte  | 항목 설명                        | 표기 방법                         | 변경 여부      |
 | --------- | ----------- | ----- | -------------------------------- | --------------------------------- | -------------- |

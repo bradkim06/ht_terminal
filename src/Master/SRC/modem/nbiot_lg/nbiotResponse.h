@@ -6,5 +6,6 @@
 
 unsigned char parse_cereg(char *p, ModemContext_t *modemPtr);
 BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr);
+BOOL parseQGMR(const char *pHead, Modem_t *modemPtr);
 
 #endif

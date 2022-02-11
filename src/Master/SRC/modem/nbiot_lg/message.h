@@ -21,7 +21,7 @@
 #define NBIOT_ACK 0x10
 #endif
 
-#define NBIOT_QA_MSG_VER 1
+#define NBIOT_QA_MSG_VER 4
 #define NBIOT_ERR_MSG_VER 1
 
 #define LEN_NBIOT_CTN 6
@@ -31,11 +31,12 @@
 #define LEN_NBIOT_QA_RSRP 2
 #define LEN_NBIOT_QA_SINR 2
 #define LEN_NBIOT_QA_MODEL TERM_MODEL_STRING_LEN + 1
-#define LEN_NBIOT_QA_FW_VER FIRMWARE_VER_LEN + 1
+#define LEN_NBIOT_QA_FW_VER 20
 #define LEN_NBIOT_QA_TX_POWER 2
 // 본래 위치 좌표 및 Neighbor CELL ID 데이터를 넣어야 하지만
 // NB-IoT 자사 제품에서는 지원하지 않는 기능이므로 reserved 처리.
-#define LEN_NBIOT_QA_RESERVED 2
+#define LEN_NBIOT_QA_PORT_INFO 3
+#define LEN_NBIOT_QA_RESERVED 3
 
 #define NBIOT_QA_BATT_PERCENT 0
 #define NBIOT_QA_BATT_VOLTAGE 1
@@ -90,6 +91,10 @@ typedef struct {
 	uchar model[LEN_NBIOT_QA_MODEL];
 	uchar fwVer[LEN_NBIOT_QA_FW_VER];
 	uchar txPower[LEN_NBIOT_QA_TX_POWER];
+	uchar location;
+	uchar neighborCell;
+	uchar ueInfo;
+	uchar portInfo[LEN_NBIOT_QA_PORT_INFO];
 	uchar reserved[LEN_NBIOT_QA_RESERVED];
 } NbiotQaReportToLg_t;
 

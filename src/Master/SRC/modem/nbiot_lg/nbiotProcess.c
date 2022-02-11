@@ -125,9 +125,7 @@ static AtCmd_t AtCmdSetFOTA = { AT_CMD_IDX_SET_FOTA, "AT+QLWFOTAIND" };
 static AtCmd_t AtCmdRunRegister = { AT_CMD_IDX_RUN_REGISTER, "AT+QLWSREGIND" };
 /* static AtCmd_t AtCmdRunNmStatus = { AT_CMD_IDX_GET_NM_STATUS, "AT+NMSTATUS?" }; */
 #if defined(NBIOT_LG_TYPE)
-// static AtCmd_t AtCmdRunDataNoti = { AT_CMD_IDX_RUN_DATA_NOTI, "AT+QLWULDATA" };
 static AtCmd_t AtCmdULDATAEX = { AT_CMD_IDX_QLWULDATAEX, "AT+QLWULDATAEX" };
-/* static AtCmd_t AtCmdGetDataStatus = { AT_CMD_IDX_GET_DATA_STATUS, "AT+QLWULDATASTATUS?" }; */
 #endif
 
 /**
