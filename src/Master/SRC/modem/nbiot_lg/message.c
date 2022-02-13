@@ -2,8 +2,8 @@
 #include <msp430.h>
 #include "port_desc.h"
 #include "osal_Timer.h"
-#include "battery.h"
 #endif
+#include "battery.h"
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
@@ -630,8 +630,8 @@ int MODEM_qaData(uchar *buf)
 	// tddPrint("modem fw ver len : %d\n", strlen(modem.FwVer));
 	p->fwVer[0] = LEN_NBIOT_QA_FW_VER - 1;
 	// deviceVer/modemVer
-	char version[LEN_NBIOT_QA_FW_VER - 1] = "";
-	snprintf(version, p->fwVer[0] + 1, "%s/%s", FIRMWARE_VER, modem.FwVer);
+	char version[LEN_NBIOT_QA_FW_VER + 1] = "";
+	snprintf(version, LEN_NBIOT_QA_FW_VER, "%s/%s", FIRMWARE_VER, modem.FwVer);
 	memcpy(&p->fwVer[1], version, p->fwVer[0]);
 
 	// Set TX power (1byte 음수/양수 설정, 1byte BCD)
