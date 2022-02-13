@@ -7,12 +7,13 @@
 2. Test Code 작성
 3. 실제 Code 구현
 4. Test Coverage 측정
-5. 실제 단말 Test
+5. 실제 단말 Test[단말 체크리스트]
 
 # 목차
 
 - [단말기 변경 이력](#단말기-변경-이력)
 - [테스트코드 변경 이력](#테스트코드-변경-이력)
+- [관련 문서](#관련-문서)
 
 ## Todo List
 
@@ -71,21 +72,16 @@ LGU+의 요청사항 (신규 제품의 NW 품질리포트는 변경된 버전으
 
 품질리포트 FW버전 모뎀 버전 추가로 인한 기능 추가
 
-##### Terminal <-> Modem Sequence
+##### Terminal <-> Modem Sequence Diagram
 
 ```mermaid
-%% AT+QGMR sequence diagram
-  sequenceDiagram
-    Term->>Modem: AT+QGMR?
-    Modem->>Term: ..BC95GJBR02A02_LGU....OK..
-```
-
-##### Terminal Modem F/W Version Save Flow
-
-```mermaid
-graph LR
-A[At+QGMR] -->B(Modem Response)
-B --> C(Save Modem F/W Version in Modem_t struct)
+sequenceDiagram
+    Note right of Term: Request Modem F/W Version
+    loop timeout / retry
+        Term->>Modem: AT+QGMR?
+        Modem->>Term: ..BC95GJBR02A02_LGU....OK..
+    end
+    Note right of Term: Save in Modem_t
 ```
 
 ### 강나루 대리 보조중계기 작업 Code Merge (2022-02-10)
@@ -156,3 +152,7 @@ LGU+ 품질리포트 Msg 생성 함수
 
 - Ceedling 단위 유닛 테스트 Tool 기능 추가
 - parseCEREG 테스트 추가
+
+# 관련 문서
+
+- [단말기 체크리스트](docs/테스트_체크리스트.xlsx) path:docs/테스트\_체크리스트
