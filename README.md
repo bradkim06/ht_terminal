@@ -72,21 +72,16 @@ LGU+의 요청사항 (신규 제품의 NW 품질리포트는 변경된 버전으
 
 품질리포트 FW버전 모뎀 버전 추가로 인한 기능 추가
 
-##### Terminal <-> Modem Sequence
+##### Terminal <-> Modem Sequence Diagram
 
 ```mermaid
-%% AT+QGMR sequence diagram
-  sequenceDiagram
-    Term->>Modem: AT+QGMR?
-    Modem->>Term: ..BC95GJBR02A02_LGU....OK..
-```
-
-##### Terminal Modem F/W Version Save Flow
-
-```mermaid
-graph LR
-A[At+QGMR] -->B(Modem Response)
-B --> C(Save Modem F/W Version in Modem_t struct)
+sequenceDiagram
+    Note right of Term: Request Modem F/W Version
+    loop timeout / retry
+        Term->>Modem: AT+QGMR?
+        Modem->>Term: ..BC95GJBR02A02_LGU....OK..
+    end
+    Note right of Term: Save in Modem_t
 ```
 
 ### 강나루 대리 보조중계기 작업 Code Merge (2022-02-10)
