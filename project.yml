@@ -93,11 +93,11 @@
     :print_summary: true
     :report_include: "^src"
 
-:tools:
-  :test_compiler:
-    :executable: gcc
-    :arguments:
-      - "-std=c99"
+# :tools:
+#   :test_compiler:
+#     :executable: gcc-11
+# :arguments:
+#   - "-std=c99"
 ---
 # Add -gcov to the plugins list to make sure of the gcov plugin
 # You will need to have gcov and gcovr both installed to make it work.
