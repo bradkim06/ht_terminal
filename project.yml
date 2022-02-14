@@ -80,8 +80,8 @@
 
 :plugins:
   :enabled:
-    - stdout_gtestlike_tests_report
-    # - stdout_pretty_tests_report
+    # - stdout_gtestlike_tests_report
+    - stdout_pretty_tests_report
     - warnings_report
     - raw_output_report
     - module_generator

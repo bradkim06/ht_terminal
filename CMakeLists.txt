@@ -28,4 +28,5 @@ include_directories(
   ${PROJECT_ROOT}/osal
   ${PROJECT_ROOT}/test
   ${PROJECT_ROOT}/modem/nbiot_lg
-  ${PROJECT_ROOT}/modem/nbiot_lg/uuid)
+  ${PROJECT_ROOT}/modem/nbiot_lg/uuid
+  /Library/Ruby/Gems/2.6.0/gems/ceedling-0.31.1/vendor/unity/src/)

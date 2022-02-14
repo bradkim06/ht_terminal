@@ -100,8 +100,6 @@ static void testFunction_hex(uchar *p, char *name, uchar *input, int size)
 	sprintf(msg, "%s 0x", name);
 	for (int i = 0; i < size; i++) {
 		TEST_ASSERT_EQUAL_HEX8_MESSAGE(*(input + i), *(p + i), msg);
-
-#pragma GCC diagnostic ignored "-Wformat-truncation"
 		snprintf(msg, sizeof(msg), "%s%x", msg, *(p + i));
 	}
 	tddPrint("%s\n", msg);
@@ -115,8 +113,7 @@ static void testFunction_str(uchar *p, char *name, uchar *input, int size)
 	for (int i = 0; i < size; i++) {
 		TEST_ASSERT_EQUAL_CHAR_MESSAGE(*(input + i), *(p + i), msg);
 		if (i > 0) {
-#pragma GCC diagnostic ignored "-Wformat-truncation"
-			snprintf(msg, sizeof(msg), "%s%c\n", msg, *(p + i));
+			snprintf(msg, sizeof(msg), "%s%c", msg, *(p + i));
 		}
 	}
 	tddPrint("%s\n", msg);
