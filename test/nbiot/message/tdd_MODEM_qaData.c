@@ -46,7 +46,7 @@ inputData_t inputData[2] = {
 		      .fwVer = { 19,  'U', '3', '2', '5', '/', 'B', 'C', '9', '5',
 				 'G', 'J', 'B', 'R', '0', '2', 'A', '0', '2', '_' },
 		      .txPower = { 0x01, 0x12 },
-		      .ueInfo = { 0x42 },
+		      .ueInfo = 0x42,
 		      .reserved = { 0xf1, 0xf1, 0xf1 } } },
 
 	{ .modem = { .ctnStr = "01234567890",
@@ -64,7 +64,7 @@ inputData_t inputData[2] = {
 		      .fwVer = { 19, 'U', '3', '2', '5', '/', 'B', 'C', '9', '5', 'G', 'J', 'B',
 				 'R' },
 		      .txPower = { 0x00, 0x05 },
-		      .ueInfo = { 0x43 },
+		      .ueInfo = 0x43,
 		      .reserved = { 0xf1, 0xf1, 0xf1 } } }
 };
 
@@ -100,7 +100,9 @@ static void testFunction_hex(uchar *p, char *name, uchar *input, int size)
 	sprintf(msg, "%s 0x", name);
 	for (int i = 0; i < size; i++) {
 		TEST_ASSERT_EQUAL_HEX8_MESSAGE(*(input + i), *(p + i), msg);
-		sprintf(msg, "%s%02x", msg, *(p + i));
+
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+		snprintf(msg, sizeof(msg), "%s%x", msg, *(p + i));
 	}
 	tddPrint("%s\n", msg);
 }
@@ -113,7 +115,8 @@ static void testFunction_str(uchar *p, char *name, uchar *input, int size)
 	for (int i = 0; i < size; i++) {
 		TEST_ASSERT_EQUAL_CHAR_MESSAGE(*(input + i), *(p + i), msg);
 		if (i > 0) {
-			sprintf(msg, "%s%c", msg, *(p + i));
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+			snprintf(msg, sizeof(msg), "%s%c\n", msg, *(p + i));
 		}
 	}
 	tddPrint("%s\n", msg);

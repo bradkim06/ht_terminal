@@ -66,7 +66,7 @@ void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
 }
 
 #pragma inline
-static void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
+void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
 {
 	// RTC의 year는 Data의 year에서 2000을 더해야 함.
 	pDate->year = pData->year + 2000;
