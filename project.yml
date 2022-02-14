@@ -81,17 +81,43 @@
 :plugins:
   :enabled:
     - stdout_pretty_tests_report
+    - compile_commands_json
+    - colour_report
     - module_generator
+    - warnings_report
+    - raw_output_report
     - gcov
+    # - stdout_gtestlike_tests_report
+
 :gcov:
   :reports:
     - HtmlDetailed
-  :html_report: true
-  :html_report_type: detailed
-  :gcovr:
-    :html_absolute_paths: true
-    :print_summary: true
-    :report_include: "^src"
+:html_report_type: detailed
+:gcovr:
+  :html_absolute_paths: false
+  :print_summary: true
+
+# :tools:
+#   :gcov_report:
+#     :executable: gcov
+#     :arguments:
+#       - -p
+#       - -b
+#       - -o "$": GCOV_BUILD_OUTPUT_PATH
+#       - '"${1}"'
+#   :gcov_post_report:
+#     # :executable: gcovr
+#     :executable: lcov
+#     # :optional: FALSE
+#     :arguments:
+#       - -p
+#       - -b
+#       - -k
+#       - -e '.*tools.*|.*build.*|.*test/Test.*'
+#       - --html
+#       - --html-details
+#       - -r .
+#       - -o build/artifacts/gcov/index.html
 
 # :tools:
 #   :test_compiler:
