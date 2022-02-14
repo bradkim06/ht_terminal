@@ -659,5 +659,6 @@ void METER_bypassReq(uint8 *body, int bodyLen);
 BOOL METER_bypassResp();
 void METER_saveMeterInfo(uint8 *serial, uint8 caliberDp, uint8 dif, uint8 vif);
 void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec);
+void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec);
 
 #endif //__METER_H__

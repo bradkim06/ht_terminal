@@ -187,9 +187,23 @@ static void testFunction(int idx)
 				      StoredMeterData.saveInterval, msg);
 }
 
+static void coverageDummy()
+{
+	Date_t date = { 0 };
+	MeterUnitData_t unit = { 0 };
+	// False Date
+	insertDateToData(&date, &unit, TRUE);
+	// no ignore sec
+	insertDateToData(&inputData[0].date, &unit, FALSE);
+	// no ignore sec
+	copyDateFromData(&unit, &date, FALSE);
+}
+
 void test_METER_addStoredData()
 {
 	for (int i = 0; i < sizeof(inputData) / sizeof(inputData_t); i++) {
 		testFunction(i);
 	}
+
+	coverageDummy();
 }
