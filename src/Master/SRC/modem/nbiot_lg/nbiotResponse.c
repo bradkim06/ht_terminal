@@ -880,12 +880,12 @@ BOOL parseQLWULDATAEX(const char *pHead, ModemContext_t *modemPtr)
 #define SEND_SUCCESS 4
 #define GOT_RESET_MSG 5
 
-#define LWM2M_UPLINK_STATUS "+QLWULDATASTATUS:"
-
 	char *p = NULL;
 	BOOL retValue = FALSE;
 
-	if ((p = strstr(pHead, LWM2M_UPLINK_STATUS)) != NULL) {
+#define LWM2M_UPLINK_STATUS "+QLWULDATASTATUS:"
+	p = strstr(pHead, LWM2M_UPLINK_STATUS);
+	if (p != NULL) {
 		p += strlen(LWM2M_UPLINK_STATUS);
 		int status = atoi(p);
 
@@ -902,8 +902,10 @@ BOOL parseQGMR(const char *pHead, Modem_t *modemPtr)
 {
 	char *p = NULL;
 	BOOL retValue = FALSE;
+
 #define PATTERN_MODEM_FW_VER "BC95G"
-	if (p = strstr(pHead, PATTERN_MODEM_FW_VER)) {
+	p = strstr(pHead, PATTERN_MODEM_FW_VER);
+	if (p != NULL) {
 		char *token = strtok(p, ".");
 		int strLen = strlen(token);
 

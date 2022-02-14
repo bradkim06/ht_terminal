@@ -21,7 +21,7 @@ uint8 BATT_getVoltage()
 
 typedef struct {
 	Modem_t modem;
-	uchar modemFwVer[30];
+	char modemFwVer[30];
 	uchar deviceFwVer;
 	uchar initialReport;
 	NbiotQaReportToLg_t expect;
@@ -46,7 +46,7 @@ inputData_t inputData[2] = {
 		      .fwVer = { 19,  'U', '3', '2', '5', '/', 'B', 'C', '9', '5',
 				 'G', 'J', 'B', 'R', '0', '2', 'A', '0', '2', '_' },
 		      .txPower = { 0x01, 0x12 },
-		      .ueInfo = { 0x42 },
+		      .ueInfo = 0x42,
 		      .reserved = { 0xf1, 0xf1, 0xf1 } } },
 
 	{ .modem = { .ctnStr = "01234567890",
@@ -64,7 +64,7 @@ inputData_t inputData[2] = {
 		      .fwVer = { 19, 'U', '3', '2', '5', '/', 'B', 'C', '9', '5', 'G', 'J', 'B',
 				 'R' },
 		      .txPower = { 0x00, 0x05 },
-		      .ueInfo = { 0x43 },
+		      .ueInfo = 0x43,
 		      .reserved = { 0xf1, 0xf1, 0xf1 } } }
 };
 

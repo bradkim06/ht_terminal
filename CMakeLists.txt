@@ -7,8 +7,8 @@ add_compile_definitions(__MSP430F5419A__)
 add_compile_definitions(NBIOT_MODEM_BC95G)
 add_compile_definitions(NDEBUG)
 add_compile_definitions(NBIOT_LG_TYPE)
-# add_compile_definitions(TDD_TEST)
-# add_compile_definitions(TDD_DEBUG)
+add_compile_definitions(TDD_TEST)
+add_compile_definitions(TDD_DEBUG)
 
 # add_compile_definitions(AUX_REPEATER)
 # Windows
