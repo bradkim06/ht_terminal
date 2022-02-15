@@ -167,18 +167,19 @@
 // METER 05L ¥‹¿ß
 //=======================================
 
-enum { METERING_TYPE_NONE = 0,
-       PDA_DATA_REQ_TYPE_METER_DB, // must be 1
-       PDA_DATA_REQ_TYPE_STATUS,
-       PDA_DATA_REQ_TYPE_METER_ONDEMAND,
-       PDA_DATA_REQ_TYPE_AMR,
-       PDA_DATA_REQ_TYPE_NUSU_DETECT,
-       PDA_DATA_REQ_TYPE_GROUP_METER,
-       PDA_DATA_REQ_TYPE_METER_SERIAL,
-       METERING_TYPE_CAR,
-       METERING_TYPE_SAVE,
-       METERING_TYPE_PERIODIC,
-       PDA_MASTER_METER_REQ,
+enum {
+	METERING_TYPE_NONE = 0,
+	PDA_DATA_REQ_TYPE_METER_DB, // must be 1
+	PDA_DATA_REQ_TYPE_STATUS,
+	PDA_DATA_REQ_TYPE_METER_ONDEMAND,
+	PDA_DATA_REQ_TYPE_AMR,
+	PDA_DATA_REQ_TYPE_NUSU_DETECT,
+	PDA_DATA_REQ_TYPE_GROUP_METER,
+	PDA_DATA_REQ_TYPE_METER_SERIAL,
+	METERING_TYPE_CAR,
+	METERING_TYPE_SAVE,
+	METERING_TYPE_PERIODIC,
+	PDA_MASTER_METER_REQ,
 };
 
 #define METERING_REQ_FROM_PDA(x)                                                                   \
@@ -225,7 +226,7 @@ typedef struct {
 
 typedef struct {
 	int nData;
-	int saveInterval;
+	uint8 saveInterval;
 	uint8 caliberDp;
 	uint8 dif;
 	uint8 vif;
@@ -262,12 +263,13 @@ typedef struct {
 #endif
 } Metering_t;
 
-enum { NOT_ACIVE_METERING = 0,
-       INITIAL_METERING,
-       PERIODIC_METERING,
-       PERIODIC_METERING_FOR_SAVE,
-       IMMEDIATE_METERING,
-       IMMEDIATE_METERING_FOR_REPORT,
+enum {
+	NOT_ACIVE_METERING = 0,
+	INITIAL_METERING,
+	PERIODIC_METERING,
+	PERIODIC_METERING_FOR_SAVE,
+	IMMEDIATE_METERING,
+	IMMEDIATE_METERING_FOR_REPORT,
 };
 
 //**************************************

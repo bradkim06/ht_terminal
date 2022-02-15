@@ -210,15 +210,6 @@ void METER_deleteAllData()
 	METER_deleteStoredData();
 }
 
-void METER_clearStoredData()
-{
-	StoredMeterData.nData = 0;
-	StoredMeterData.saveInterval = conf.meterInterval;
-	for (int i = 0; i < MAX_NUM_STORED_DATA; i++) {
-		memset(&StoredMeterData.unit[i], 0, sizeof(MeterUnitData_t));
-	}
-}
-
 int METER_getNumberOfStoredData()
 {
 	return StoredMeterData.nData;
@@ -1212,5 +1203,19 @@ void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 
 		memcpy(&p->unit[0], pUnit, sizeof(MeterUnitData_t));
 		p->nData++;
+	}
+}
+
+void METER_clearStoredData()
+{
+	StoredMeterData.nData = 0;
+
+	if (conf.meterInterval < 1 || conf.meterInterval > 24) {
+		conf.meterInterval = 1;
+	}
+
+	StoredMeterData.saveInterval = conf.meterInterval;
+	for (int i = 0; i < MAX_NUM_STORED_DATA; i++) {
+		memset(&StoredMeterData.unit[i], 0, sizeof(MeterUnitData_t));
 	}
 }
