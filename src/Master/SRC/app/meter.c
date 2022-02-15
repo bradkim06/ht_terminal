@@ -1223,6 +1223,10 @@ void METER_clearIntervalData()
 #endif
 	MeterStoredData_t *p = &StoredMeterData;
 
+	if (p->nData > nMaxData) {
+		p->nData = nMaxData;
+	}
+
 	if (p->nData == nMaxData) {
 		uint8 interval = conf.reportInterval;
 		for (int i = p->nData - 1; i >= p->nData - interval; i--) {
