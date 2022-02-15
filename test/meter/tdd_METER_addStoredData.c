@@ -19,7 +19,7 @@ typedef struct {
 	expect_t expect;
 } inputData_t;
 
-static inputData_t inputData[12] = {
+static inputData_t inputData[19] = {
 	{
 		.testName = "정상적인 검침 데이터 저장",
 		.config = { 0 },
@@ -110,12 +110,14 @@ static inputData_t inputData[12] = {
 		.unit = { 0 },
 		.expect = { 1, 24 },
 	},
+	// Wrong Date Input Data, Coverage Test
+	// 잘못된 Date가 들어오면 Diff가 충족되는것으로 처리
 	{
 		.testName = "Coverage Test, Under Year MIN",
 		.config = { .isShortInterval = 0, 0 },
 		.date = { .year = 0, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
-		.stored = { .nData = 1, .saveInterval = 25, 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
 		.unit = { 0 },
 		.expect = { 2, 1 },
 	},
@@ -124,7 +126,70 @@ static inputData_t inputData[12] = {
 		.config = { .isShortInterval = 0, 0 },
 		.date = { .year = 2500, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
-		.stored = { .nData = 1, .saveInterval = 25, 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Under Month MIN",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 0, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Month MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 13, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Under Day MIN",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 0, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Day MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 33, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Hour MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 24, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Minute MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 60, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Second MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 60 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
 		.unit = { 0 },
 		.expect = { 2, 1 },
 	},
