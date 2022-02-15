@@ -1206,6 +1206,33 @@ void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 	}
 }
 
+/**
+ * @brief nData == MAX인 상태에서Uplink는 성공했으나 Downlink는 실패한 경우 실행된다.
+ * ReportInterval 만큼의 검침 데이터를 삭제시킨다.
+ */
+void METER_clearIntervalData()
+{
+	if (conf.reportInterval < 1 || conf.reportInterval > 24) {
+		conf.reportInterval = 6;
+	}
+
+#if LORA_DEVICE
+	int nMaxData = NUM_LORA_STORED_DATA;
+#else // NBIOT_DEVICE
+	int nMaxData = NUM_NBIOT_STORED_DATA;
+#endif
+	MeterStoredData_t *p = &StoredMeterData;
+
+	if (p->nData == nMaxData) {
+		uint8 interval = conf.reportInterval;
+		for (int i = p->nData - 1; i >= p->nData - interval; i--) {
+			memset(&p->unit[i], 0, sizeof(MeterUnitData_t));
+		}
+
+		p->nData -= interval;
+	}
+}
+
 void METER_clearStoredData()
 {
 	StoredMeterData.nData = 0;

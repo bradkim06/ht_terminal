@@ -109,6 +109,31 @@ ULDATA 실패여부를 체크하는 regError, regRety Flag가 생겼었다.
 
 AT+QLWULDATAEX는 데이터 Uplink시 LG Platform에 전송이 됐는지 확인이 가능. Platform Uplink가 확인되면 검침데이터를 삭제하도록 기능 변경.
 
+#### FlowChart
+
+```mermaid
+flowchart TD
+    Uplink[Uplink, AT+QLWULDATAEX] --> response{{Modem Response QLWULDATASTATUS:4}};
+    response --> |Yes| uplinkOk
+    uplinkOk[uplinkOK, 데이터 is Full?] --> |No| downlink[Ack Recv?]
+    uplinkOk --> |Yes| deleteInterval[데이터 주기보고 시간만큼 삭제]
+    deleteInterval --> downlink
+    downlink --> |Yes| downlinkOk[Ack Recv Ok, 검침데이터 모두 삭제]
+    downlink --> |No| End[검침데이터 유지]
+
+    response --> |No| uplinkFail[Uplink 재시도]
+    uplinkFail --> |Yes| Uplink
+    uplinkFail --> |No| End[검침 데이터 유지]
+```
+
+> QLWULDATASTATUS:[Status] Status가 4가 아니라면 Uplink실패이므로 재시도  
+> #define HAVE_NOT_BEEN_SENT 0  
+> #define WAIT_RESPONSE_PLATFORM 1  
+> #define SENT_FAILED 2  
+> #define TIMEOUT 3  
+> #define SEND_SUCCESS 4  
+> #define GOT_RESET_MSG 5
+
 ### 강나루 대리 변경사항 Merge (2022-01-24)
 
 Bsl Update 기능 오류 수정
