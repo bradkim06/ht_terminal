@@ -17,9 +17,9 @@ typedef struct {
 	MeterStoredData_t stored;
 	MeterUnitData_t unit;
 	expect_t expect;
-} inputData_t;
+} storeInput_t;
 
-static inputData_t inputData[19] = {
+static storeInput_t storeInput[19] = {
 	{
 		.testName = "정상적인 검침 데이터 저장",
 		.config = { 0 },
@@ -216,18 +216,43 @@ void tearDown()
 {
 }
 
-static void testFunction(int idx)
+static void test_addStoredData(int idx)
 {
 	char msg[100] = "";
-	memcpy(&conf, &inputData[idx].config, sizeof(Config_t));
-	memcpy(&StoredMeterData, &inputData[idx].stored, sizeof(MeterStoredData_t));
-	insertDateToData(&inputData[idx].storedDate, &StoredMeterData.unit[0], TRUE);
-	METER_addStoredData(&inputData[idx].date, &inputData[idx].unit);
+	memcpy(&conf, &storeInput[idx].config, sizeof(Config_t));
+	memcpy(&StoredMeterData, &storeInput[idx].stored, sizeof(MeterStoredData_t));
+	insertDateToData(&storeInput[idx].storedDate, &StoredMeterData.unit[0], TRUE);
+	METER_addStoredData(&storeInput[idx].date, &storeInput[idx].unit);
 
 	sprintf(msg, "Test Case %d\n", idx);
-	TEST_ASSERT_EQUAL_INT_MESSAGE(inputData[idx].expect.nData, StoredMeterData.nData, msg);
-	TEST_ASSERT_EQUAL_INT_MESSAGE(inputData[idx].expect.saveInterval,
+	TEST_ASSERT_EQUAL_INT_MESSAGE(storeInput[idx].expect.nData, StoredMeterData.nData, msg);
+	TEST_ASSERT_EQUAL_INT_MESSAGE(storeInput[idx].expect.saveInterval,
 				      StoredMeterData.saveInterval, msg);
+}
+
+static void test_METER_clearStoredData(uint8 interval)
+{
+	memset(&conf, 0, sizeof(Config_t));
+	memset(&StoredMeterData, 0xff, sizeof(MeterStoredData_t));
+	conf.meterInterval = interval;
+	uint8 expectInterval = interval;
+	if (interval < 1 || interval > 24) {
+		expectInterval = 1;
+	}
+
+	METER_clearStoredData();
+
+	tddPrint("expect nData(0), interval(%d), allMeterUnit(0)\n", expectInterval);
+
+	MeterStoredData_t *p = &StoredMeterData;
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0, p->nData, "nData must be 0");
+	TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectInterval, p->saveInterval, "Stored interval test");
+	TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectInterval, conf.meterInterval, "Stored interval test");
+
+	uint8 *pUnit = (uint8 *)&p->unit;
+	for (int i = 0; i < sizeof(p->unit); i++) {
+		TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, *(pUnit + i), "meter unit data must be 0");
+	}
 }
 
 static void coverageDummy()
@@ -235,26 +260,33 @@ static void coverageDummy()
 	Date_t date = { 0 };
 	MeterUnitData_t unit = { 0 };
 	// no ignore sec
-	insertDateToData(&inputData[0].date, &unit, FALSE);
+	insertDateToData(&storeInput[0].date, &unit, FALSE);
 	// no ignore sec
 	copyDateFromData(&unit, &date, FALSE);
 }
 
-void test_METER_addStoredData()
+void test_METER()
 {
 	char msg[100];
-	for (int i = 0; i < sizeof(inputData) / sizeof(inputData_t); i++) {
-		tddPrint("Test Case(%d) : %s\n", i, inputData[i].testName);
-		Date_t *p = &inputData[i].date;
+	TEST_MESSAGE("METER_addStoredData Test");
+	for (int i = 0; i < sizeof(storeInput) / sizeof(storeInput_t); i++) {
+		tddPrint("Test Case(%d) : %s\n", i, storeInput[i].testName);
+		Date_t *p = &storeInput[i].date;
 		sprintf(msg, "Date:%d-%d-%d,%d:%d:%d", p->year, p->mon, p->day, p->hour, p->min,
 			p->sec);
-		p = &inputData[i].storedDate;
+		p = &storeInput[i].storedDate;
 		sprintf(msg, "%s Stored Date:%d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
 			p->hour, p->min, p->sec);
 		tddPrint("%s\n", msg);
 
-		testFunction(i);
+		test_addStoredData(i);
 	}
 
+	TEST_MESSAGE("METER_clearStoredData Test");
+	test_METER_clearStoredData(2);
+	test_METER_clearStoredData(0);
+	test_METER_clearStoredData(25);
+
+	TEST_MESSAGE("coverage Dummy Test");
 	coverageDummy();
 }

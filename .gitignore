@@ -60,3 +60,4 @@ build/
 *.dep
 .ccls-cache/
 .clangd/
+.cache/
