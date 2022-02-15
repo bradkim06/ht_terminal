@@ -1,3 +1,4 @@
+#include "meter.h"
 #include <msp430.h>
 #include <ctype.h>
 #include <time.h>
@@ -891,12 +892,15 @@ static ModemStep_t transfer()
 	} break;
 
 	case 2: {
-		if (METER_getNumberOfStoredData() && modemCtx.waitDl) {
-			// 정상적 주기보고 동작시 검침데이터 초기화
-			METER_clearStoredData();
+		int nData = METER_getNumberOfStoredData();
+		if ((nData == NUM_NBIOT_STORED_DATA) && (modemCtx.waitDl)) {
+			METER_clearIntervalData();
 		}
 
 		if (modemComm.dlDataLen > 0) {
+			// Ack Ok
+			METER_clearStoredData();
+			modemCtx.waitDl = FALSE;
 			MODEM_checkDlMessage((void *)modemComm.dlData, modemComm.dlDataLen);
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
 			StepFlowIndex.transfer = END_STEP_FLOW_INDEX;

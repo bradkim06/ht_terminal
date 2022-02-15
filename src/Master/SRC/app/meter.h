@@ -633,6 +633,7 @@ BOOL METER_std_lcdMarkReq(BOOL isMarkOn);
 
 void METER_deleteAllData();
 void METER_clearStoredData();
+void METER_clearIntervalData();
 int METER_getNumberOfStoredData();
 int METER_fillSendData(uint8 *pData);
 void METER_saveInFlash(Date_t *pDate, MeterUnitData_t *pUnit);

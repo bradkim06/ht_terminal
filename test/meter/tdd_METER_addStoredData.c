@@ -255,6 +255,35 @@ static void test_METER_clearStoredData(uint8 interval)
 	}
 }
 
+static void test_METER_clearIntervalData(int reportInterval)
+{
+	conf.reportInterval = reportInterval;
+	memset(&StoredMeterData, 0xff, sizeof(MeterStoredData_t));
+	StoredMeterData.nData = NUM_NBIOT_STORED_DATA;
+
+	uint8 expectInterval = reportInterval;
+	if (reportInterval < 1 || reportInterval > 24) {
+		expectInterval = 6;
+	}
+
+	METER_clearIntervalData();
+	tddPrint("input interval(%d) expect(%d)\n", reportInterval, expectInterval);
+	TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectInterval, conf.reportInterval,
+					"reportInterval Check");
+	tddPrint("input nData(%d) expect(%d)\n", NUM_NBIOT_STORED_DATA, StoredMeterData.nData);
+	TEST_ASSERT_EQUAL_INT_MESSAGE(NUM_NBIOT_STORED_DATA - expectInterval, StoredMeterData.nData,
+				      "nData - reportInterval");
+
+	for (int i = NUM_NBIOT_STORED_DATA - 1; i >= NUM_NBIOT_STORED_DATA - expectInterval; i--) {
+		uint8 *pData = (uint8 *)&StoredMeterData.unit[i];
+		MeterUnitData_t *p = &StoredMeterData.unit[i];
+
+		for (int k = 0; k < sizeof(MeterUnitData_t); k++) {
+			TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, *(pData + k), "unit data must be 0");
+		}
+	}
+}
+
 static void coverageDummy()
 {
 	Date_t date = { 0 };
@@ -263,6 +292,9 @@ static void coverageDummy()
 	insertDateToData(&storeInput[0].date, &unit, FALSE);
 	// no ignore sec
 	copyDateFromData(&unit, &date, FALSE);
+
+	StoredMeterData.nData = 1;
+	METER_clearIntervalData();
 }
 
 void test_METER()
@@ -286,6 +318,12 @@ void test_METER()
 	test_METER_clearStoredData(2);
 	test_METER_clearStoredData(0);
 	test_METER_clearStoredData(25);
+
+	TEST_MESSAGE("METER_clearIntervalData");
+	test_METER_clearIntervalData(6);
+	test_METER_clearIntervalData(1);
+	test_METER_clearIntervalData(0);
+	test_METER_clearIntervalData(25);
 
 	TEST_MESSAGE("coverage Dummy Test");
 	coverageDummy();
