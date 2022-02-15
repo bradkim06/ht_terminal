@@ -897,6 +897,7 @@ static ModemStep_t transfer()
 		}
 
 		if (modemComm.dlDataLen > 0) {
+			modemCtx.waitDl = FALSE;
 			MODEM_checkDlMessage((void *)modemComm.dlData, modemComm.dlDataLen);
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
 			StepFlowIndex.transfer = END_STEP_FLOW_INDEX;

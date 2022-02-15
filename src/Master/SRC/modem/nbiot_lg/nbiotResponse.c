@@ -334,7 +334,6 @@ static int parse_pf_downlink(char *p)
 		}
 		modemComm.dlDataLen = len;
 
-		modemCtx.waitDl = FALSE;
 		valid = 1;
 	} while (0);
 
