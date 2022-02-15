@@ -1167,7 +1167,7 @@ void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 	insertDateToData(pDate, pUnit, TRUE);
 
 	MeterStoredData_t *p = &StoredMeterData;
-	if (p->saveInterval == 0 || p->saveInterval > 24) {
+	if (p->saveInterval < 1 || p->saveInterval > 24) {
 		p->saveInterval = 1;
 	}
 
