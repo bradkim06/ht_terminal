@@ -1,3 +1,0 @@
-METER_addStoredData	README.md	/^  - METER_addStoredData() Refactoring$/
-add_executable	CMakeLists.txt	/^add_executable(App ${SRC})$/
-set	CMakeLists.txt	/^set(AUTHOR_NAME "bradkim06")$/
