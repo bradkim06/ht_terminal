@@ -255,11 +255,11 @@ static void test_METER_clearStoredData(uint8 interval)
 	}
 }
 
-static void test_METER_clearIntervalData(int reportInterval)
+static void test_METER_clearIntervalData(int reportInterval, int nData)
 {
 	conf.reportInterval = reportInterval;
 	memset(&StoredMeterData, 0xff, sizeof(MeterStoredData_t));
-	StoredMeterData.nData = NUM_NBIOT_STORED_DATA;
+	StoredMeterData.nData = nData;
 
 	uint8 expectInterval = reportInterval;
 	if (reportInterval < 1 || reportInterval > 24) {
@@ -270,7 +270,7 @@ static void test_METER_clearIntervalData(int reportInterval)
 	tddPrint("input interval(%d) expect(%d)\n", reportInterval, expectInterval);
 	TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectInterval, conf.reportInterval,
 					"reportInterval Check");
-	tddPrint("input nData(%d) expect(%d)\n", NUM_NBIOT_STORED_DATA, StoredMeterData.nData);
+	tddPrint("input nData(%d) expect(%d)\n", nData, StoredMeterData.nData);
 	TEST_ASSERT_EQUAL_INT_MESSAGE(NUM_NBIOT_STORED_DATA - expectInterval, StoredMeterData.nData,
 				      "nData - reportInterval");
 
@@ -320,10 +320,10 @@ void test_METER()
 	test_METER_clearStoredData(25);
 
 	TEST_MESSAGE("METER_clearIntervalData");
-	test_METER_clearIntervalData(6);
-	test_METER_clearIntervalData(1);
-	test_METER_clearIntervalData(0);
-	test_METER_clearIntervalData(25);
+	test_METER_clearIntervalData(6, NUM_NBIOT_STORED_DATA);
+	test_METER_clearIntervalData(1, NUM_NBIOT_STORED_DATA);
+	test_METER_clearIntervalData(0, NUM_NBIOT_STORED_DATA);
+	test_METER_clearIntervalData(25, 25);
 
 	TEST_MESSAGE("coverage Dummy Test");
 	coverageDummy();
