@@ -18,7 +18,7 @@ typedef struct {
 	expect_t expect;
 } inputData_t;
 
-inputData_t inputData[12] = {
+static inputData_t inputData[13] = {
 	{
 		// 1. 정상적인 검침데이터 저장
 		.config = { 0 },
@@ -127,6 +127,15 @@ inputData_t inputData[12] = {
 		.unit = { 0 },
 		.expect = { 2, 1 },
 	},
+	{
+		// 13. Wrong Year
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 0, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 25, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
 };
 
 Date_t storedDate;
@@ -191,8 +200,6 @@ static void coverageDummy()
 {
 	Date_t date = { 0 };
 	MeterUnitData_t unit = { 0 };
-	// False Date
-	insertDateToData(&date, &unit, TRUE);
 	// no ignore sec
 	insertDateToData(&inputData[0].date, &unit, FALSE);
 	// no ignore sec
