@@ -201,33 +201,10 @@ extern MeterStoredData_t StoredMeterData;
 Config_t conf;
 
 // CMock
-#define MAX_NUM_STORED_DATA 24
 
 int RTC_isTimeSync()
 {
 	return 1;
-}
-
-void meterDataSave(MeterUnitData_t *pUnit)
-{
-	for (int i = 0; i < 4; i++) {
-		pUnit->meterData[i] = i;
-	}
-
-	pUnit->meterStatus = 0;
-	pUnit->icon.lowBatt = 0;
-	pUnit->icon.rArrow = 0;
-	pUnit->icon.fArrow = 0; // always 0
-	pUnit->icon.m3 = 1;
-	pUnit->icon.notUsed = 0; // 표준 프로토콜에는 미사용 없음.
-	pUnit->icon.leak = 0;
-
-	uint8 serial[4];
-	for (int i = 0; i < 4; i++) { // serial 4byte
-		serial[i] = i;
-	}
-
-	uchar caliberDp = 0;
 }
 
 void setUp()
@@ -269,10 +246,10 @@ void test_METER_addStoredData()
 	for (int i = 0; i < sizeof(inputData) / sizeof(inputData_t); i++) {
 		tddPrint("Test Case(%d) : %s\n", i, inputData[i].testName);
 		Date_t *p = &inputData[i].date;
-		sprintf(msg, "Date : %d-%d-%d,%d:%d:%d", p->year, p->mon, p->day, p->hour, p->min,
+		sprintf(msg, "Date:%d-%d-%d,%d:%d:%d", p->year, p->mon, p->day, p->hour, p->min,
 			p->sec);
 		p = &inputData[i].storedDate;
-		sprintf(msg, "%s Stored Date : %d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
+		sprintf(msg, "%s Stored Date:%d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
 			p->hour, p->min, p->sec);
 		tddPrint("%s\n", msg);
 
