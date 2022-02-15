@@ -10,6 +10,7 @@ typedef struct {
 } expect_t;
 
 typedef struct {
+	char testName[100];
 	Config_t config;
 	Date_t date;
 	Date_t storedDate;
@@ -18,9 +19,9 @@ typedef struct {
 	expect_t expect;
 } inputData_t;
 
-static inputData_t inputData[13] = {
+static inputData_t inputData[19] = {
 	{
-		// 1. 정상적인 검침데이터 저장
+		.testName = "정상적인 검침 데이터 저장",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
@@ -29,7 +30,7 @@ static inputData_t inputData[13] = {
 		.expect = { 5, 1 },
 	},
 	{
-		// 2. nData = 0
+		.testName = "nData 0개, Save Data",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
@@ -38,7 +39,7 @@ static inputData_t inputData[13] = {
 		.expect = { 1, 1 },
 	},
 	{
-		// 3. data0, interval0
+		.testName = "interval 설정 0(Error), Init 1 Test",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
@@ -47,16 +48,16 @@ static inputData_t inputData[13] = {
 		.expect = { 1, 1 },
 	},
 	{
-		// 4. unexpected saveInterval init 1
+		.testName = "interval 설정 25(Error), Init 1",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
-		.stored = { .nData = 24, .saveInterval = 0, 0 },
+		.stored = { .nData = 0, .saveInterval = 25, 0 },
 		.unit = { 0 },
-		.expect = { 13, 2 },
+		.expect = { 1, 1 },
 	},
 	{
-		// 5. saveInterval 2, max
+		.testName = "saveInterval 2->4, nData Max",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
@@ -65,7 +66,7 @@ static inputData_t inputData[13] = {
 		.expect = { 13, 4 },
 	},
 	{
-		// 6. saveInterval 4, max
+		.testName = "saveInterval 4 Not change, nData Max",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 17, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
@@ -74,16 +75,7 @@ static inputData_t inputData[13] = {
 		.expect = { 24, 4 },
 	},
 	{
-		// 7. MAX 저장 초과
-		.config = { 0 },
-		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
-		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
-		.stored = { .nData = 24, .saveInterval = 1, 0 },
-		.unit = { 0 },
-		.expect = { 13, 2 },
-	},
-	{
-		// 8. Save Time Interval 낮음
+		.testName = "Diff Time is under saveInterval",
 		.config = { 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 52, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
@@ -92,7 +84,7 @@ static inputData_t inputData[13] = {
 		.expect = { 1, 1 },
 	},
 	{
-		// 9. Short Interval 저장
+		.testName = "Short Config",
 		.config = { .isShortInterval = 1, 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 52, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
@@ -101,7 +93,7 @@ static inputData_t inputData[13] = {
 		.expect = { 5, 1 },
 	},
 	{
-		// 10. Short Interval Max
+		.testName = "Short Config, nData Max",
 		.config = { .isShortInterval = 1, 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 52, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
@@ -110,7 +102,7 @@ static inputData_t inputData[13] = {
 		.expect = { 13, 2 },
 	},
 	{
-		// 11. Short Interval 부족
+		.testName = "Short Config, diff Time under Interval setting",
 		.config = { .isShortInterval = 1, 0 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
@@ -118,21 +110,86 @@ static inputData_t inputData[13] = {
 		.unit = { 0 },
 		.expect = { 1, 24 },
 	},
+	// Wrong Date Input Data, Coverage Test
+	// 잘못된 Date가 들어오면 Diff가 충족되는것으로 처리
 	{
-		// 12. save Interval 24 초과 init
-		.config = { .isShortInterval = 1, 0 },
-		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.testName = "Coverage Test, Under Year MIN",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 0, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
-		.stored = { .nData = 1, .saveInterval = 25, 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
 		.unit = { 0 },
 		.expect = { 2, 1 },
 	},
 	{
-		// 13. Wrong Year
+		.testName = "Coverage Test, Over Year MAX",
 		.config = { .isShortInterval = 0, 0 },
-		.date = { .year = 0, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.date = { .year = 2500, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
-		.stored = { .nData = 1, .saveInterval = 25, 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Under Month MIN",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 0, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Month MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 13, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Under Day MIN",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 0, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Day MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 33, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Hour MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 24, .min = 39, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Minute MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 60, .sec = 0 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 2, 1 },
+	},
+	{
+		.testName = "Coverage Test, Over Second MAX",
+		.config = { .isShortInterval = 0, 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 14, .min = 39, .sec = 60 },
+		.stored = { .nData = 1, .saveInterval = 1, 0 },
 		.unit = { 0 },
 		.expect = { 2, 1 },
 	},
@@ -144,33 +201,10 @@ extern MeterStoredData_t StoredMeterData;
 Config_t conf;
 
 // CMock
-#define MAX_NUM_STORED_DATA 24
 
 int RTC_isTimeSync()
 {
 	return 1;
-}
-
-void meterDataSave(MeterUnitData_t *pUnit)
-{
-	for (int i = 0; i < 4; i++) {
-		pUnit->meterData[i] = i;
-	}
-
-	pUnit->meterStatus = 0;
-	pUnit->icon.lowBatt = 0;
-	pUnit->icon.rArrow = 0;
-	pUnit->icon.fArrow = 0; // always 0
-	pUnit->icon.m3 = 1;
-	pUnit->icon.notUsed = 0; // 표준 프로토콜에는 미사용 없음.
-	pUnit->icon.leak = 0;
-
-	uint8 serial[4];
-	for (int i = 0; i < 4; i++) { // serial 4byte
-		serial[i] = i;
-	}
-
-	uchar caliberDp = 0;
 }
 
 void setUp()
@@ -208,7 +242,17 @@ static void coverageDummy()
 
 void test_METER_addStoredData()
 {
+	char msg[100];
 	for (int i = 0; i < sizeof(inputData) / sizeof(inputData_t); i++) {
+		tddPrint("Test Case(%d) : %s\n", i, inputData[i].testName);
+		Date_t *p = &inputData[i].date;
+		sprintf(msg, "Date:%d-%d-%d,%d:%d:%d", p->year, p->mon, p->day, p->hour, p->min,
+			p->sec);
+		p = &inputData[i].storedDate;
+		sprintf(msg, "%s Stored Date:%d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
+			p->hour, p->min, p->sec);
+		tddPrint("%s\n", msg);
+
 		testFunction(i);
 	}
 
