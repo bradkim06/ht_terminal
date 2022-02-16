@@ -19,6 +19,12 @@ typedef struct {
 	expect_t expect;
 } storeInput_t;
 
+#if LORA_DEVICE
+int nMaxData = NUM_LORA_STORED_DATA;
+#else // NBIOT_DEVICE
+int nMaxData = NUM_NBIOT_STORED_DATA;
+#endif
+
 static storeInput_t storeInput[20] = {
 	{
 		.testName = "정상적인 검침 데이터 저장",
@@ -227,16 +233,54 @@ void tearDown()
 
 static void test_addStoredData(int idx)
 {
-	char msg[100] = "";
+	BOOL result = FALSE;
+	// initialize test
+	char msg[500] = "";
 	memcpy(&conf, &storeInput[idx].config, sizeof(Config_t));
 	memcpy(&StoredMeterData, &storeInput[idx].stored, sizeof(MeterStoredData_t));
 	insertDateToData(&storeInput[idx].storedDate, &StoredMeterData.unit[0], TRUE);
-	METER_addStoredData(&storeInput[idx].date, &storeInput[idx].unit);
+	printf("Input Meter Data\n");
+	for (int i = 0; i < nMaxData; i++) {
+		printf("stored.unit[%2d] : ", i);
+		uint8 *p = (uint8 *)&StoredMeterData.unit[i];
+
+		for (int k = 0; k < sizeof(MeterUnitData_t); k++) {
+			if (i != 0 && i < StoredMeterData.nData) {
+				*(p + k) = i + 1;
+			}
+
+			printf("%02X ", *(p + k));
+		}
+		printf("\n");
+	}
+	memset(&storeInput[idx].unit, 0xAA, sizeof(MeterUnitData_t));
+
+	// Run Test Code
+	result = METER_addStoredData(&storeInput[idx].date, &storeInput[idx].unit);
+	printf("Output Meter Data [After METER_addStoredData()]\n");
+	for (int i = 0; i < nMaxData; i++) {
+		printf("stored.unit[%2d] : ", i);
+		uint8 *p = (uint8 *)&StoredMeterData.unit[i];
+
+		for (int k = 0; k < sizeof(MeterUnitData_t); k++) {
+			printf("%02X ", *(p + k));
+		}
+		printf("\n");
+	}
 
 	sprintf(msg, "Test Case %d\n", idx);
 	TEST_ASSERT_EQUAL_INT_MESSAGE(storeInput[idx].expect.nData, StoredMeterData.nData, msg);
 	TEST_ASSERT_EQUAL_INT_MESSAGE(storeInput[idx].expect.saveInterval,
 				      StoredMeterData.saveInterval, msg);
+
+	if (result) {
+		uint8 *pExpect = (uint8 *)&storeInput[idx].unit;
+		uint8 *pResult = (uint8 *)&StoredMeterData.unit[0];
+
+		for (int i = 0; i < sizeof(MeterUnitData_t); i++) {
+			TEST_ASSERT_EQUAL_HEX8_MESSAGE(*(pExpect + i), *(pResult + i), msg);
+		}
+	}
 }
 
 static void test_METER_clearStoredData(uint8 interval)
@@ -280,10 +324,10 @@ static void test_METER_clearIntervalData(int reportInterval, int nData)
 	TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectInterval, conf.reportInterval,
 					"reportInterval Check");
 	tddPrint("input nData(%d) expect(%d)\n", nData, StoredMeterData.nData);
-	TEST_ASSERT_EQUAL_INT_MESSAGE(NUM_NBIOT_STORED_DATA - expectInterval, StoredMeterData.nData,
+	TEST_ASSERT_EQUAL_INT_MESSAGE(nMaxData - expectInterval, StoredMeterData.nData,
 				      "nData - reportInterval");
 
-	for (int i = NUM_NBIOT_STORED_DATA - 1; i >= NUM_NBIOT_STORED_DATA - expectInterval; i--) {
+	for (int i = nMaxData - 1; i >= nMaxData - expectInterval; i--) {
 		uint8 *pData = (uint8 *)&StoredMeterData.unit[i];
 		MeterUnitData_t *p = &StoredMeterData.unit[i];
 
@@ -311,14 +355,15 @@ void test_METER()
 	char msg[100];
 	TEST_MESSAGE("METER_addStoredData Test");
 	for (int i = 0; i < sizeof(storeInput) / sizeof(storeInput_t); i++) {
-		tddPrint("Test Case(%d) : %s\n", i, storeInput[i].testName);
+		printf("================ Test Case(%d) : %s ==================\n", i,
+		       storeInput[i].testName);
 		Date_t *p = &storeInput[i].date;
 		sprintf(msg, "Date:%d-%d-%d,%d:%d:%d", p->year, p->mon, p->day, p->hour, p->min,
 			p->sec);
 		p = &storeInput[i].storedDate;
 		sprintf(msg, "%s Stored Date:%d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
 			p->hour, p->min, p->sec);
-		tddPrint("%s\n", msg);
+		tddPrint("%s nData(%d)\n", msg, storeInput[i].stored.nData);
 
 		test_addStoredData(i);
 	}

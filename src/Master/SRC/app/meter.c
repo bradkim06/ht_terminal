@@ -1153,8 +1153,9 @@ BOOL METER_bypassResp()
  * @param pDate meter data time
  * @param pUnit meter data
  */
-void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
+BOOL METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 {
+	int retVal = 0;
 	insertDateToData(pDate, pUnit, TRUE);
 
 	MeterStoredData_t *p = &StoredMeterData;
@@ -1187,6 +1188,8 @@ void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 						} else {
 							memcpy(&p->unit[(i - 1) / 2], &p->unit[i],
 							       sizeof(MeterUnitData_t));
+							memset(&p->unit[i], 0,
+							       sizeof(MeterUnitData_t));
 						}
 					}
 					p->nData /= 2;
@@ -1209,7 +1212,10 @@ void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 
 		memcpy(&p->unit[0], pUnit, sizeof(MeterUnitData_t));
 		p->nData++;
+		retVal = TRUE;
 	}
+
+	return retVal;
 }
 
 /**

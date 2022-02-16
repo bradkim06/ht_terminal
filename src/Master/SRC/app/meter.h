@@ -638,7 +638,7 @@ int METER_getNumberOfStoredData();
 int METER_fillSendData(uint8 *pData);
 void METER_saveInFlash(Date_t *pDate, MeterUnitData_t *pUnit);
 void METER_displayStoredData();
-void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit);
+BOOL METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit);
 void METER_collectStoredData();
 void METER_displayTempData();
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit);
