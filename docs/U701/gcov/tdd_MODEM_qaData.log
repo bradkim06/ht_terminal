@@ -1,0 +1,23 @@
+tdd_MODEM_qaData.c:186:test_tdd_MODEM_qaData:INFO: Test Case 0
+34
+60
+82
+95
+12
+W
+_
+12
+ueInfo : 42
+0
+f1
+tdd_MODEM_qaData.c:186:test_tdd_MODEM_qaData:INFO: Test Case 1
+90
+60
+67
+12
+5
+W
+5
+ueInfo : 43
+0
+f1

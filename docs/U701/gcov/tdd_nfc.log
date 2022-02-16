@@ -1,0 +1,17 @@
+================ Test Case (0) - Data Skip Mode ON ================
+input mtype(6), mversion(4), reset(0), sleep(0), reportMode(0), period(0), debug(0), dataSkip(1)
+OSAL_setEvent Run, APP_EVENT_CHANGE_CONFIG
+Config Result - sleep(0) riMode(0) riChgCount(0) riCtrlValue(0) period(0) debug(0) dataSkip(1)
+send NFC Result, mtype(85) mversion(4) reset(0) sleep(2) report(1) period(2) debug(3) dataSkip(1)
+Hex Msg - 00 00 00 00 00 00 00 00 00 00 55 04 00 02 01 02 03 01 
+================ Test Case (1) - Data Skip Mode No Change ================
+input mtype(6), mversion(4), reset(0), sleep(0), reportMode(0), period(0), debug(0), dataSkip(0)
+Config Result - sleep(0) riMode(0) riChgCount(0) riCtrlValue(0) period(0) debug(0) dataSkip(0)
+send NFC Result, mtype(85) mversion(4) reset(0) sleep(2) report(1) period(2) debug(3) dataSkip(2)
+Hex Msg - 00 00 00 00 00 00 00 00 00 00 55 04 00 02 01 02 03 02 
+================ Test Case (2) - Data Skip Mode OFF ================
+input mtype(6), mversion(4), reset(0), sleep(0), reportMode(0), period(0), debug(0), dataSkip(2)
+OSAL_setEvent Run, APP_EVENT_CHANGE_CONFIG
+Config Result - sleep(0) riMode(0) riChgCount(0) riCtrlValue(0) period(0) debug(0) dataSkip(0)
+send NFC Result, mtype(85) mversion(4) reset(0) sleep(2) report(1) period(2) debug(3) dataSkip(2)
+Hex Msg - 00 00 00 00 00 00 00 00 00 00 55 04 00 02 01 02 03 02 

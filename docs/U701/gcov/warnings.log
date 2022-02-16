@@ -1,0 +1,25 @@
+test/meter/tdd_METER_addStoredData.c: In function ‘test_METER’:
+test/meter/tdd_METER_addStoredData.c:373:19: warning: ‘ Stored Date:’ directive writing 13 bytes into a region of size between 1 and 100 [-Wformat-overflow=]
+  373 |   sprintf(msg, "%s Stored Date:%d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
+      |                   ^~~~~~~~~~~~~
+test/meter/tdd_METER_addStoredData.c:373:3: note: ‘sprintf’ output between 25 and 138 bytes into a destination of size 100
+  373 |   sprintf(msg, "%s Stored Date:%d-%d-%d,%d:%d:%d", msg, p->year, p->mon, p->day,
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  374 |    p->hour, p->min, p->sec);
+      |    ~~~~~~~~~~~~~~~~~~~~~~~~
+
+test/nbiot/message/tdd_MODEM_qaData.c: In function ‘testFunction_hex’:
+test/nbiot/message/tdd_MODEM_qaData.c:103:35: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
+  103 |   snprintf(msg, sizeof(msg), "%s%x", msg, *(p + i));
+      |                                   ^
+test/nbiot/message/tdd_MODEM_qaData.c:103:3: note: ‘snprintf’ output between 2 and 102 bytes into a destination of size 100
+  103 |   snprintf(msg, sizeof(msg), "%s%x", msg, *(p + i));
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test/nbiot/message/tdd_MODEM_qaData.c: In function ‘testFunction_str’:
+test/nbiot/message/tdd_MODEM_qaData.c:116:36: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
+  116 |    snprintf(msg, sizeof(msg), "%s%c", msg, *(p + i));
+      |                                    ^
+test/nbiot/message/tdd_MODEM_qaData.c:116:4: note: ‘snprintf’ output between 2 and 101 bytes into a destination of size 100
+  116 |    snprintf(msg, sizeof(msg), "%s%c", msg, *(p + i));
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

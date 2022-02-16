@@ -1,0 +1,6 @@
+============ Success(4) Test Case ============
+input string : +QLWULDATASTATUS:4
+============ Wrong Status Test Case ============
+input string : +QLWULDATASTATUS:3
+============ Wrong String Test Case ============
+input string : +TESTTESTTEST

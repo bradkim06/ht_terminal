@@ -1,0 +1,6 @@
+tdd_parseQGMR.c:42:test_tdd_parseQGMR:INFO: Test Case 0
+input : ..BC95GJBR02A02_LGU
+parseFwVer : BC95GJBR02A02_
+tdd_parseQGMR.c:42:test_tdd_parseQGMR:INFO: Test Case 1
+input : ..C95GJBR02A02_LGU....OK..
+parseFwVer : 
