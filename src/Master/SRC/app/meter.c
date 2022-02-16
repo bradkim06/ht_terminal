@@ -1163,9 +1163,7 @@ BOOL METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 		p->saveInterval = 1;
 	}
 
-	int interval = checkInterval(pUnit, &p->unit[0], p->saveInterval);
-
-	if (interval) {
+	if (p->nData == 0 || checkInterval(pUnit, &p->unit[0], p->saveInterval)) {
 #if LORA_DEVICE
 		int nMaxData = NUM_LORA_STORED_DATA;
 #else // NBIOT_DEVICE
@@ -1173,13 +1171,15 @@ BOOL METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 #endif
 
 		if (p->nData >= nMaxData) {
+			p->nData = nMaxData;
+
 			if (conf.dataSkipMode) {
 				// saveInterval Max 4 Day(수자원 공사 요구사항)
 				switch (p->saveInterval) {
 				case 1:
 				case 2:
 					// 하나 걸러 하나씩 없앰 - 짝수 번째 것은 무조건 지우고,
-					// 홀수 번째 것은 1->0, 3->1, 5->2, 7->3, 9->4와 같이 이동함.
+					// 홀수 번째 것은 1->0, 3->1, 5->2, 7->3, 9->4와 같이 이동 후 삭제.
 					// 결과적으로 데이터의 갯수는 절반이 됨
 					for (int i = 0; i < p->nData; i++) {
 						if ((i % 2) == 0) {
@@ -1197,17 +1197,19 @@ BOOL METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
 					break;
 
 				default:
-					p->nData = nMaxData - 1;
+					p->nData--;
 					break;
 				}
 			} else {
 				// 서울시 기본 마지막 데이터만 버림 Save Max : 1Day
-				p->nData = nMaxData - 1;
+				p->nData--;
 			}
 		}
 
-		for (int i = p->nData - 1; i >= 0; i--) {
-			memcpy(&p->unit[i + 1], &p->unit[i], sizeof(MeterUnitData_t));
+		if (p->nData) {
+			for (int i = p->nData - 1; i >= 0; i--) {
+				memcpy(&p->unit[i + 1], &p->unit[i], sizeof(MeterUnitData_t));
+			}
 		}
 
 		memcpy(&p->unit[0], pUnit, sizeof(MeterUnitData_t));

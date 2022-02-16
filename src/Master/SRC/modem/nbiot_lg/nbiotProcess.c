@@ -894,6 +894,7 @@ static ModemStep_t transfer()
 	case 2: {
 		int nData = METER_getNumberOfStoredData();
 		if ((nData == NUM_NBIOT_STORED_DATA) && (modemCtx.waitDl)) {
+			// Uplink Ok
 			METER_clearIntervalData();
 		}
 

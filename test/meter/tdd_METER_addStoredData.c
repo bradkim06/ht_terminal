@@ -29,7 +29,7 @@ static storeInput_t storeInput[20] = {
 	{
 		.testName = "정상적인 검침 데이터 저장",
 		.config = { .dataSkipMode = 1 },
-		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 11, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 4, .saveInterval = 1, 0 },
 		.unit = { 0 },
@@ -45,9 +45,9 @@ static storeInput_t storeInput[20] = {
 		.expect = { 24, 1 },
 	},
 	{
-		.testName = "nData 0개, Save Data",
+		.testName = "nData 0개, diff 0, But Save Data",
 		.config = { .dataSkipMode = 1 },
-		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 0, .saveInterval = 1, 0 },
 		.unit = { 0 },

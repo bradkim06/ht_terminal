@@ -58,6 +58,7 @@ void test_reportInterval()
 					base, intervalArr[i]);
 				int expect = expectFunc(h, base, intervalArr[i]);
 				int result = APP_checkTimeInterval(h, base, intervalArr[i]);
+				printf("%sexpect(%d) result(%d)\n", msg, expect, result);
 				TEST_ASSERT_EQUAL_INT_MESSAGE(expect, result, msg);
 			}
 		}
@@ -77,6 +78,7 @@ void test_reportInterval()
 
 		sprintf(msg, "inputData -> h : %d base : %d interval : %d\n", h, base, interval);
 		int result = APP_checkTimeInterval(h, base, interval);
+		printf("%sexpect(%d) result(%d)\n", msg, expect, result);
 		TEST_ASSERT_EQUAL_INT_MESSAGE(expect, result, msg);
 	}
 }
