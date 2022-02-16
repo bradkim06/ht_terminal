@@ -24,7 +24,7 @@
 #if defined(NBIOT_MODEM_BC95G)
 #if defined(AUX_REPEATER)
 #define FW_VER_MAIN "7"
-#define FIRMWARE_VER "U" FW_VER_MAIN "19" //TODO
+#define FIRMWARE_VER "U" FW_VER_MAIN "01"
 #else
 #define FW_VER_MAIN "3"
 #define FIRMWARE_VER "U" FW_VER_MAIN "25"

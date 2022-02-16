@@ -1,7 +1,9 @@
 #ifndef _OSAL_TIMER_H_
 #define _OSAL_TIMER_H_
 
+#ifndef TDD_TEST
 #include <msp430.h>
+#endif
 #include "common_header.h"
 
 typedef struct {

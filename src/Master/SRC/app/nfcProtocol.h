@@ -66,6 +66,7 @@
 #define NFC_PROTOCOL_VER_2 1
 #define NFC_PROTOCOL_VER_3 2
 #define NFC_PROTOCOL_VER_4 3
+#define NFC_PROTOCOL_VER_5 4
 
 #define MSG_OFFSET_LEN 2 //Device Code(1) + msgLen(1)
 #define MSG_TYPE_POSITION 10
@@ -96,6 +97,11 @@
 #define DEBUG_METER_MODE_USE 2
 #define DEBUG_MODE_NO_USE 3
 
+// Meter Save Interval Devide
+#define DATASKIP_MODE_NO_CHANGE 0
+#define DATASKIP_MODE_ON 1
+#define DATASKIP_MODE_OFF 2
+
 typedef struct {
 	uint8 deviceCode;
 	uint8 len;
@@ -118,49 +124,6 @@ typedef struct {
 	uint8 nwkAddr[4];
 	uint8 slaveId;
 } NfcAmiInfo_t;
-
-//Recv
-// For Terminal message format (protocol version 1) Not Use Since U316
-/* typedef struct { */
-/* 	NfcHeader_t header; */
-/* 	uint8 mtype; */
-/* 	uint8 mversion; */
-/* 	uint8 serialNum[SERIAL_NUM_LEN]; */
-/* 	uint8 sleepMode; */
-/* 	uint8 year[2]; */
-/* 	uint8 mon; */
-/* 	uint8 day; */
-/* 	uint8 hour; */
-/* 	uint8 min; */
-/* 	uint8 sec; */
-/* 	uint8 meterInterval; */
-/* 	uint8 reportInterval; */
-/* 	uint8 messageFrame; */
-/* #if NBIOT_DEVICE */
-/* 	uint8 serverIp[4]; */
-/* 	uint8 serverPort[2]; */
-/* #endif */
-/* 	uint8 meterNum; */
-/* 	NfcMeterInfo_t meterInfo[3]; */
-/* } NfcConfSetV1_t; */
-
-// For Repeator message format (protocol version 2) Not Use
-/* typedef struct { */
-/* 	NfcHeader_t header; */
-/* 	uint8 mtype; */
-/* 	uint8 mversion; */
-/* 	uint8 serialNum[SERIAL_NUM_LEN]; */
-/* 	uint8 sleepMode; */
-/* 	uint8 dateTime[4]; */
-/* 	uint8 meterInterval; */
-/* 	uint8 reportInterval; */
-/* 	uint8 messageFrame; */
-/* #if NBIOT_DEVICE */
-/* 	uint8 serverIp[4]; */
-/* 	uint8 serverPort[2]; */
-/* #endif */
-/* 	NfcAmiInfo_t amiInfo; */
-/* } NfcConfSetV2_t; */
 
 // For Terminal message format (protocol version 3)
 typedef struct {
@@ -282,6 +245,18 @@ typedef struct {
 	uint8 periodMode;
 	uint8 debugMode;
 } NfcBdCtrlReqV4_t;
+
+typedef struct {
+	NfcHeader_t header;
+	uint8 mtype;
+	uint8 mversion;
+	uint8 reset;
+	uint8 sleepMode;
+	uint8 reportMode;
+	uint8 periodMode; // 기간검침을 실제로 사용하지 않아 옵션화(이후 Flash Write는 설치시에만 쓰임)
+	uint8 debugMode; // 단말 불량시 계량기 케이블로 Log 확인용
+	uint8 dataSkipMode; // 수자원 공사, 서울시 프로토콜 기능 충돌로 인한 옵션
+} NfcBdCtrlReqV5_t;
 
 typedef struct {
 	NfcHeader_t header;
@@ -544,6 +519,18 @@ typedef struct {
 	NfcHeader_t header;
 	uint8 mtype;
 	uint8 mversion;
+	uint8 reset;
+	uint8 sleepMode;
+	uint8 reportMode;
+	uint8 periodMode;
+	uint8 debugMode;
+	uint8 dataSkipMode;
+} NfcBdCtrlAckV5_t;
+
+typedef struct {
+	NfcHeader_t header;
+	uint8 mtype;
+	uint8 mversion;
 	uint8 fwVer[4];
 } NfcFwVerReport_t;
 
@@ -680,5 +667,9 @@ void NFCAPP_meterAdjustReq();
 void NFCAPP_clearAsyncCmd();
 void NFCAPP_continueSend(byte *p, int len);
 void jumpToBSL();
+
+void recvBdControlReq(byte *data, uint8 len);
+void sendBdControlAck(uint8 mversion, uint8 reset);
+void send(byte *p, int len);
 
 #endif // _MESSAGE_HEADER_

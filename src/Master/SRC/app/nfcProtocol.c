@@ -1,18 +1,25 @@
+#include "nfcProtocol.h"
+#include "osal_Timer.h"
+#include "app.h"
+#include "tdd.h"
+
+extern uint8 AppTaskId;
+extern Config_t conf;
+extern Metering_t Metering;
+
+#ifndef TDD_TEST
 #include <msp430.h>
 
 #include "RTC.h"
 #include "common_header.h"
 #include "MSP430FlashUtil.h"
 
-#include "osal_Timer.h"
 #include "port_desc.h"
-#include "app.h"
 #include "check_meter_misc.h"
 #include "battery.h"
 #include "rtcAlarm.h"
 
 #include "NFC_i2c.h"
-#include "nfcProtocol.h"
 #include "uart.h"
 #include "modem.h"
 #include "meter.h"
@@ -28,10 +35,6 @@
 #define NFC_RC_FAIL 3
 
 #define CELLPHONE_NOMAL_RESPONSE 0
-
-extern Config_t conf;
-extern uint8 AppTaskId;
-extern Metering_t Metering;
 
 // NFC 프로토콜 v2를 위한 시간 구조체.
 typedef struct {
@@ -587,68 +590,6 @@ void sendPulseMeterValueAck()
 	send(msg, sizeof(NfcPulseMeterValueSetAck_t));
 }
 
-void sendBdControlAck(uint8 mversion, uint8 reset)
-{
-	byte msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	// Protocol version 관계없이 동일한 Data 먼저 처리.
-	NfcBdCtrlAckV1_t *p = (NfcBdCtrlAckV1_t *)msg;
-
-	p->mtype = BD_CONTROL_ACK;
-	p->mversion = mversion;
-	p->reset = reset;
-
-	if (conf.sleepMode) {
-		p->sleepMode = SLEEP_MODE_SLEEP;
-	} else {
-		p->sleepMode = SLEEP_MODE_NORMAL;
-	}
-
-	// Protocol version에 따라 다른 부분 처리.
-	int messageLen = sizeof(NfcBdCtrlAckV1_t);
-
-	if (mversion >= NFC_PROTOCOL_VER_2) {
-		messageLen = sizeof(NfcBdCtrlAckV2_t);
-
-		NfcBdCtrlAckV2_t *p = (NfcBdCtrlAckV2_t *)msg;
-
-		if (conf.riCtrlMode) {
-			p->reportMode = REPORT_MODE_TERMINAL;
-		} else {
-			p->reportMode = REPORT_MODE_SERVER;
-		}
-	}
-
-	if (mversion >= NFC_PROTOCOL_VER_3) {
-		messageLen = sizeof(NfcBdCtrlAckV3_t);
-
-		NfcBdCtrlAckV3_t *p = (NfcBdCtrlAckV3_t *)msg;
-
-		if (conf.periodMode) {
-			p->periodMode = PERIOD_MODE_USE;
-		} else {
-			p->periodMode = PERIOD_MODE_NO_USE;
-		}
-	}
-
-	if (mversion >= NFC_PROTOCOL_VER_4) {
-		messageLen = sizeof(NfcBdCtrlAckV4_t);
-
-		NfcBdCtrlAckV4_t *p = (NfcBdCtrlAckV4_t *)msg;
-
-		if (conf.debugPrint == 2) {
-			p->debugMode = DEBUG_METER_MODE_USE;
-		} else if (conf.debugPrint == 1) {
-			p->debugMode = DEBUG_JATG_MODE_USE;
-		} else {
-			p->debugMode = DEBUG_MODE_NO_USE;
-		}
-	}
-
-	send(msg, messageLen);
-}
-
 #if defined(AUX_REPEATER)
 void sendSlaveCheckReport()
 {
@@ -681,7 +622,7 @@ void sendSlaveCheckReport()
 
 			p->checkState = (pStatus.lastError == SLAVE_SUCCESS) ?
 						NFC_RC_METERING_COMPLETED :
-						NFC_RC_FAIL;
+						      NFC_RC_FAIL;
 			memcpy(p->slaveSerialNum, pStatus.slaveSerial, LEN_SLAVE_SERIAL_NUM);
 			p->slaveBatt = pStatus.slaveBatt;
 			p->slaveRssi = pStatus.slaveRssi;
@@ -1094,97 +1035,6 @@ void recvPulseMeterValueSet(byte *data, uint8 len)
 	sendPulseMeterValueAck();
 }
 
-void recvBdControlReq(byte *data, uint8 len)
-{
-	NfcBdCtrlReqV1_t *p = (NfcBdCtrlReqV1_t *)data;
-
-	int sleepModeChanged = 0;
-	int reportModeChanged = 0;
-	int periodModeChanged = 0;
-	int debugModeChanged = 0;
-
-	Config_t tconfig;
-	memcpy(&tconfig, &conf, sizeof(Config_t));
-
-	// Protocol version 관계없는 공통부분 설정 확인.
-	if (p->sleepMode == SLEEP_MODE_SLEEP) {
-		if (tconfig.sleepMode == 0) {
-			tconfig.sleepMode = 1;
-			sleepModeChanged = 1;
-		}
-	} else if (p->sleepMode == SLEEP_MODE_NORMAL) {
-		if (tconfig.sleepMode) {
-			tconfig.sleepMode = 0;
-			sleepModeChanged = 1;
-		}
-	}
-
-	int mVersion = p->mversion;
-
-	// Protocol version 2에 대한 설정 확인.
-	if (mVersion >= NFC_PROTOCOL_VER_2) {
-		NfcBdCtrlReqV2_t *pMsg = (NfcBdCtrlReqV2_t *)data;
-		if (pMsg->reportMode == REPORT_MODE_SERVER) {
-			if (tconfig.riCtrlMode) {
-				tconfig.riCtrlMode = 0;
-				tconfig.riCtrlChgCount = 0;
-				tconfig.riCtrlValue = tconfig.reportInterval;
-				reportModeChanged = 1;
-			}
-		} else if (pMsg->reportMode == REPORT_MODE_TERMINAL) {
-			if (tconfig.riCtrlMode == 0) {
-				tconfig.riCtrlMode = 1;
-				tconfig.riCtrlChgCount = 0;
-				tconfig.riCtrlValue = tconfig.reportInterval;
-				reportModeChanged = 1;
-			}
-		}
-	}
-
-	// Protocol version 3에 대한 설정 확인.
-	if (mVersion >= NFC_PROTOCOL_VER_3) {
-		NfcBdCtrlReqV3_t *pMsg = (NfcBdCtrlReqV3_t *)data;
-
-		if (pMsg->periodMode == PERIOD_MODE_USE) {
-			tconfig.periodMode = 1;
-			periodModeChanged = 1;
-		} else if (pMsg->periodMode == PERIOD_MODE_NO_USE) {
-			tconfig.periodMode = 0;
-			periodModeChanged = 1;
-		}
-	}
-
-	if (mVersion >= NFC_PROTOCOL_VER_4) {
-		NfcBdCtrlReqV4_t *pMsg = (NfcBdCtrlReqV4_t *)data;
-
-		if (pMsg->debugMode == DEBUG_METER_MODE_USE) {
-			conf.debugPrint = 2;
-			PRINT_resume();
-			UART_debugMode();
-		} else if (pMsg->debugMode == DEBUG_JATG_MODE_USE) {
-			conf.debugPrint = 1;
-			UART_init();
-			PRINT_resume();
-			PRINT_enable();
-		} else if (pMsg->debugMode == DEBUG_MODE_NO_USE) {
-			tconfig.debugPrint = 0;
-			debugModeChanged = 1;
-		}
-	}
-
-	if (sleepModeChanged || reportModeChanged || periodModeChanged || debugModeChanged) {
-		// 설정 변경 시 Global context에 복사 후 이벤트 등록
-		memcpy(&conf, &tconfig, sizeof(Config_t));
-		OSAL_setEvent(AppTaskId, APP_EVENT_CHANGE_CONFIG);
-	} else {
-		if (p->reset) {
-			OSAL_setEvent(AppTaskId, APP_EVENT_REBOOT);
-		}
-	}
-
-	sendBdControlAck(mVersion, p->reset);
-}
-
 ///////////////////////////////
 /////  Send Recv SMW Message
 ///////////////////////////////
@@ -1390,7 +1240,7 @@ void recvLoRaAppEuiKeySet(byte *data, uint8 len)
 		} else {
 			JoinMode_t joinMode = (p->joinMode == JOIN_MODE_SEUDO_JOIN) ?
 						      LORA_SEUDO_JOIN :
-						      LORA_REAL_JOIN;
+							    LORA_REAL_JOIN;
 			if (MODEM_setUserNwk(p->appEui, p->appKey, joinMode)) {
 				// 현재 AppKey or AppEUI 이 불일치 할 경우 TRUE로 설정 시작.
 				result = NFC_RC_IN_METERING;
@@ -1527,4 +1377,187 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		sendFwVerReport();
 		break;
 	}
+}
+
+#endif
+
+// TDD_TEST
+
+void recvBdControlReq(byte *data, uint8 len)
+{
+	NfcBdCtrlReqV1_t *p = (NfcBdCtrlReqV1_t *)data;
+
+	int sleepModeChanged = 0;
+	int reportModeChanged = 0;
+	int periodModeChanged = 0;
+	int debugModeChanged = 0;
+	int dataSkipModeChanged = 0;
+
+	Config_t tconfig;
+	memcpy(&tconfig, &conf, sizeof(Config_t));
+
+	// Protocol version 관계없는 공통부분 설정 확인.
+	if (p->sleepMode == SLEEP_MODE_SLEEP) {
+		if (tconfig.sleepMode == 0) {
+			tconfig.sleepMode = 1;
+			sleepModeChanged = 1;
+		}
+	} else if (p->sleepMode == SLEEP_MODE_NORMAL) {
+		if (tconfig.sleepMode) {
+			tconfig.sleepMode = 0;
+			sleepModeChanged = 1;
+		}
+	}
+
+	int mVersion = p->mversion;
+
+	// Protocol version 2에 대한 설정 확인.
+	if (mVersion >= NFC_PROTOCOL_VER_2) {
+		NfcBdCtrlReqV2_t *pMsg = (NfcBdCtrlReqV2_t *)data;
+		if (pMsg->reportMode == REPORT_MODE_SERVER) {
+			if (tconfig.riCtrlMode) {
+				tconfig.riCtrlMode = 0;
+				tconfig.riCtrlChgCount = 0;
+				tconfig.riCtrlValue = tconfig.reportInterval;
+				reportModeChanged = 1;
+			}
+		} else if (pMsg->reportMode == REPORT_MODE_TERMINAL) {
+			if (tconfig.riCtrlMode == 0) {
+				tconfig.riCtrlMode = 1;
+				tconfig.riCtrlChgCount = 0;
+				tconfig.riCtrlValue = tconfig.reportInterval;
+				reportModeChanged = 1;
+			}
+		}
+	}
+
+	// Protocol version 3에 대한 설정 확인.
+	if (mVersion >= NFC_PROTOCOL_VER_3) {
+		NfcBdCtrlReqV3_t *pMsg = (NfcBdCtrlReqV3_t *)data;
+
+		if (pMsg->periodMode == PERIOD_MODE_USE) {
+			tconfig.periodMode = 1;
+			periodModeChanged = 1;
+		} else if (pMsg->periodMode == PERIOD_MODE_NO_USE) {
+			tconfig.periodMode = 0;
+			periodModeChanged = 1;
+		}
+	}
+
+	if (mVersion >= NFC_PROTOCOL_VER_4) {
+		NfcBdCtrlReqV4_t *pMsg = (NfcBdCtrlReqV4_t *)data;
+
+		if (pMsg->debugMode == DEBUG_METER_MODE_USE) {
+			conf.debugPrint = 2;
+			UART_debugMode();
+			PRINT_resume();
+		} else if (pMsg->debugMode == DEBUG_JATG_MODE_USE) {
+			conf.debugPrint = 1;
+			UART_init();
+			PRINT_resume();
+			PRINT_enable();
+		} else if (pMsg->debugMode == DEBUG_MODE_NO_USE) {
+			tconfig.debugPrint = 0;
+			debugModeChanged = 1;
+		}
+	}
+
+	if (mVersion >= NFC_PROTOCOL_VER_5) {
+		NfcBdCtrlReqV5_t *pMsg = (NfcBdCtrlReqV5_t *)data;
+
+		if (pMsg->dataSkipMode == DATASKIP_MODE_ON) {
+			tconfig.dataSkipMode = 1;
+			dataSkipModeChanged = 1;
+		} else if (pMsg->dataSkipMode == DATASKIP_MODE_OFF) {
+			tconfig.dataSkipMode = 0;
+			dataSkipModeChanged = 1;
+		}
+	}
+
+	if (sleepModeChanged || reportModeChanged || periodModeChanged || debugModeChanged ||
+	    dataSkipModeChanged) {
+		// 설정 변경 시 Global context에 복사 후 이벤트 등록
+		memcpy(&conf, &tconfig, sizeof(Config_t));
+		OSAL_setEvent(AppTaskId, APP_EVENT_CHANGE_CONFIG);
+	} else {
+		if (p->reset) {
+			OSAL_setEvent(AppTaskId, APP_EVENT_REBOOT);
+		}
+	}
+
+	sendBdControlAck(mVersion, p->reset);
+}
+
+void sendBdControlAck(uint8 mversion, uint8 reset)
+{
+	byte msg[64];
+	memset(msg, 0, sizeof(msg));
+
+	// Protocol version 관계없이 동일한 Data 먼저 처리.
+	NfcBdCtrlAckV1_t *p = (NfcBdCtrlAckV1_t *)msg;
+
+	p->mtype = BD_CONTROL_ACK;
+	p->mversion = mversion;
+	p->reset = reset;
+
+	if (conf.sleepMode) {
+		p->sleepMode = SLEEP_MODE_SLEEP;
+	} else {
+		p->sleepMode = SLEEP_MODE_NORMAL;
+	}
+
+	// Protocol version에 따라 다른 부분 처리.
+	int messageLen = sizeof(NfcBdCtrlAckV1_t);
+
+	if (mversion >= NFC_PROTOCOL_VER_2) {
+		messageLen = sizeof(NfcBdCtrlAckV2_t);
+
+		NfcBdCtrlAckV2_t *p = (NfcBdCtrlAckV2_t *)msg;
+
+		if (conf.riCtrlMode) {
+			p->reportMode = REPORT_MODE_TERMINAL;
+		} else {
+			p->reportMode = REPORT_MODE_SERVER;
+		}
+	}
+
+	if (mversion >= NFC_PROTOCOL_VER_3) {
+		messageLen = sizeof(NfcBdCtrlAckV3_t);
+
+		NfcBdCtrlAckV3_t *p = (NfcBdCtrlAckV3_t *)msg;
+
+		if (conf.periodMode) {
+			p->periodMode = PERIOD_MODE_USE;
+		} else {
+			p->periodMode = PERIOD_MODE_NO_USE;
+		}
+	}
+
+	if (mversion >= NFC_PROTOCOL_VER_4) {
+		messageLen = sizeof(NfcBdCtrlAckV4_t);
+
+		NfcBdCtrlAckV4_t *p = (NfcBdCtrlAckV4_t *)msg;
+
+		if (conf.debugPrint == 2) {
+			p->debugMode = DEBUG_METER_MODE_USE;
+		} else if (conf.debugPrint == 1) {
+			p->debugMode = DEBUG_JATG_MODE_USE;
+		} else {
+			p->debugMode = DEBUG_MODE_NO_USE;
+		}
+	}
+
+	if (mversion >= NFC_PROTOCOL_VER_5) {
+		messageLen = sizeof(NfcBdCtrlAckV5_t);
+
+		NfcBdCtrlAckV5_t *p = (NfcBdCtrlAckV5_t *)msg;
+
+		if (conf.dataSkipMode) {
+			p->dataSkipMode = DATASKIP_MODE_ON;
+		} else {
+			p->dataSkipMode = DATASKIP_MODE_OFF;
+		}
+	}
+
+	send(msg, messageLen);
 }
