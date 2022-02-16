@@ -156,6 +156,7 @@ typedef struct {
 	uint8 imei[8];
 	uint8 imsi[8];
 	BOOL isModemInit;
+	uint8 dataSkipMode;
 #endif
 	uint8 sleepMode;
 	uint8 riCtrlMode; // 0 : no ctrl, 1 : ctrl
@@ -174,7 +175,6 @@ typedef struct {
 	uint8 periodMode;
 	uint8 bslModel;
 	uint8 havePushButton;
-	uint8 dataSkipMode;
 } Config_t;
 
 extern Config_t conf;

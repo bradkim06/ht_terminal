@@ -19,10 +19,10 @@ typedef struct {
 	expect_t expect;
 } storeInput_t;
 
-static storeInput_t storeInput[19] = {
+static storeInput_t storeInput[20] = {
 	{
 		.testName = "정상적인 검침 데이터 저장",
-		.config = { 0 },
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 4, .saveInterval = 1, 0 },
@@ -30,8 +30,17 @@ static storeInput_t storeInput[19] = {
 		.expect = { 5, 1 },
 	},
 	{
-		.testName = "nData 0개, Save Data",
+		.testName = "Data Skip Mode OFF",
 		.config = { 0 },
+		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
+		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
+		.stored = { .nData = 24, .saveInterval = 1, 0 },
+		.unit = { 0 },
+		.expect = { 24, 1 },
+	},
+	{
+		.testName = "nData 0개, Save Data",
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 0, .saveInterval = 1, 0 },
@@ -40,7 +49,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "interval 설정 0(Error), Init 1 Test",
-		.config = { 0 },
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 0, .saveInterval = 0, 0 },
@@ -49,7 +58,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "interval 설정 25(Error), Init 1",
-		.config = { 0 },
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 0, .saveInterval = 25, 0 },
@@ -58,7 +67,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "saveInterval 2->4, nData Max",
-		.config = { 0 },
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 24, .saveInterval = 2, 0 },
@@ -67,7 +76,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "saveInterval 4 Not change, nData Max",
-		.config = { 0 },
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 17, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 10, .min = 39, .sec = 0 },
 		.stored = { .nData = 24, .saveInterval = 4, 0 },
@@ -76,7 +85,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "Diff Time is under saveInterval",
-		.config = { 0 },
+		.config = { .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 52, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.stored = { .nData = 1, .saveInterval = 1, 0 },
@@ -85,7 +94,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "Short Config",
-		.config = { .isShortInterval = 1, 0 },
+		.config = { .isShortInterval = 1, .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 52, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.stored = { .nData = 4, .saveInterval = 1, 0 },
@@ -94,7 +103,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "Short Config, nData Max",
-		.config = { .isShortInterval = 1, 0 },
+		.config = { .isShortInterval = 1, .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 52, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.stored = { .nData = 24, .saveInterval = 1, 0 },
@@ -103,7 +112,7 @@ static storeInput_t storeInput[19] = {
 	},
 	{
 		.testName = "Short Config, diff Time under Interval setting",
-		.config = { .isShortInterval = 1, 0 },
+		.config = { .isShortInterval = 1, .dataSkipMode = 1 },
 		.date = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.storedDate = { .year = 2022, .mon = 2, .day = 9, .hour = 12, .min = 39, .sec = 0 },
 		.stored = { .nData = 1, .saveInterval = 24, 0 },
