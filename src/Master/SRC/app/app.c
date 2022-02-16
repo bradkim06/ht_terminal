@@ -101,7 +101,7 @@ void APP_showConfig(Config_t *p)
 				      "UNKNOWN")
 	printf(" [ Debug Out  ] %s(%s)\n", p->debugPrint ? "On" : "Off",
 	       DEBUG_STATUS_STR(p->debugPrint));
-	printf(" [ Dataskip   ] %d, (0:4days), (1:24hour)\n", p->dataSkipMode);
+	printf(" [ Dataskip   ] %d, (0:24hour), (1:4day)\n", p->dataSkipMode);
 #if defined(AUX_REPEATER)
 	printf(" [ PAN ID     ] %04X\n", p->pan_id);
 
