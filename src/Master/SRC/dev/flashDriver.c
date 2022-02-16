@@ -302,6 +302,7 @@ void FLASH_saveConfigInfo(Config_t *config)
 	flashConfig.fotaInterval = config->fotaInterval;
 	memcpy(flashConfig.serviceCode, &config->serviceCode, 4);
 	flashConfig.isModemInit = config->isModemInit;
+	flashConfig.dataSkipMode = config->dataSkipMode;
 #endif
 	flashConfig.isShortInterval = config->isShortInterval;
 	flashConfig.debugPrint = config->debugPrint;
@@ -341,7 +342,11 @@ void FLASH_readConfigInfo(Config_t *config)
 	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
 	config->serviceCode[4] = 0;
 	config->isModemInit = flashConfig.isModemInit;
-	config->dataSkipMode = flashConfig.dataSkipMode;
+	if (flashConfig.dataSkipMode != 0 || flashConfig.dataSkipMode != 1) {
+		config->dataSkipMode = flashConfig.dataSkipMode;
+	} else {
+		config->dataSkipMode = 1;
+	}
 #endif
 	config->sleepMode = flashConfig.sleepMode;
 	config->riCtrlMode = flashConfig.riCtrlMode;
@@ -378,23 +383,6 @@ void FLASH_readConfigInfo(Config_t *config)
 			 ascii2Hex(config->serialNum[10]) * 10 + ascii2Hex(config->serialNum[11]);
 
 	distributingReportTime(serialBase, config);
-
-	// int serialBase = ascii2Hex(flashID.serialNum[8]) * 1000 +
-	// 		 ascii2Hex(flashID.serialNum[9]) * 100 +
-	// 		 ascii2Hex(flashID.serialNum[10]) * 10 + ascii2Hex(flashID.serialNum[11]);
-
-	// #if 1 // sholee
-	// int nSpread = config->reportRange * 50;
-	// #else
-	// int nSpread = config->reportInterval * 50;
-	// #endif
-
-	// config->reportSec = ((serialBase / nSpread) % 4) *
-	// 		    15; // 같은 '분'에 보고하는 단말기들간에 시간을 15초 단위로 4개로 나눔
-	// serialBase %= nSpread;
-
-	// config->intervalBaseTime = serialBase / 50;
-	// config->reportMin = (serialBase % 50) + 5;
 }
 
 void ip2hexArray(char *ip, uint8 *hexIp)
