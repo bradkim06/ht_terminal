@@ -5,7 +5,7 @@
 #include "rtcAlarm.h"
 
 typedef struct {
-	int nData;
+	uint8 nData;
 	int saveInterval;
 } expect_t;
 
@@ -308,8 +308,23 @@ static void test_METER_clearStoredData(uint8 interval)
 	}
 }
 
-static void test_METER_clearIntervalData(int reportInterval, int nData)
+static void METER_clearIntervalDataResult(uint8 nData, int value)
 {
+	TEST_ASSERT_EQUAL_INT_MESSAGE(nData, StoredMeterData.nData, "nData - reportInterval");
+
+	for (int i = nMaxData - 1; i >= nData; i--) {
+		uint8 *pData = (uint8 *)&StoredMeterData.unit[i];
+		MeterUnitData_t *p = &StoredMeterData.unit[i];
+
+		for (int k = 0; k < sizeof(MeterUnitData_t); k++) {
+			TEST_ASSERT_EQUAL_UINT8_MESSAGE(value, *(pData + k), "unit data must be 0");
+		}
+	}
+}
+
+static void test_METER_clearIntervalData(int reportInterval, uint8 nData)
+{
+	printf("========input reportInterval(%d) nData(%d)========\n", reportInterval, nData);
 	conf.reportInterval = reportInterval;
 	memset(&StoredMeterData, 0xff, sizeof(MeterStoredData_t));
 	StoredMeterData.nData = nData;
@@ -324,16 +339,10 @@ static void test_METER_clearIntervalData(int reportInterval, int nData)
 	TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectInterval, conf.reportInterval,
 					"reportInterval Check");
 	tddPrint("input nData(%d) expect(%d)\n", nData, StoredMeterData.nData);
-	TEST_ASSERT_EQUAL_INT_MESSAGE(nMaxData - expectInterval, StoredMeterData.nData,
-				      "nData - reportInterval");
-
-	for (int i = nMaxData - 1; i >= nMaxData - expectInterval; i--) {
-		uint8 *pData = (uint8 *)&StoredMeterData.unit[i];
-		MeterUnitData_t *p = &StoredMeterData.unit[i];
-
-		for (int k = 0; k < sizeof(MeterUnitData_t); k++) {
-			TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, *(pData + k), "unit data must be 0");
-		}
+	if (nData >= 24) {
+		METER_clearIntervalDataResult(nMaxData - expectInterval, 0);
+	} else {
+		METER_clearIntervalDataResult(nData, 0xff);
 	}
 }
 
@@ -375,9 +384,12 @@ void test_METER()
 
 	TEST_MESSAGE("METER_clearIntervalData");
 	test_METER_clearIntervalData(6, NUM_NBIOT_STORED_DATA);
+	test_METER_clearIntervalData(24, NUM_NBIOT_STORED_DATA);
+	test_METER_clearIntervalData(6, NUM_NBIOT_STORED_DATA);
 	test_METER_clearIntervalData(1, NUM_NBIOT_STORED_DATA);
 	test_METER_clearIntervalData(0, NUM_NBIOT_STORED_DATA);
-	test_METER_clearIntervalData(25, 25);
+	test_METER_clearIntervalData(100, 100);
+	test_METER_clearIntervalData(0, 0);
 
 	TEST_MESSAGE("coverage Dummy Test");
 	coverageDummy();

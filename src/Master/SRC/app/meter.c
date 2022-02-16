@@ -1224,10 +1224,6 @@ BOOL METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit)
  */
 void METER_clearIntervalData()
 {
-	if (conf.reportInterval < 1 || conf.reportInterval > 24) {
-		conf.reportInterval = 6;
-	}
-
 #if LORA_DEVICE
 	int nMaxData = NUM_LORA_STORED_DATA;
 #else // NBIOT_DEVICE
@@ -1235,6 +1231,9 @@ void METER_clearIntervalData()
 #endif
 	MeterStoredData_t *p = &StoredMeterData;
 
+	if (conf.reportInterval < 1 || conf.reportInterval > 24) {
+		conf.reportInterval = 6;
+	}
 	if (p->nData > nMaxData) {
 		p->nData = nMaxData;
 	}

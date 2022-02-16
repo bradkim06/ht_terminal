@@ -225,7 +225,7 @@ typedef struct {
 } MeterUnitData_t;
 
 typedef struct {
-	int nData;
+	uint8 nData;
 	uint8 saveInterval;
 	uint8 caliberDp;
 	uint8 dif;
