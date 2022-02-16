@@ -34,7 +34,6 @@ Config_t config;
 
 void setUp()
 {
-	memset(&config, 0, sizeof(Config_t));
 }
 
 void tearDown()
@@ -44,11 +43,15 @@ void tearDown()
 static void testFunction(inputData_t *data)
 {
 	char msg[100] = "";
+	memset(&config, 0, sizeof(Config_t));
+
 	config.reportRange = data->reportRange;
 	config.reportInterval = data->reportInterval;
 	sprintf(msg, "s/n : %d reportRange : %d Interval : %d expectHour : %d expectMin : %d",
 		data->serialNum, config.reportRange, config.reportInterval, data->resultHour,
 		data->resultMin);
+
+	printf("%s\n", msg);
 
 	distributingReportTime(data->serialNum, &config);
 	TEST_ASSERT_EQUAL_INT_MESSAGE(data->resultHour, config.intervalBaseTime, msg);
