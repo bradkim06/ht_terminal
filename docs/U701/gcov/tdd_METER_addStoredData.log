@@ -1,6 +1,6 @@
 tdd_METER_addStoredData.c:365:test_METER:INFO: METER_addStoredData Test
 ================ Test Case(0) : 정상적인 검침 데이터 저장 ==================
-Date:2022-2-9,12:39:0 Stored Date:2022-2-9,10:39:0 nData(4)
+Date:2022-2-9,11:39:0 Stored Date:2022-2-9,10:39:0 nData(4)
 Input Meter Data
 stored.unit[ 0] : 16 02 09 0A 27 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[ 1] : 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 
@@ -27,7 +27,7 @@ stored.unit[21] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 stored.unit[22] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[23] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 Output Meter Data [After METER_addStoredData()]
-stored.unit[ 0] : 16 02 09 0C 27 00 01 AA AA AA AA AA AA AA AA AA AA AA AA AA AA 
+stored.unit[ 0] : 16 02 09 0B 27 00 01 AA AA AA AA AA AA AA AA AA AA AA AA AA AA 
 stored.unit[ 1] : 16 02 09 0A 27 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[ 2] : 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 
 stored.unit[ 3] : 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 03 
@@ -103,8 +103,8 @@ stored.unit[20] : 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14
 stored.unit[21] : 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 
 stored.unit[22] : 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 
 stored.unit[23] : 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 
-================ Test Case(2) : nData 0개, Save Data ==================
-Date:2022-2-9,12:39:0 Stored Date:2022-2-9,10:39:0 nData(0)
+================ Test Case(2) : nData 0개, diff 0, But Save Data ==================
+Date:2022-2-9,10:39:0 Stored Date:2022-2-9,10:39:0 nData(0)
 Input Meter Data
 stored.unit[ 0] : 16 02 09 0A 27 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[ 1] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
@@ -131,7 +131,7 @@ stored.unit[21] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 stored.unit[22] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[23] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 Output Meter Data [After METER_addStoredData()]
-stored.unit[ 0] : 16 02 09 0C 27 00 01 AA AA AA AA AA AA AA AA AA AA AA AA AA AA 
+stored.unit[ 0] : 16 02 09 0A 27 00 01 AA AA AA AA AA AA AA AA AA AA AA AA AA AA 
 stored.unit[ 1] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[ 2] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 stored.unit[ 3] : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
