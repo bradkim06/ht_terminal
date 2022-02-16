@@ -37,6 +37,7 @@
     - src/Master/SRC/dev/flashDriver.c
     - src/Master/SRC/app/meter.c
     - src/Master/SRC/app/rtcAlarm.c
+    # - src/Master/SRC/app/nfcProtocol.c
   :support:
     - test/support
   :libraries: []
@@ -56,6 +57,7 @@
     - TDD_TEST
     - NBIOT_MODEM_BC95G
     - NBIOT_LG_TYPE
+    - NBIOT_DEVICE
   :test:
     - *common_defines
     - TEST

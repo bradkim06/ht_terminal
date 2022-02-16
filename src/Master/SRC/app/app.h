@@ -1,5 +1,3 @@
-int APP_checkTimeInterval(int h, int bt, int interval);
-#ifndef TDD_TEST
 #ifndef _AMIAPP_HEADER_
 #define _AMIAPP_HEADER_
 
@@ -59,6 +57,6 @@ void APP_slaveAccessFailed();
 void APP_slaveMeteringCompleted();
 void APP_slaveMeteringFailed(int resultCode);
 #endif
+int APP_checkTimeInterval(int h, int bt, int interval);
 
-#endif
 #endif
