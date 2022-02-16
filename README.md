@@ -27,14 +27,16 @@ flowchart TD
 
 #### Main
 
+- [ ] Flash Read시 쓰레기 데이터가 들어오는지 확인, 초기화하는 기능 추가 필요
 - [ ] 유선 펌웨어 업그레이드 기능 확인
+- [ ] OTA, RCT 측정시 QREGSWT = 2 필요 (?)
+
+- [x] AT+QLWULDATAEX 기능 추가, 테스트
 - [x] 수자원 공사 보고주기 분할(최대 4일치) on/off 옵션 처리
   - 김영일 부장님 스마트폰 프로토콜 추가 필요
 - [x] 일련 번호 시간 분산 테스트 이상없음
 - [x] 보조중계기 P/F 버전 구현 / 테스트
   - [x] 강나루 대리 보조중계기 기능 Merge
-- [x] AT+QLWULDATAEX 기능 추가, 테스트
-- [ ] OTA, RCT 측정시 QREGSWT = 2 필요 (?)
 
 #### Sub
 
@@ -52,7 +54,9 @@ flowchart TD
 
 <!-- TOC start -->
 
-- [Bug Fix](#bug-fix)
+#### 기능 변경
+
+- [dataSkipMode 추가 (2022-02-16)](#dataskipmode-2022-02-16)
 - [LGU+ 품질리포트 Ver 1.75 (2022-02-11)](#lgu-ver-175-2022-02-11)
   - [AT+QGMR Response 추가](#atqgmr-response-)
     - [Terminal <-> Modem Sequence Diagram](#terminal-modem-sequence-diagram)
@@ -65,7 +69,7 @@ flowchart TD
 
 <!-- TOC end -->
 
-### Bug Fix
+#### Bug Fix
 
 단말의 기능에 지장은 주지 않을것으로 보이는 논리적 에러 수정  
 상세한 내용은 test 폴더의 README 참조
@@ -74,6 +78,8 @@ flowchart TD
   - local variable 미초기화로 잘못된 result 나오는 Case 수정
 - METER_addStoredData() Refactoring
   - nData == Max일때 검침데이터 일부 메모리 삭제 안되는 부분 수정 (2022-02-16)
+
+<!-- TOC --><a name="dataskipmode-2022-02-16"></a>
 
 ### dataSkipMode 추가 (2022-02-16)
 
