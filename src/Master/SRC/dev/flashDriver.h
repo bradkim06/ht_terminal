@@ -49,7 +49,8 @@ typedef struct {
 	uint8 riCtrlMode; // 26
 	uint8 periodMode; // 27
 	uint8 reportRange; // 28
-	uint8 reserved[2]; // 29 ~ 30
+	uint8 dataSkipMode; // 29
+	uint8 reserved[1]; // 30
 	uint8 checksum; // 31
 } FlashConfig_t;
 

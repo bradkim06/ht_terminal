@@ -134,6 +134,7 @@ static void readConfig(FlashConfig_t *pInfo)
 		pInfo->fotaPort[0] = LO_UINT16(LG_DEFAULT_FOTA_SERVER_PORT);
 		pInfo->fotaPort[1] = HI_UINT16(LG_DEFAULT_FOTA_SERVER_PORT);
 		pInfo->fotaInterval = LG_DEFAULT_FOTA_DAY_INTERVAL;
+		pInfo->dataSkipMode = 1;
 #endif
 
 		memset(pInfo->resetCount, 0, 2);
@@ -340,6 +341,7 @@ void FLASH_readConfigInfo(Config_t *config)
 	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
 	config->serviceCode[4] = 0;
 	config->isModemInit = flashConfig.isModemInit;
+	config->dataSkipMode = flashConfig.dataSkipMode;
 #endif
 	config->sleepMode = flashConfig.sleepMode;
 	config->riCtrlMode = flashConfig.riCtrlMode;
