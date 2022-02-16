@@ -1318,6 +1318,7 @@
           <state>NDEBUG</state>
           <state>NBIOT_LG_TYPE</state>
           <state>NBIOT_MODEM_BC95G</state>
+          <state>NBIOT_DEVICE</state>
           <state>AUX_REPEATER</state>
         </option>
         <option>
@@ -1826,7 +1827,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>NBIOT_LG_V150_AR_RELEASE.frm</state>
+          <state>U701.frm</state>
         </option>
         <option>
           <name>OutputFormat</name>
@@ -1840,7 +1841,7 @@
         </option>
         <option>
           <name>SecondaryOutputFile</name>
-          <state>NBIOT_LG_V150_AR_RELEASE.a43</state>
+          <state>U701.a43</state>
         </option>
         <option>
           <name>XDefines</name>
@@ -2020,7 +2021,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>NBIOT_LG_V150_AR_RELEASE.txt</state>
+          <state>U701.txt</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
