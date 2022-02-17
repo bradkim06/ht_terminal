@@ -40,12 +40,14 @@
 
 #define TERM_MODEL_STRING_LEN 8
 #define TERM_MODEL_STRING(x)                                                                       \
-	((x) == TERM_MODEL_HAT_114W ? "HAT-114W" :                                                 \
-	 (x) == TERM_MODEL_HAT_124W ? "HAT-124W" :                                                 \
-	 (x) == TERM_MODEL_HTM_115W ? "HTM-115W" :                                                 \
-	 (x) == TERM_MODEL_HAT_314W ? "HAT-314W" :                                                 \
-	 (x) == TERM_MODEL_HAT_435W ? "HAT-435W" :                                                 \
-					    "UNKNOWN")
+	((x) == TERM_MODEL_HAT_114W ?                                                              \
+		 "HAT-114W" :                                                                      \
+		 (x) == TERM_MODEL_HAT_124W ?                                                      \
+		 "HAT-124W" :                                                                      \
+		 (x) == TERM_MODEL_HTM_115W ?                                                      \
+		 "HTM-115W" :                                                                      \
+		 (x) == TERM_MODEL_HAT_314W ? "HAT-314W" :                                         \
+					      (x) == TERM_MODEL_HAT_435W ? "HAT-435W" : "UNKNOWN")
 
 #define TERM_HAS_LCD(x) ((x) == TERM_MODEL_HAT_114W)
 #define SMART_WATER_METER(x) ((x) == TERM_MODEL_HTM_115W)
@@ -143,6 +145,7 @@ typedef struct {
 	uint32 nwk_addr;
 	uint32 slaveNwk;
 	uint8 freqOffset;
+	uint8 havePushButton;
 #endif
 #if LORA_DEVICE
 	uint8 devEui[8];
@@ -174,7 +177,6 @@ typedef struct {
 	uint8 termModel;
 	uint8 periodMode;
 	uint8 bslModel;
-	uint8 havePushButton;
 } Config_t;
 
 extern Config_t conf;

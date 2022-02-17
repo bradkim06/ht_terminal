@@ -95,10 +95,9 @@ void APP_showConfig(Config_t *p)
 #define DEBUG_JTAG 1
 #define DEBUG_METER 2
 #define DEBUG_STATUS_STR(x)                                                                        \
-	(((x) == DEBUG_OFF)   ? "OFF" :                                                            \
-	 ((x) == DEBUG_JTAG)  ? "JTAG" :                                                           \
-	 ((x) == DEBUG_METER) ? "METER" :                                                          \
-				      "UNKNOWN")
+	(((x) == DEBUG_OFF) ?                                                                      \
+		 "OFF" :                                                                           \
+		 ((x) == DEBUG_JTAG) ? "JTAG" : ((x) == DEBUG_METER) ? "METER" : "UNKNOWN")
 	printf(" [ Debug Out  ] %s(%s)\n", p->debugPrint ? "On" : "Off",
 	       DEBUG_STATUS_STR(p->debugPrint));
 	printf(" [ Dataskip   ] %d, (0:24hour), (1:4day)\n", p->dataSkipMode);
@@ -111,6 +110,7 @@ void APP_showConfig(Config_t *p)
 	       *(master + 0));
 	printf(" [ Slave NWK  ] %d.%d.%d.%d\n", *(slave + 3), *(slave + 2), *(slave + 1),
 	       *(slave + 0));
+	printf(" [ Button     ] %d\n", conf.havePushButton);
 #endif
 	printf(" [ RST CAUSE  ] %Xh \n", SYSRSTIV);
 	printf("===========================================\n");

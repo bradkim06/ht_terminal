@@ -318,13 +318,12 @@ void FLASH_saveConfigInfo(Config_t *config)
 
 void FLASH_readConfigInfo(Config_t *config)
 {
-	config->termModel = MISC_getDeviceType();
-	config->bslModel = MISC_getBslType();
-	config->havePushButton = MISC_findPushButton();
-
 	// read others
 	FlashConfig_t flashConfig;
 	readConfig(&flashConfig);
+
+	config->termModel = MISC_getDeviceType();
+	config->bslModel = MISC_getBslType();
 
 	config->meterType = flashConfig.meterType;
 	config->meterInterval = flashConfig.meterInterval;
@@ -369,6 +368,7 @@ void FLASH_readConfigInfo(Config_t *config)
 	memcpy(addr, &flashID.nwk_addr, 4);
 	addr[zeroPos] = flashID.slaveId;
 	memcpy(&config->slaveNwk, addr, 4);
+	config->havePushButton = MISC_findPushButton();
 #endif
 
 #if LORA_DEVICE
