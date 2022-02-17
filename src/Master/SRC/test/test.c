@@ -533,6 +533,7 @@ void TEST_lpm3(int mode)
 
 	P1DIR = 0xFF;
 	P1OUT = 0x00;
+	P1OUT |= BM(PORT_LCD_SWITCH);
 
 	LCD_init();
 	LCD_wait();
@@ -571,6 +572,7 @@ void TEST_lpm2()
 
 	P1DIR = 0xFF;
 	P1OUT = 0x00;
+	P1OUT |= BM(PORT_LCD_SWITCH);
 
 	LCD_init();
 	LCD_wait();
