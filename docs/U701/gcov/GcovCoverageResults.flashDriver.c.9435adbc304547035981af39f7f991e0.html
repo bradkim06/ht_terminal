@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2022-02-17 08:57:42</td>
+      <td>2022-02-17 14:46:26</td>
     </tr>
   </table>
 </div>
@@ -2692,7 +2692,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">termModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MISC_getDeviceType</span><span class="p">();</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="c1">// read others</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2700,7 +2700,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">bslModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MISC_getBslType</span><span class="p">();</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">FlashConfig_t</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2708,7 +2708,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">havePushButton</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MISC_findPushButton</span><span class="p">();</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">readConfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">flashConfig</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2724,7 +2724,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="c1">// read others</span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">termModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MISC_getDeviceType</span><span class="p">();</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2732,7 +2732,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">FlashConfig_t</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">bslModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MISC_getBslType</span><span class="p">();</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2740,7 +2740,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">readConfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">flashConfig</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -2748,7 +2748,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">meterType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">meterType</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2756,7 +2756,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">meterType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">meterType</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">meterInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">meterInterval</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2764,7 +2764,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">meterInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">meterInterval</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">reportInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">reportInterval</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2772,7 +2772,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">reportInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">reportInterval</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">reportRange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">reportRange</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2780,7 +2780,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">reportRange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">reportRange</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -2788,7 +2788,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="cp">#if NBIOT_DEVICE</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2796,7 +2796,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#if NBIOT_DEVICE</span></td>
+      <td class="src "><span class="w">	</span><span class="n">sprintf</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serverIp</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d.%d.%d.%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2804,7 +2804,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">sprintf</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serverIp</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d.%d.%d.%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"></span></td>
+      <td class="src "><span class="w">		</span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2812,7 +2812,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">		</span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverIp</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serverPort</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverPort</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2820,7 +2820,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serverPort</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serverPort</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">sprintf</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">fotaIp</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d.%d.%d.%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2828,7 +2828,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">sprintf</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">fotaIp</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d.%d.%d.%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"></span></td>
+      <td class="src "><span class="w">		</span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2836,7 +2836,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">		</span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaIp</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">fotaPort</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaPort</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2844,7 +2844,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">fotaPort</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaPort</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">fotaInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaInterval</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2852,7 +2852,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">fotaInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">fotaInterval</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serviceCode</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serviceCode</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2860,7 +2860,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serviceCode</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">serviceCode</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serviceCode</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2868,7 +2868,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">serviceCode</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">isModemInit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">isModemInit</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2876,7 +2876,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">isModemInit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">isModemInit</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">flashConfig</span><span class="p">.</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2884,7 +2884,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">flashConfig</span><span class="p">.</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">		</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">dataSkipMode</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2892,7 +2892,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">		</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">dataSkipMode</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2900,7 +2900,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">		</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2908,7 +2908,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">		</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">dataSkipMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2916,7 +2916,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="cp">#endif</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2924,7 +2924,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#endif</span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">sleepMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">sleepMode</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2932,7 +2932,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">sleepMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">sleepMode</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">riCtrlMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">riCtrlMode</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2940,7 +2940,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">riCtrlMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">riCtrlMode</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">periodMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">periodMode</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2948,7 +2948,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">periodMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">periodMode</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">isShortInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">isShortInterval</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2956,7 +2956,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">isShortInterval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">isShortInterval</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">debugPrint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">debugPrint</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2964,7 +2964,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">debugPrint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">debugPrint</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -2972,7 +2972,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">resetCount</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">resetCount</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2980,7 +2980,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">resetCount</span><span class="p">,</span><span class="w"> </span><span class="n">flashConfig</span><span class="p">.</span><span class="n">resetCount</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -2988,7 +2988,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">	</span><span class="c1">// read serial number</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2996,7 +2996,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="c1">// read serial number</span></td>
+      <td class="src "><span class="w">	</span><span class="n">FlashId_t</span><span class="w"> </span><span class="n">flashID</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3004,7 +3004,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">FlashId_t</span><span class="w"> </span><span class="n">flashID</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">readID</span><span class="p">(</span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3012,7 +3012,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">readID</span><span class="p">(</span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3020,7 +3020,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="cp">#if defined(AUX_REPEATER)</span></td>
     </tr>
 
     <tr class="source-line">
@@ -3028,7 +3028,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#if defined(AUX_REPEATER)</span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">pan_id</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">.</span><span class="n">pan_id</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3036,7 +3036,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">pan_id</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">.</span><span class="n">pan_id</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">nwk_addr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">.</span><span class="n">nwk_addr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3044,7 +3044,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">nwk_addr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">.</span><span class="n">nwk_addr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3052,7 +3052,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">zeroPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getFirstZeroPosition</span><span class="p">(</span><span class="n">flashID</span><span class="p">.</span><span class="n">nwk_addr</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3060,7 +3060,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">zeroPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getFirstZeroPosition</span><span class="p">(</span><span class="n">flashID</span><span class="p">.</span><span class="n">nwk_addr</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">uint8</span><span class="w"> </span><span class="n">addr</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3068,7 +3068,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">uint8</span><span class="w"> </span><span class="n">addr</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">.</span><span class="n">nwk_addr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3076,7 +3076,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flashID</span><span class="p">.</span><span class="n">nwk_addr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">addr</span><span class="p">[</span><span class="n">zeroPos</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashID</span><span class="p">.</span><span class="n">slaveId</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3084,7 +3084,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">addr</span><span class="p">[</span><span class="n">zeroPos</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flashID</span><span class="p">.</span><span class="n">slaveId</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">slaveNwk</span><span class="p">,</span><span class="w"> </span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3092,7 +3092,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">slaveNwk</span><span class="p">,</span><span class="w"> </span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">havePushButton</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MISC_findPushButton</span><span class="p">();</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">

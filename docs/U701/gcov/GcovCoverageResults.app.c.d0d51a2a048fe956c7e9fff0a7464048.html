@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2022-02-17 08:57:42</td>
+      <td>2022-02-17 14:46:26</td>
     </tr>
   </table>
 </div>
@@ -875,7 +875,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">	(((x) == DEBUG_OFF)   ? &quot;OFF&quot; :                                                            \</span></td>
+      <td class="src "><span class="cp">	(((x) == DEBUG_OFF) ?                                                                      \</span></td>
     </tr>
 
     <tr class="source-line">
@@ -883,7 +883,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">	 ((x) == DEBUG_JTAG)  ? &quot;JTAG&quot; :                                                           \</span></td>
+      <td class="src "><span class="cp">		 &quot;OFF&quot; :                                                                           \</span></td>
     </tr>
 
     <tr class="source-line">
@@ -891,7 +891,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">	 ((x) == DEBUG_METER) ? &quot;METER&quot; :                                                          \</span></td>
+      <td class="src "><span class="cp">		 ((x) == DEBUG_JTAG) ? &quot;JTAG&quot; : ((x) == DEBUG_METER) ? &quot;METER&quot; : &quot;UNKNOWN&quot;)</span></td>
     </tr>
 
     <tr class="source-line">
@@ -899,7 +899,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">				      &quot;UNKNOWN&quot;)</span></td>
+      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Debug Out  ] %s(%s)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">debugPrint</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;On&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;Off&quot;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -907,7 +907,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Debug Out  ] %s(%s)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">debugPrint</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;On&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;Off&quot;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="w">	       </span><span class="n">DEBUG_STATUS_STR</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">debugPrint</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -915,7 +915,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	       </span><span class="n">DEBUG_STATUS_STR</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">debugPrint</span><span class="p">));</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Dataskip   ] %d, (0:24hour), (1:4day)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">dataSkipMode</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -923,7 +923,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Dataskip   ] %d, (0:24hour), (1:4day)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">dataSkipMode</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="cp">#if defined(AUX_REPEATER)</span></td>
     </tr>
 
     <tr class="source-line">
@@ -931,7 +931,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#if defined(AUX_REPEATER)</span></td>
+      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ PAN ID     ] %04X</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pan_id</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -939,7 +939,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ PAN ID     ] %04X</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pan_id</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -947,7 +947,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">	</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="n">master</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">nwk_addr</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -955,7 +955,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="n">master</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">nwk_addr</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="n">slave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">slaveNwk</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -963,7 +963,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="n">slave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">uint8</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">slaveNwk</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ NWK        ] %d.%d.%d.%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -971,7 +971,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ NWK        ] %d.%d.%d.%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"></span></td>
+      <td class="src "><span class="w">	       </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -979,7 +979,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	       </span><span class="o">*</span><span class="p">(</span><span class="n">master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Slave NWK  ] %d.%d.%d.%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -987,7 +987,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Slave NWK  ] %d.%d.%d.%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"></span></td>
+      <td class="src "><span class="w">	       </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -995,7 +995,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">	       </span><span class="o">*</span><span class="p">(</span><span class="n">slave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span><span class="w"></span></td>
+      <td class="src "><span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot; [ Button     ] %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">conf</span><span class="p">.</span><span class="n">havePushButton</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
