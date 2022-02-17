@@ -81,6 +81,12 @@ flowchart TD
 
 <!-- TOC --><a name="dataskipmode-2022-02-16"></a>
 
+### 강나루 대리 작업 버전 Merge & Test (2022-02-17)
+
+- 변경사항
+  - 보조 중계기 Push 버튼(즉시 검침)
+  - lpm3 검사시 Push Port Setting 변경으로 과전류(40uA), 해당 부분 수정
+
 ### dataSkipMode 추가 (2022-02-16)
 
 수자원 공사의 요청사항으로 검침데이터가 Max(24개)에서 지속적인 통신 실패시 검침데이터를 분할하여  
