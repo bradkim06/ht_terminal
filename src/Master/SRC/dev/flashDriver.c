@@ -341,9 +341,8 @@ void FLASH_readConfigInfo(Config_t *config)
 	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
 	config->serviceCode[4] = 0;
 	config->isModemInit = flashConfig.isModemInit;
-	if (flashConfig.dataSkipMode != 0 || flashConfig.dataSkipMode != 1) {
-		config->dataSkipMode = flashConfig.dataSkipMode;
-	} else {
+	config->dataSkipMode = flashConfig.dataSkipMode;
+	if (config->dataSkipMode > 1) {
 		config->dataSkipMode = 1;
 	}
 #endif

@@ -627,10 +627,10 @@ int MODEM_qaData(uchar *buf)
 	memcpy(&p->model[1], model, p->model[0]);
 
 	// Set firmware version
-	// tddPrint("modem fw ver len : %d\n", strlen(modem.FwVer));
 	p->fwVer[0] = LEN_NBIOT_QA_FW_VER - 1;
-	// deviceVer/modemVer
-	char version[LEN_NBIOT_QA_FW_VER + 1] = "";
+
+	// byte format len(20) : len(1), deviceVer(4), '/'(1), modemVer(14)
+	char version[LEN_NBIOT_QA_FW_VER] = "";
 	snprintf(version, LEN_NBIOT_QA_FW_VER, "%s/%s", FIRMWARE_VER, modem.FwVer);
 	memcpy(&p->fwVer[1], version, p->fwVer[0]);
 
