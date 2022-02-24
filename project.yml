@@ -37,7 +37,7 @@
     - src/Master/SRC/dev/flashDriver.c
     - src/Master/SRC/app/meter.c
     - src/Master/SRC/app/rtcAlarm.c
-    # - src/Master/SRC/app/nfcProtocol.c
+    - src/Master/SRC/app/nfcProtocol.c
   :support:
     - test/support
   :libraries: []
