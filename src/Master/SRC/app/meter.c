@@ -42,8 +42,6 @@
 	} while (0);
 #endif
 
-extern uint8 AppProcess;
-
 // 리셋 직후 또는 자석을 댔을 때 읽어온 데이터 저장 영역
 MeterTempData_t TempMeterData;
 
