@@ -64,7 +64,7 @@ MEMORY
     INFOD                   : origin = 0x1800, length = 0x0080
     FLASHA                  : origin = 0x5C00, length = 0xA380
     FLASHB                  : origin = 0x10000,length = 0x10000
-    FLASHC                  : origin = 0x20000,length = 0x5000
+    FLASHC                  : origin = 0x20000,length = 0x3300
     INT00                   : origin = 0xFF80, length = 0x0002
     INT01                   : origin = 0xFF82, length = 0x0002
     INT02                   : origin = 0xFF84, length = 0x0002
@@ -146,7 +146,7 @@ SECTIONS
 #ifndef __LARGE_CODE_MODEL__
     .text       : {} > FLASHA                /* Code                              */
 #else
-    .text       : {} >> FLASHB | FLASHA      /* Code                              */
+    .text       : {} >> FLASHC | FLASHB | FLASHA      /* Code                              */
 #endif
     .text:_isr  : {} > FLASHA                /* ISR Code space                    */
     .cinit      : {} > FLASHA                /* Initialization tables             */
