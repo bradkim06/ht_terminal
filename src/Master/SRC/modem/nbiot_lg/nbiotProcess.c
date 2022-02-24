@@ -241,10 +241,6 @@ static void setModemData()
  */
 static void sendAtCommand(uint32 timeout, int retry, AtCmd_t *atCmd, char *param, ...)
 {
-	ASSERT_PRINT(!(modemCtx.status.busy), "BUSY flag is not released \n");
-	ASSERT_PRINT((atCmd->cmd != NULL && strstr(atCmd->cmd, "AT") != NULL),
-		     "AT Command string is NULL\n");
-
 	if (retry >= 0) {
 		snprintf(modemComm.atData, LEN_MAX_AT_DATA, "%s", atCmd->cmd);
 
@@ -254,7 +250,6 @@ static void sendAtCommand(uint32 timeout, int retry, AtCmd_t *atCmd, char *param
 			int paramLen =
 				vsnprintf((modemComm.atData + strlen(atCmd->cmd)),
 					  (LEN_MAX_AT_DATA - strlen(atCmd->cmd)), param, arg);
-			ASSERT_PRINT((paramLen > 0), "Formatting parameter converting fail\n");
 			va_end(arg);
 		}
 
@@ -280,9 +275,6 @@ static void sendAtCommand(uint32 timeout, int retry, AtCmd_t *atCmd, char *param
  */
 static void sendNoRespAtCommand(uint32 delay, AtCmd_t *atCmd, char *param, ...)
 {
-	ASSERT_PRINT((atCmd->cmd != NULL && strstr(atCmd->cmd, "AT") != NULL),
-		     "AT Command string is NULL\n");
-
 	snprintf(modemComm.atData, LEN_MAX_AT_DATA, "%s", atCmd->cmd);
 
 	if (param != NULL) {
@@ -290,7 +282,6 @@ static void sendNoRespAtCommand(uint32 delay, AtCmd_t *atCmd, char *param, ...)
 		va_start(arg, param);
 		int paramLen = vsnprintf((modemComm.atData + strlen(atCmd->cmd)),
 					 (LEN_MAX_AT_DATA - strlen(atCmd->cmd)), param, arg);
-		ASSERT_PRINT((paramLen > 0), "Formatting parameter converting fail\n");
 		va_end(arg);
 	}
 
@@ -393,8 +384,6 @@ static char *getMeterDataMessage(BOOL isJoin, int *messageLen)
  */
 static ModemStep_t idle()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_IDLE, "step is invalid \n");
-
 	ModemStep_t nextStep =
 		modemCtx.step; // step 종료 전 까지 현재 step을 next step 으로 return.
 	modemCtx.errCode = MODEM_ERROR_NONE;
@@ -456,8 +445,6 @@ static ModemStep_t idle()
  */
 static ModemStep_t bip()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_BIP, "step is invalid \n");
-
 	ModemStep_t nextStep =
 		modemCtx.step; // step 종료 전 까지 현재 step을 next step 으로 return.
 	modemCtx.errCode = MODEM_ERROR_USIM_INVALID;
@@ -519,8 +506,6 @@ static ModemStep_t bip()
  */
 static ModemStep_t init()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_INIT, "step is invalid \n");
-
 	ModemStep_t nextStep =
 		modemCtx.step; // step 종료 전 까지 현재 step을 next step 으로 return.
 	modemCtx.errCode = MODEM_ERROR_AT_CMD_NO_RESP;
@@ -673,8 +658,6 @@ static ModemStep_t init()
  */
 static ModemStep_t attachNw()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_ATTACH_NW, "step is invalid \n");
-
 	// step 종료 전 까지 현재 step을 next step 으로 return.
 	ModemStep_t nextStep = modemCtx.step;
 	modemCtx.errCode = MODEM_ERROR_AT_CMD_NO_RESP;
@@ -760,8 +743,6 @@ static ModemStep_t attachNw()
  */
 static ModemStep_t updateQa()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_UPDATE_QA, "step is invalid \n");
-
 	ModemStep_t nextStep =
 		modemCtx.step; // step 종료 전 까지 현재 step을 next step 으로 return.
 	modemCtx.errCode = MODEM_ERROR_AT_CMD_NO_RESP;
@@ -851,7 +832,6 @@ static ModemStep_t updateQa()
  */
 static ModemStep_t transfer()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_TRANSFER, "step is invalid \n");
 	static uint16 transfer_count = 0;
 
 	ModemStep_t nextStep =
@@ -937,8 +917,6 @@ static ModemStep_t transfer()
  */
 static ModemStep_t certify()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_CERTIFY, "step is invalid \n");
-
 	ModemStep_t nextStep = modemCtx.step;
 	modemCtx.errCode = MODEM_ERROR_PF_CERITY_FAIL;
 
@@ -1024,8 +1002,6 @@ static ModemStep_t certify()
  */
 static ModemStep_t fota()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_FOTA, "step is invalid \n");
-
 	ModemStep_t nextStep = modemCtx.step;
 	modemCtx.errCode = MODEM_ERROR_PF_FOTA_FAIL;
 
@@ -1162,8 +1138,6 @@ static ModemStep_t fota()
  */
 static ModemStep_t detachNw()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_DETACH_NW, "step is invalid \n");
-
 	ModemStep_t nextStep = modemCtx.step;
 	modemCtx.errCode = MODEM_ERROR_AT_CMD_NO_RESP;
 
@@ -1214,11 +1188,6 @@ static ModemStep_t detachNw()
  */
 static ModemStep_t retry()
 {
-	ASSERT_PRINT(modemCtx.step == MODEM_STEP_RETRY, "step is invalid \n");
-	ASSERT_PRINT(modemCtx.retryCount > 0, "retry count is not increased \n");
-	ASSERT_PRINT(modemCtx.retryStep != MODEM_STEP_UNKNOWN, "MODEM retry step is not set \n");
-	ASSERT_PRINT(modemCtx.retryStep != MODEM_STEP_IDLE, "MODEM retry step is initialized \n");
-
 	// step 종료 전 까지 현재 step을 next step 으로 return.
 	ModemStep_t nextStep = modemCtx.step;
 	modemCtx.errCode = MODEM_ERROR_AT_CMD_NO_RESP;
@@ -1362,7 +1331,6 @@ BOOL MODEM_process()
 		return FALSE;
 	}
 
-	ASSERT_PRINT(nextStep != MODEM_STEP_UNKNOWN, "next step is not set when step finish");
 	// 동작 중간에 stop된 경우를 고려.
 	if (modemCtx.step != nextStep && !modemCtx.status.stop) {
 #if defined(DEBUG)

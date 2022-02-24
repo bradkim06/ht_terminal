@@ -90,7 +90,6 @@ int MISC_getDeviceType()
 #endif
 }
 
-#pragma optimize = none
 void MISC_delayUs(uint32 timeout)
 {
 	// This sequence uses exactly 8 clock cycle for each round (1 micro sec)
@@ -102,7 +101,6 @@ void MISC_delayUs(uint32 timeout)
 	} while (--timeout);
 } // MISC_delayUs
 
-#pragma optimize = none
 void MISC_delayMs(uint32 timeout)
 {
 	unsigned int i;

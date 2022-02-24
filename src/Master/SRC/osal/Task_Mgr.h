@@ -22,4 +22,5 @@ extern event32_t *TasksEvents;
 void TASKMGR_init(void);
 void TASKMGR_run(void);
 
-#endif // _TASK_MGR_H_
+// _TASK_MGR_H_
+#endif

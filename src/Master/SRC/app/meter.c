@@ -50,8 +50,7 @@ MeterTempData_t TempMeterData;
 //주기 검침 데이터 저장 영역
 MeterStoredData_t StoredMeterData;
 
-#pragma inline
-void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
+inline void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
 {
 	if (RTC_isValidDate(pDate)) {
 		// Data의 year는 RTC의 year에서 2000을 빼서 사용
@@ -65,8 +64,7 @@ void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
 	}
 }
 
-#pragma inline
-void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
+inline void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
 {
 	// RTC의 year는 Data의 year에서 2000을 더해야 함.
 	pDate->year = pData->year + 2000;

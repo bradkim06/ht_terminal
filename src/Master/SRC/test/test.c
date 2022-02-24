@@ -592,7 +592,7 @@ void TEST_lpm2()
 
 	device_sleep_state = FALSE;
 	GLOBAL_DISABLE_INT();
-	SET_ACTIVE_OFF_LPM(TRUE);
+	__bis_SR_register(POWER_ACTIVE_OFF + GIE);
 
 	while (1)
 		;

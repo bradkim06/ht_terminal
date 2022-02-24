@@ -31,10 +31,10 @@
 #endif
 
 #define ALARM_TYPE_STR(x)                                                                          \
-	(((x) == RTC_ALARM_METERING) ? "metering" :                                                \
-				       ((x) == RTC_ALARM_REPORT) ?                                 \
-				       "report" :                                                  \
-				       ((x) == RTC_ALARM_METER_SAVE) ? "meter save" : "unknown")
+	(((x) == RTC_ALARM_METERING)   ? "metering" :                                              \
+	 ((x) == RTC_ALARM_REPORT)     ? "report" :                                                \
+	 ((x) == RTC_ALARM_METER_SAVE) ? "meter save" :                                            \
+					       "unknown")
 
 static int TimeSyncFlag = 0;
 static Date_t TimeSyncDate;
@@ -54,12 +54,12 @@ static void setDefaultRTC(Date_t *date)
 
 void RTC_read(Date_t *date)
 {
-	date->year = GetRTCYEAR();
-	date->mon = GetRTCMON();
-	date->day = GetRTCDAY();
-	date->hour = GetRTCHOUR();
-	date->min = GetRTCMIN();
-	date->sec = GetRTCSEC();
+	date->year = RTCYEAR;
+	date->mon = RTCMON;
+	date->day = RTCDAY;
+	date->hour = RTCHOUR;
+	date->min = RTCMIN;
+	date->sec = RTCSEC;
 }
 
 void RTC_set(Date_t date)
@@ -68,12 +68,12 @@ void RTC_set(Date_t date)
 		RTCCTL01 |= RTCMODE;
 		RTCCTL01 &= ~(RTCHOLD);
 
-		SetRTCYEAR(date.year);
-		SetRTCMON(date.mon);
-		SetRTCDAY(date.day);
-		SetRTCHOUR(date.hour);
-		SetRTCMIN(date.min);
-		SetRTCSEC(date.sec);
+		RTCYEAR = date.year;
+		RTCMON = date.mon;
+		RTCDAY = date.day;
+		RTCHOUR = date.hour;
+		RTCMIN = date.min;
+		RTCSEC = date.sec;
 	}
 }
 

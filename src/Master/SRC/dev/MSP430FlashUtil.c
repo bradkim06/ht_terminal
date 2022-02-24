@@ -1,5 +1,3 @@
-
-
 #include <msp430.h>
 #include "check_meter_misc.h"
 #include "uart.h"
@@ -26,8 +24,7 @@
 STATIC void initFlash(void);
 STATIC void doneFlash(void);
 
-#pragma inline
-STATIC BOOL isBusyFlash(uint32 timeoutUsec)
+inline STATIC BOOL isBusyFlash(uint32 timeoutUsec)
 {
 	if (FCTL3 & BUSY) {
 		MISC_delayUs(timeoutUsec);

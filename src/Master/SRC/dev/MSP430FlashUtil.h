@@ -6,3 +6,4 @@ BOOL MSP430FLASH_read(unsigned char *addr, unsigned char *value, unsigned short 
 BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf, unsigned short len);
 
 #endif
+
