@@ -19,7 +19,7 @@ flowchart TD
     1[기능 변경, 설계사항 README 작성] --> 2;
     2[Test Code 설계 및 작성] --> 3;
     3[실제 기능 Code 작성] --> 4;
-    4[Test Result, Log 결과 분석] --> |Fail| 1
+    4[Test Result, Log 결과 분석] --> |Fail| 2
     4 --> |Success| 5[End]
 ```
 
@@ -47,6 +47,27 @@ flowchart TD
 - [단말기 체크리스트](docs/테스트_체크리스트.xlsx) path:docs/테스트\_체크리스트
 
 # 단말기 변경 이력
+
+### IAR to CCS 변경 (2022-02-24)
+
+#### 변경 사유
+
+- Jtag Debug 기능 사용
+- CCS는 무료버전으로 최신 업데이트 배포
+
+#### 변경 사항
+
+- IAR 종속적인 코드 변경
+  - #pragma inline  
+    → pragma func()
+  - #pragma optimize = none  
+    → 어차피 optimize 기능 끔
+  - dataFlash.c 기능으로 변경된 linker정보 파일  
+    → 변경이 필요없을듯 보이지만 정보를 위해 lnk.cmd FLASHC = length(0x5000) → 0x5C00 으로 변경
+  - RTCASMFunctions_IAR.s43파일 제거  
+    → RTC read, set 모두 asm → c언어로 변경
+  - md5, uuid 파일 library  
+    → source file 변경
 
 ## U701 Release (2022-02-18)
 
