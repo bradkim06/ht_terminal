@@ -28,8 +28,7 @@ flowchart TD
 #### Main
 
 - [ ] Flash Read시 쓰레기 데이터가 들어오는지 확인, 초기화하는 기능 추가 필요
-- [ ] 유선 펌웨어 업그레이드 기능 확인
-- [ ] OTA, RCT 측정시 QREGSWT = 2 필요 (?)
+- [x] 유선 펌웨어 업그레이드 기능 확인
 
 - [x] AT+QLWULDATAEX 기능 추가, 테스트
 - [x] 수자원 공사 보고주기 분할(최대 4일치) on/off 옵션 처리
@@ -47,6 +46,48 @@ flowchart TD
 - [단말기 체크리스트](docs/테스트_체크리스트.xlsx) path:docs/테스트\_체크리스트
 
 # 단말기 변경 이력
+
+### BSL 기능 수정, 테스트 (2022-03-02)
+
+펌웨어 쓰기는 정상 작동했으나 Set PC가 main()으로 jump하지 않아 자동으로 재실행되지 않는 문제 수정.  
+Set PC는 bsl-scripter가 자동으로 FLASH 메모리의 첫번째 주소로 생성하는것으로 보이므로 main()함수를 FLASH 첫번째에 위치하도록 함.
+
+- 수정사항
+
+```c
+file main.c
+
+// main 메모리 section 생성.
+#pragma CODE_SECTION(main, "MAIN")
+main(){
+...
+}
+```
+
+```
+file lnk_msp430f5419a.cmd
+
+// MAIN 메모리 section을 FLASH 첫번째 주소에 강제 지정.
+FLASHA : origin = 0x5C00, length = 0x0100
+```
+
+#### BSL 파일구조
+
+| 파일명                             | 기능                             | Detail                                    |
+| ---------------------------------- | -------------------------------- | ----------------------------------------- |
+| bsl-scripter-windows.exe           | bsl script 생성 파일             | ti-txt 파일을 읽어 script 파일을 생성한다 |
+| BSL_Download.exe                   | bsl script load & run            | script 파일을 읽어 bsl 과정을 진행        |
+| \*.txt 예) U326.txt                | ti-txt 형식의 binary             | msp430에서 실행될 binary 파일             |
+| script\_\*.txt 예) script_U326.txt | BSL_Download.exe가 실행할 script | bsl-scripter에 의해 매번 자동 생성된다    |
+
+```mermaid
+flowchart TD
+    1[BSL_Download.exe U326.txt COM5] --> 2[bsl-scripter create script_U326.txt]
+    2 --> 3[BSL_Download read RX_PASSWORD]
+    3 --> |password Wrong| 4[Erase Mass Memory] -->5
+    3 --> |password Correct| 5[Write New Firmware]
+    5 --> 6[Set PC first Flash memory location]
+```
 
 ### IAR to CCS 변경 (2022-02-24)
 
