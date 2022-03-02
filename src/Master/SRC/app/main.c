@@ -163,12 +163,12 @@ void initPort()
 		PORT_SENSOR_IFG &= ~BM(PORT_SENSOR_REED); // IFG cleared
 
 #if defined(AUX_REPEATER)
-        if(MISC_findPushButton()) {
-            PORT1_DIR &= ~BM(PORT_LCD_SWITCH);     // Set to Input
-            PORT1_IE  |=  BM(PORT_LCD_SWITCH);     // Interrupt enabled
-            PORT1_IES |=  BM(PORT_LCD_SWITCH);     // Hi/Low edge
-            PORT1_IFG &= ~BM(PORT_LCD_SWITCH);     // IFG cleared
-        }
+		if (MISC_findPushButton()) {
+			PORT1_DIR &= ~BM(PORT_LCD_SWITCH); // Set to Input
+			PORT1_IE |= BM(PORT_LCD_SWITCH); // Interrupt enabled
+			PORT1_IES |= BM(PORT_LCD_SWITCH); // Hi/Low edge
+			PORT1_IFG &= ~BM(PORT_LCD_SWITCH); // IFG cleared
+		}
 #endif
 	}
 
@@ -209,6 +209,7 @@ void initSystem()
 	}
 }
 
+#pragma CODE_SECTION(main, "MAIN")
 main()
 {
 	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer

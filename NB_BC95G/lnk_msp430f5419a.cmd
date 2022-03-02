@@ -62,9 +62,10 @@ MEMORY
     INFOB                   : origin = 0x1900, length = 0x0080
     INFOC                   : origin = 0x1880, length = 0x0080
     INFOD                   : origin = 0x1800, length = 0x0080
-    FLASHA                  : origin = 0x5C00, length = 0xA380
-    FLASHB                  : origin = 0x10000,length = 0x10000
-    FLASHC                  : origin = 0x20000,length = 0x3300
+    FLASHA					: origin = 0x5C00, length = 0x0100
+    FLASHB                  : origin = 0x5D00, length = 0xA280
+    FLASHC                  : origin = 0x10000,length = 0x10000
+    FLASHD                  : origin = 0x20000,length = 0x3300
     INT00                   : origin = 0xFF80, length = 0x0002
     INT01                   : origin = 0xFF82, length = 0x0002
     INT02                   : origin = 0xFF84, length = 0x0002
@@ -142,32 +143,33 @@ SECTIONS
     .TI.noinit  : {} > RAM                  /* For #pragma noinit                */
     .sysmem     : {} > RAM                  /* Dynamic memory allocation area    */
     .stack      : {} > RAM (HIGH)           /* Software system stack             */
+    MAIN		: {} > FLASHA
 
 #ifndef __LARGE_CODE_MODEL__
-    .text       : {} > FLASHA                /* Code                              */
+    .text       : {} > FLASHB                /* Code                              */
 #else
-    .text       : {} >> FLASHB | FLASHA      /* Code                              */
+    .text       : {} >> FLASHC | FLASHB      /* Code                              */
 #endif
-    .text:_isr  : {} > FLASHA                /* ISR Code space                    */
-    .cinit      : {} > FLASHA                /* Initialization tables             */
+    .text:_isr  : {} > FLASHB                /* ISR Code space                    */
+    .cinit      : {} > FLASHB                /* Initialization tables             */
 #ifndef __LARGE_DATA_MODEL__
-    .const      : {} > FLASHA                /* Constant data                     */
+    .const      : {} > FLASHB                /* Constant data                     */
 #else
-    .const      : {} >> FLASHA | FLASHB      /* Constant data                     */
+    .const      : {} >> FLASHB | FLASHC      /* Constant data                     */
 #endif
     .cio        : {} > RAM                  /* C I/O Buffer                      */
 
-    .pinit      : {} > FLASHA                /* C++ Constructor tables            */
-    .binit      : {} > FLASHA                /* Boot-time Initialization tables   */
-    .init_array : {} > FLASHA                /* C++ Constructor tables            */
-    .mspabi.exidx : {} > FLASHA              /* C++ Constructor tables            */
-    .mspabi.extab : {} > FLASHA              /* C++ Constructor tables            */
+    .pinit      : {} > FLASHB                /* C++ Constructor tables            */
+    .binit      : {} > FLASHB                /* Boot-time Initialization tables   */
+    .init_array : {} > FLASHB                /* C++ Constructor tables            */
+    .mspabi.exidx : {} > FLASHB              /* C++ Constructor tables            */
+    .mspabi.extab : {} > FLASHB              /* C++ Constructor tables            */
 #ifdef __TI_COMPILER_VERSION__
   #if __TI_COMPILER_VERSION__ >= 15009000
     #ifndef __LARGE_CODE_MODEL__
-    .TI.ramfunc : {} load=FLASHA, run=RAM, table(BINIT)
+    .TI.ramfunc : {} load=FLASHB, run=RAM, table(BINIT)
     #else
-    .TI.ramfunc : {} load=FLASHA | FLASHB, run=RAM, table(BINIT)
+    .TI.ramfunc : {} load=FLASHB | FLASHC, run=RAM, table(BINIT)
     #endif
   #endif
 #endif

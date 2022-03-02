@@ -87,8 +87,9 @@ void jumpToBSL()
 	printf("start BSL ...\n");
 	LCD_displayString("Call BSL");
 
+	MISC_delayMs(100);
+
 	// disable meter t/rx port
-	extern void set_meterPortForBSL();
 	set_meterPortForBSL();
 
 	TIMER_stop();
@@ -103,8 +104,6 @@ void jumpToBSL()
 
 	// jump to BSL address
 	((void (*)())0x1000)(); // jump to BSL
-
-	printf("BSL started\n");
 }
 
 #endif

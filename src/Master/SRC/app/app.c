@@ -90,14 +90,16 @@ void APP_showConfig(Config_t *p)
 	printf(" [ Operating  ] %s\n", p->sleepMode ? "Sleep" : "Active");
 	uint8 batt = BATT_getLastVoltage();
 	printf(" [ Battery    ] %d.%dV\n", batt / 10, batt % 10);
+	printf(" [ BSL Model  ] %d\n", p->bslModel);
 	printf(" [ Reset Count] %d times\n", p->resetCount);
 #define DEBUG_OFF 0
 #define DEBUG_JTAG 1
 #define DEBUG_METER 2
 #define DEBUG_STATUS_STR(x)                                                                        \
-	(((x) == DEBUG_OFF) ?                                                                      \
-		 "OFF" :                                                                           \
-		 ((x) == DEBUG_JTAG) ? "JTAG" : ((x) == DEBUG_METER) ? "METER" : "UNKNOWN")
+	(((x) == DEBUG_OFF)   ? "OFF" :                                                            \
+	 ((x) == DEBUG_JTAG)  ? "JTAG" :                                                           \
+	 ((x) == DEBUG_METER) ? "METER" :                                                          \
+				      "UNKNOWN")
 	printf(" [ Debug Out  ] %s(%s)\n", p->debugPrint ? "On" : "Off",
 	       DEBUG_STATUS_STR(p->debugPrint));
 	printf(" [ Dataskip   ] %d, (0:24hour), (1:4day)\n", p->dataSkipMode);
