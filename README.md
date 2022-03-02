@@ -50,6 +50,10 @@ flowchart TD
 
 ### IAR to CCS 변경 (2022-02-24)
 
+NB Platform 단말, 보조중계기 프로젝트 생성
+
+- [x] Test ok
+
 #### 변경 사유
 
 - Jtag Debug 기능 사용
@@ -62,8 +66,8 @@ flowchart TD
     → pragma func()
   - #pragma optimize = none  
     → 어차피 optimize 기능 끔
-  - dataFlash.c 기능으로 변경된 linker정보 파일  
-    → 변경이 필요없을듯 보이지만 정보를 위해 lnk.cmd FLASHC = length(0x5000) → 0x5C00 으로 변경
+  - dataFlash.c 기능으로 변경된 linker정보변경 적용
+    → FLASHC = length(0x5000) → 0x2330 으로 변경
   - RTCASMFunctions_IAR.s43파일 제거  
     → RTC read, set 모두 asm → c언어로 변경
   - md5, uuid 파일 library  
