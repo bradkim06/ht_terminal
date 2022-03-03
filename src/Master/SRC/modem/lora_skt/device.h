@@ -10,7 +10,7 @@
 #define FW_VER_MAIN "1"
 #endif
 
-#define FIRMWARE_VER "L" FW_VER_MAIN "28"
+#define FIRMWARE_VER "L" FW_VER_MAIN "29"
 #define FIRMWARE_VER_LEN 4
 
 // LoRa 단말의 LCD는 UART를 통해 접속됨 (경우에 따라 GPIO로 동작할 수 있음.)

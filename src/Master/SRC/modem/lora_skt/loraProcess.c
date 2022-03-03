@@ -188,7 +188,6 @@ static BOOL dataTransfer()
 
 		int bufSize = (len * 2) + 1;
 		char *buf = (char *)malloc(bufSize); // '1' is end line
-		ASSERT_PRINT(buf != 0, "LORA DATA BUF ALLOC FAIL\n");
 		memset(buf, 0, bufSize);
 
 		for (int i = 0; i < len; i++) {
