@@ -33,21 +33,25 @@
     - +:test/**
     - -:test/support
   :source:
-    - src/Master/SRC/modem/nbiot_lg/nbiotResponse.c
-    - src/Master/SRC/dev/flashDriver.c
-    - src/Master/SRC/app/meter.c
-    - src/Master/SRC/app/rtcAlarm.c
-    - src/Master/SRC/app/nfcProtocol.c
+    - src/Master/SRC**
+    # - src/Master/SRC/modem/nbiot_lg/nbiotResponse.c
+    # - src/Master/SRC/dev/flashDriver.c
+    # - src/Master/SRC/app/meter.c
+    # - src/Master/SRC/app/rtcAlarm.c
+    # - src/Master/SRC/app/nfcProtocol.c
   :support:
     - test/support
   :libraries: []
   :include:
-    - src/Master/SRC/modem/nbiot_lg/**
-    - src/Master/SRC/app/**
-    - src/Master/SRC/dev/**
-    - src/Master/SRC/test/**
-    - src/Master/SRC/misc/**
-    - src/Master/SRC/osal/**
+    - src/Master/SRC/**
+    # - /Applications/ti/ccs1110/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/include/
+    - /Applications/ti/ccs1110/ccs/ccs_base/msp430/include/msp430.h
+    # - src/Master/SRC/modem/nbiot_lg/**
+    # - src/Master/SRC/app/**
+    # - src/Master/SRC/dev/**
+    # - src/Master/SRC/test/**
+    # - src/Master/SRC/misc/**
+    # - src/Master/SRC/osal/**
 
 :defines:
   # in order to add common defines:
@@ -55,9 +59,11 @@
   #  2) add entries to the :common: section (e.g. :test: has TEST defined)
   :common: &common_defines
     - TDD_TEST
+    - __MSP430F5419A__
     - NBIOT_MODEM_BC95G
     - NBIOT_LG_TYPE
     - NBIOT_DEVICE
+    - NDEBUG
   :test:
     - *common_defines
     - TEST
