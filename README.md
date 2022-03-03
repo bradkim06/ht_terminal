@@ -28,7 +28,12 @@ flowchart TD
 #### Main
 
 - [ ] Flash Read시 쓰레기 데이터가 들어오는지 확인, 초기화하는 기능 추가 필요
+- [ ] 최종버전(U325) 현장 불량 검토 --> 신규 불량이 존재하는지?
+
 - [x] 유선 펌웨어 업그레이드 기능 확인
+
+  - [x] NB-IoT (UDP, P/F)
+  - [x] LoRa SKT
 
 - [x] AT+QLWULDATAEX 기능 추가, 테스트
 - [x] 수자원 공사 보고주기 분할(최대 4일치) on/off 옵션 처리
@@ -46,6 +51,14 @@ flowchart TD
 - [단말기 체크리스트](docs/테스트_체크리스트.xlsx) path:docs/테스트\_체크리스트
 
 # 단말기 변경 이력
+
+### LoRa SKT F/W 유선 업그레이드 Test (2022-03-03)
+
+- [x] Test Ok
+
+#### dataSkipMode LoRa 구조체에도 추가
+
+### LoRa SKT Project 생성 (2022-03-03)
 
 ### BSL 기능 수정, 테스트 (2022-03-02)
 
