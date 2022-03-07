@@ -35,7 +35,7 @@
 #define LEN_MODEM_FW_VER 14
 
 #define LEN_MAX_AT_DATA MODEM_TX_BUF_LEN
-#define LEN_MAX_DL_DATA 0x20
+#define LEN_MAX_DL_DATA 0x100
 
 // MCC in IMSI
 #define IMSI_MCC_KOREA "450"
