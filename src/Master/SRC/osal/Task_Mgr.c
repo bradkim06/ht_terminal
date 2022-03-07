@@ -93,6 +93,7 @@ void TASKMGR_run(void)
 				}
 
 				if (taskIdx >= TotalTasksCnt) {
+					// RTC Alarm이 설정되지 않는 버그 발견. prepareToSleep() 두번 실행.
 					APP_prepareToSleep();
 					printf("--sleep--\n\n");
 					MISC_delayMs(100);
