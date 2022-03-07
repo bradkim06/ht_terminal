@@ -1,13 +1,11 @@
 #ifndef __MESSAGE_H__
 #define __MESSAGE_H__
 
-#if 0
-#define PROTOCOL_VERSION 0xA1
-#else
+#include "common_header.h"
+
 #define PROTOCOL_VERSION_A1 0xA1
 #define PROTOCOL_VERSION_A2 0xA2
 #define PROTOCOL_VERSION_A3 0xA3
-#endif
 
 #if 0
 #define NBIOT_JOIN 0x30
