@@ -93,7 +93,6 @@ void TASKMGR_run(void)
 				}
 
 				if (taskIdx >= TotalTasksCnt) {
-					WDTCTL = WDTPW | WDTHOLD; //Stop watchdog timer
 					APP_prepareToSleep();
 					printf("--sleep--\n\n");
 					MISC_delayMs(100);
