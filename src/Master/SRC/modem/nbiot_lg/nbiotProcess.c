@@ -73,7 +73,7 @@ ModemComm_t modemComm;
 ModemContext_t modemCtx;
 
 uchar raw_data[LEN_MAX_NBIOT_DATA];
-char ul_data[600];
+char ul_data[LEN_MAX_AT_DATA + 1];
 
 typedef struct {
 	uint8 idle;
@@ -305,6 +305,7 @@ static void sendNoRespAtCommand(uint32 delay, AtCmd_t *atCmd, char *param, ...)
 static char *getQaReportMessage(int *messageLen)
 {
 	memset(raw_data, 0, sizeof(raw_data));
+	// len 58
 	int len = MODEM_qaData(raw_data);
 
 	// Hex data를 ASCII로 변환하여 저장할 버퍼의 길이이므로
@@ -330,6 +331,7 @@ static char *getQaReportMessage(int *messageLen)
 static char *getErrorReportMessage(int *messageLen)
 {
 	memset(raw_data, 0, sizeof(raw_data));
+	// len 35
 	int len = MODEM_errData(raw_data, modemCtx.pfUlCnt, modemCtx.pfDlCnt, modemCtx.ulCnt,
 				modemCtx.dlCnt);
 
