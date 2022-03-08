@@ -12,7 +12,7 @@
 #include "NFC_i2c.h"
 #include "test.h"
 
-// #define DATA_FLASH_TEST
+#define DATA_FLASH_TEST
 
 #if defined(DATA_FLASH_TEST)
 Date_t testDate;

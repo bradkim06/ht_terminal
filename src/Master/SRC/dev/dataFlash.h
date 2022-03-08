@@ -1,6 +1,8 @@
 #ifndef __DATA_FLASH_H__
 #define __DATA_FLASH_H__
 
+#include "common_header.h"
+
 #define DATA_FLASH_TOP_ADDR 0x23400 // 10KB(0x23400 ~ 0x25BFF)
 
 #define SECTOR_SIZE 512
