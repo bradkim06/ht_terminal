@@ -19,11 +19,7 @@ typedef struct {
 	expect_t expect;
 } storeInput_t;
 
-#if LORA_DEVICE
-int nMaxData = NUM_LORA_STORED_DATA;
-#else // NBIOT_DEVICE
 int nMaxData = NUM_NBIOT_STORED_DATA;
-#endif
 
 static storeInput_t storeInput[20] = {
 	{

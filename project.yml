@@ -43,7 +43,13 @@
     - test/support
   :libraries: []
   :include:
-    - src/Master/SRC/**
+    - src/Master/SRC/app
+    - src/Master/SRC/dev
+    - src/Master/SRC/misc
+    - src/Master/SRC/test
+    - src/Master/SRC/osal
+    - src/Master/SRC/modem/nbiot_lg
+    - src/Master/SRC/modem/nbiot_lg/uuid
     # - /Applications/ti/ccs1110/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/include/
     - /Applications/ti/ccs1110/ccs/ccs_base/msp430/include/msp430.h
     # - src/Master/SRC/modem/nbiot_lg/**
@@ -62,7 +68,7 @@
     - __MSP430F5419A__
     - NBIOT_MODEM_BC95G
     - NBIOT_LG_TYPE
-    - NBIOT_DEVICE
+    # - NBIOT_DEVICE
     - NDEBUG
   :test:
     - *common_defines
@@ -88,8 +94,8 @@
 
 :plugins:
   :enabled:
-    # - stdout_gtestlike_tests_report
-    - stdout_pretty_tests_report
+    - stdout_gtestlike_tests_report
+    # - stdout_pretty_tests_report
     - warnings_report
     - raw_output_report
     - module_generator
