@@ -43,7 +43,7 @@ inputData_t inputData[2] = {
 		      .rsrp = { 0x00, 0x95 },
 		      .sinr = { 0x00, 0x12 },
 		      .model = { 8, 'H', 'A', 'T', '-', '1', '2', '4', 'W' },
-		      .fwVer = { 19,  'U', '3', '2', '5', '/', 'B', 'C', '9', '5',
+		      .fwVer = { 19,  ' ', ' ', ' ', ' ', '/', 'B', 'C', '9', '5',
 				 'G', 'J', 'B', 'R', '0', '2', 'A', '0', '2', '_' },
 		      .txPower = { 0x01, 0x12 },
 		      .ueInfo = 0x42,
@@ -61,7 +61,7 @@ inputData_t inputData[2] = {
 		      .rsrp = { 0x01, 0x12 },
 		      .sinr = { 0x01, 0x05 },
 		      .model = { 8, 'H', 'A', 'T', '-', '4', '3', '5', 'W' },
-		      .fwVer = { 19, 'U', '3', '2', '5', '/', 'B', 'C', '9', '5', 'G', 'J', 'B',
+		      .fwVer = { 19, ' ', ' ', ' ', ' ', '/', 'B', 'C', '9', '5', 'G', 'J', 'B',
 				 'R' },
 		      .txPower = { 0x00, 0x05 },
 		      .ueInfo = 0x43,
@@ -85,8 +85,16 @@ Config_t conf;
 Modem_t modem;
 ModemContext_t modemCtx;
 
+static void getTestFWVer()
+{
+	for (int i = 0; i < sizeof(inputData) / sizeof(inputData_t); i++) {
+		memcpy(&inputData[i].expect.fwVer[1], FIRMWARE_VER, FIRMWARE_VER_LEN);
+	}
+}
+
 void setUp(void)
 {
+	getTestFWVer();
 }
 
 void tearDown(void)
@@ -111,8 +119,8 @@ static void testFunction_str(uchar *p, char *name, uchar *input, int size)
 
 	sprintf(msg, "%s len : %d ", name, *p);
 	for (int i = 0; i < size; i++) {
-		TEST_ASSERT_EQUAL_CHAR_MESSAGE(*(input + i), *(p + i), msg);
 		if (i > 0) {
+			TEST_ASSERT_EQUAL_CHAR_MESSAGE(*(input + i), *(p + i), msg);
 			snprintf(msg, sizeof(msg), "%s%c", msg, *(p + i));
 		}
 	}

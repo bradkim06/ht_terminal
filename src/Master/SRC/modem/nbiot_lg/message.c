@@ -643,7 +643,7 @@ int MODEM_qaData(uchar *buf)
 
 	// UE INFO BAND5(LTE), 고정형
 #define UE_INFO_BC95G 0x42
-	p->ueInfo = (UE_INFO_BC95G + (modemCtx.proc.initialReport & 0x01));
+	p->ueInfo = UE_INFO_BC95G + modemCtx.proc.initialReport;
 
 	// PORT INFO 사용안함 PASS
 
