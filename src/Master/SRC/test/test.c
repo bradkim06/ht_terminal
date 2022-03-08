@@ -997,7 +997,6 @@ void TEST_runTasks()
 {
 	uint8 idx = 0;
 
-	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 
 	for (int i = 0; i < (testTasksCnt + 1); i++) {
@@ -1036,7 +1035,6 @@ void TEST_runTasks()
 
 void TEST_run()
 {
-	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 	PRINT_enable();
 

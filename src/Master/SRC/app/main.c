@@ -212,7 +212,6 @@ void initSystem()
 #pragma CODE_SECTION(main, "MAIN")
 int main()
 {
-	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_VRST_3SEC; // Start watchdog timer(3.2768 sec)
 	initSystem();
 
@@ -220,7 +219,6 @@ int main()
 	// 1. App level의 코드 구동 시 Console 출력이 포함되어 동작 시간이 유동적으로 변함.
 	// 2. 시스템 초기화 이후에는 Clock 설정이 완료된 상태이므로 WDT를 재설정해도 무방.
 
-	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 	if (IsTestModeOn) {
 		TEST_run();

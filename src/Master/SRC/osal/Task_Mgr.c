@@ -54,7 +54,6 @@ void TASKMGR_run(void)
 	device_sleep_state = FALSE;
 
 	for (;;) { // Forever Loop
-		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 
 		if (++idx >= TotalTasksCnt) {
