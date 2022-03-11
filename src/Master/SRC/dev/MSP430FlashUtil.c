@@ -20,11 +20,11 @@
  */
 #define FLASH_SECTOR_PROGRAM_USEC (uint32)(FLASH_BYTE_PROGRAM_USEC * FLASH_SECTOR_LENGTH)
 
-
 inline STATIC BOOL isBusyFlash(uint32 timeoutUsec)
 {
 	if (FCTL3 & BUSY) {
 		MISC_delayUs(timeoutUsec);
+		printf("busy flash 0x%02X\n", FCTL3 & BUSY);
 		return (FCTL3 & BUSY);
 	}
 

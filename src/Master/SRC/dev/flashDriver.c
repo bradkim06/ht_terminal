@@ -1,6 +1,9 @@
 #include "flashDriver.h"
 #include "common_header.h"
 #include "tdd.h"
+#if NBIOT_DEVICE
+#include "modem.h"
+#endif
 
 #ifndef TDD_TEST
 #include <msp430.h>
@@ -37,34 +40,32 @@ static void saveConfig(FlashConfig_t *pInfo)
 	halIntState_t intState;
 	HAL_ENTER_CRITICAL_SECTION(intState);
 
-	BOOL result = FALSE;
+	BOOL resultA = FALSE;
 	MSP430FLASH_read((uint8 *)FLASH_SEGA_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	memcpy(flash, (uint8 *)pInfo, sizeof(FlashConfig_t));
 
 	if (MSP430FLASH_erasePage((uint8 *)FLASH_SEGA_ADDR)) {
 		if (MSP430FLASH_write((uint8 *)FLASH_SEGA_ADDR, flash, LEN_INFO_FLASH_SECTOR)) {
-			result = TRUE;
+			resultA = TRUE;
 		}
 	}
 
 	MSP430FLASH_read((uint8 *)FLASH_SEGC_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	memcpy(flash, (uint8 *)pInfo, sizeof(FlashConfig_t));
 
+	BOOL resultC = FALSE;
 	if (MSP430FLASH_erasePage((uint8 *)FLASH_SEGC_ADDR)) {
 		if (MSP430FLASH_write((uint8 *)FLASH_SEGC_ADDR, flash, LEN_INFO_FLASH_SECTOR)) {
-			result = TRUE;
+			resultC = TRUE;
 		}
 	}
 
 	HAL_EXIT_CRITICAL_SECTION(intState);
-	if (!result) {
-		OSAL_setEvent(AppTaskId, APP_EVENT_REBOOT);
+	if ((resultA & resultC) == FALSE) {
+		printf("flash fail A(%d), C(%d)\n", resultA, resultC);
 	}
 }
 
-#if NBIOT_DEVICE
-#include "modem.h"
-#endif
 static void readConfig(FlashConfig_t *pInfo)
 {
 	// Info Flash A와 C에 저장된 정보를 읽어서 checksum을 확인하여
