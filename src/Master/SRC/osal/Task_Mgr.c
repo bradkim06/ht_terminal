@@ -35,7 +35,7 @@ void TASKMGR_init(void)
 	TasksEvents = (event32_t *)malloc(sizeof(event32_t) * TotalTasksCnt);
 	if (TasksEvents == NULL) {
 		printf("malloc error - TASKMGR_init\n");
-		return;
+		REBOOT_SYSTEM();
 	}
 
 	memset(TasksEvents, 0, (sizeof(event32_t) * TotalTasksCnt));

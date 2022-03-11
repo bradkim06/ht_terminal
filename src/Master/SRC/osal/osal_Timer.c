@@ -1,4 +1,5 @@
 
+#include "app.h"
 #include <msp430.h>
 #include "common_header.h"
 #include "osal_Timer.h"
@@ -137,6 +138,7 @@ static OsalTimerRec_t *addEventTimer(byte taskId, event32_t event_flag, uint16 t
 			return (newTimer);
 		} else {
 			printf("malloc error - addEventTimer\n");
+			REBOOT_SYSTEM();
 			return ((OsalTimerRec_t *)NULL);
 		}
 	}

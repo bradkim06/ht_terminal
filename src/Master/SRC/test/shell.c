@@ -34,7 +34,7 @@ void SHELL_init()
 	ShellCmdBuf = (ShellCmdBuffer_t *)malloc(sizeof(ShellCmdBuffer_t));
 	if (ShellCmdBuf == NULL) {
 		printf("malloc(ShellCmdBuf) failed\n");
-		exit(1);
+		REBOOT_SYSTEM();
 	}
 	memset(ShellCmdBuf, 0, sizeof(ShellCmdBuffer_t));
 }
@@ -512,16 +512,12 @@ void SHELL_run()
 			if (numOfCmdArgs >= 3) {
 				// 처음 3개 파라미터를 제외한 나머지 4개는 선택이므로 아래와 같이 처리.
 				int numMeter = SHELL_decimal(cmdArgs[0]); /* num of meter */
-				int type1 = SHELL_decimal(cmdArgs[1]); /* type 1 */
-				int port1 = SHELL_decimal(cmdArgs[2]); /* port 1 */
-				int type2 = (numOfCmdArgs >= 4) ? SHELL_decimal(cmdArgs[3]) :
-								  0xFF; /* type 2 */
-				int port2 = (numOfCmdArgs >= 5) ? SHELL_decimal(cmdArgs[4]) :
-								  0xFF; /* port 2 */
-				int type3 = (numOfCmdArgs >= 6) ? SHELL_decimal(cmdArgs[5]) :
-								  0xFF; /* type 3 */
-				int port3 = (numOfCmdArgs >= 7) ? SHELL_decimal(cmdArgs[6]) :
-								  0xFF; /* port 3 */
+				int type1 = SHELL_decimal(cmdArgs[1]);
+				int port1 = SHELL_decimal(cmdArgs[2]);
+				int type2 = (numOfCmdArgs >= 4) ? SHELL_decimal(cmdArgs[3]) : 0xFF;
+				int port2 = (numOfCmdArgs >= 5) ? SHELL_decimal(cmdArgs[4]) : 0xFF;
+				int type3 = (numOfCmdArgs >= 6) ? SHELL_decimal(cmdArgs[5]) : 0xFF;
+				int port3 = (numOfCmdArgs >= 7) ? SHELL_decimal(cmdArgs[6]) : 0xFF;
 				if (cmdIdx == CMDN_PWMETER) {
 					TEST_pwmeter(numMeter, type1, port1, type2, port2, type3,
 						     port3);
@@ -687,8 +683,7 @@ void SHELL_run()
 		case CMDN_PCTX:
 			if (numOfCmdArgs >= 1) {
 				int ch = SHELL_decimal(cmdArgs[0]); /* channel */
-				int txLevel = (numOfCmdArgs >= 2) ? SHELL_decimal(cmdArgs[1]) :
-								    0; /* tx power level */
+				int txLevel = (numOfCmdArgs >= 2) ? SHELL_decimal(cmdArgs[1]) : 0;
 				TEST_ContinuousTx(ch, txLevel, 1);
 			} else {
 				goto SHELL_CMD_ERROR;
@@ -698,10 +693,8 @@ void SHELL_run()
 		case CMDN_PTX:
 			if (numOfCmdArgs >= 1) {
 				int ch = SHELL_decimal(cmdArgs[0]); /* channel */
-				int txLevel = (numOfCmdArgs >= 2) ? SHELL_decimal(cmdArgs[1]) :
-								    0; /* tx power level */
-				int msgLen = (numOfCmdArgs >= 3) ? SHELL_decimal(cmdArgs[2]) :
-								   60; /* message len */
+				int txLevel = (numOfCmdArgs >= 2) ? SHELL_decimal(cmdArgs[1]) : 0;
+				int msgLen = (numOfCmdArgs >= 3) ? SHELL_decimal(cmdArgs[2]) : 60;
 				TEST_TxData(ch, txLevel, msgLen, 1);
 			} else {
 				goto SHELL_CMD_ERROR;
