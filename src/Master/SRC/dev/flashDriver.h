@@ -95,7 +95,6 @@ typedef struct {
  **************************************************/
 void FLASH_saveConfigInfo(Config_t *config);
 void FLASH_readConfigInfo(Config_t *config);
-uint8 FLASH_readResetCause();
 void FLASH_updateResetCount(Config_t *config);
 
 /**************************************************

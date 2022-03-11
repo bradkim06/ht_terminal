@@ -46,7 +46,6 @@ event32_t APP_tasks(uint8 taskId, event32_t events);
 void APP_prepareToSleep();
 
 void REBOOT_SYSTEM(void);
-void APP_runPeriodicCheckNFC();
 void APP_runPeriodicReport();
 void APP_runMetering(int meteringType);
 void APP_showConfig(Config_t *p);

@@ -659,29 +659,3 @@ BOOL NFC_factoryResetTag()
 
 	return (nStatus <= 0);
 }
-
-BOOL NFC_checkTagSetting()
-{
-#define TAG_SETTING_CMP_POS 11
-	uint8 *tagSettings = (uint8 *)malloc(sizeof(uint8) * DefaultBeginingOfMemoryLength);
-	memset(tagSettings, 0, DefaultBeginingOfMemoryLength);
-
-	MISC_delayMs(100);
-	int nStatus = NTAG_readBytes(NTAG_MEM_ADRR_I2C_ADDRESS, tagSettings,
-				     DefaultBeginingOfMemoryLength);
-	MISC_delayMs(100);
-
-	BOOL result = FALSE;
-	if (nStatus <= 0) {
-		if (memcmp((tagSettings + TAG_SETTING_CMP_POS),
-			   (DefaultBeginingOfMemory + TAG_SETTING_CMP_POS),
-			   (DefaultBeginingOfMemoryLength - TAG_SETTING_CMP_POS))) {
-			result = FALSE;
-		} else {
-			result = TRUE;
-		}
-	}
-	free(tagSettings);
-
-	return result;
-}

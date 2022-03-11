@@ -176,7 +176,6 @@ void NFC_tagDisable();
 void NFC_fdEnable();
 void NFC_fdDisable();
 BOOL NFC_factoryResetTag();
-BOOL NFC_checkTagSetting();
 BOOL NFC_checkRead(int msec);
 
 BOOL NFC_sendMessage(byte *msg, uint8 len);

@@ -586,29 +586,6 @@ void APP_runMetering(int meteringType)
 #endif
 }
 
-// NFC tag 설정 확인 및 복구 code.
-void APP_runPeriodicCheckNFC()
-{
-	NFC_tagDisable();
-	NFC_fdDisable();
-
-	PORT1_DIR |= BM(PORT_NFC_TAG);
-	PORT1_OUT |= BM(PORT_NFC_TAG);
-
-	if (NFC_checkTagSetting()) {
-		printf("NFC TAG setting check - OK\n");
-	} else {
-		printf("NFC TAG setting check - FAIL\n");
-		if (NFC_factoryResetTag()) {
-			printf("TAG RESET - OK\n");
-		} else {
-			printf("TAG RESET - FAIL\n");
-		}
-	}
-
-	NFC_init();
-}
-
 void APP_runPeriodicReport()
 {
 	if (MODEM_getAccessState() == ACCESS_STATE_IDLE) {

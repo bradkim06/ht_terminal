@@ -28,20 +28,6 @@ static uint8 calChecksum(uint8 *p, int len)
  * Flash functions for Configuration data
  **************************************************/
 
-uint8 FLASH_readResetCause()
-{
-	uint8 cause = 0;
-
-	halIntState_t intState;
-	HAL_ENTER_CRITICAL_SECTION(intState);
-	MSP430FLASH_read((uint8 *)SYSRSTIV_ADDR, &cause, 1);
-	// 현재 Reset cuase data를 사용하고 있지 않으므로 추가처리는 생략한다.
-	MSP430FLASH_erasePage((uint8 *)SYSRSTIV_ADDR);
-	HAL_EXIT_CRITICAL_SECTION(intState);
-
-	return cause;
-}
-
 static void saveConfig(FlashConfig_t *pInfo)
 {
 	// Info Flash A와 C에 동일한 정보를 저장함

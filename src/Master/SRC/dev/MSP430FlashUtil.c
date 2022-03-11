@@ -20,9 +20,6 @@
  */
 #define FLASH_SECTOR_PROGRAM_USEC (uint32)(FLASH_BYTE_PROGRAM_USEC * FLASH_SECTOR_LENGTH)
 
-// Function prototypes
-STATIC void initFlash(void);
-STATIC void doneFlash(void);
 
 inline STATIC BOOL isBusyFlash(uint32 timeoutUsec)
 {
@@ -34,22 +31,8 @@ inline STATIC BOOL isBusyFlash(uint32 timeoutUsec)
 	return FALSE;
 }
 
-STATIC void initFlash(void)
-{
-#if defined FCTL2
-	FCTL2 = FWKEY + FSSEL_1 + FN4 + FN3; // Flash Timing Generator as MCLK/24 -> 333 kHz.
-#endif
-}
-
-STATIC void doneFlash()
-{
-	return;
-}
-
 BOOL MSP430FLASH_erasePage(unsigned char *addr)
 {
-	initFlash();
-
 	if (isBusyFlash(FLASH_SECTOR_PROGRAM_USEC)) {
 		return FALSE;
 	}
@@ -83,8 +66,6 @@ BOOL MSP430FLASH_erasePage(unsigned char *addr)
 		FCTL3 = FWKEY + LOCK; // Set LOCK bit
 	}
 
-	doneFlash();
-
 	return result;
 }
 
@@ -99,8 +80,6 @@ BOOL MSP430FLASH_read(unsigned char *addr, unsigned char *value, unsigned short 
 
 BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf, unsigned short len)
 {
-	initFlash();
-
 	// Check busy befor operating
 	if (isBusyFlash(FLASH_SECTOR_PROGRAM_USEC)) {
 		return FALSE;
@@ -151,8 +130,6 @@ BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf, unsigned short l
 	} else {
 		FCTL3 = FWKEY + LOCK; // Set LOCK bit
 	}
-
-	doneFlash();
 
 	return result;
 }
