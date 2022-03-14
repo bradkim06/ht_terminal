@@ -60,3 +60,5 @@ build/
 .ccls-cache/
 .clangd/
 .cache/
+
+NB_PF_BC95G/.launches/NB_PF_BC95G.launch
