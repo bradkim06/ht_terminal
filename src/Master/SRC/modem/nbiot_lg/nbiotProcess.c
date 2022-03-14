@@ -21,8 +21,8 @@
 #define DEREGISTER_DELAY 5000
 
 // AT command default timeout/retry
-#define AT_CMD_DEFAULT_TIMEOUT 5000
-#define AT_CMD_DEFAULT_RETRY 4
+#define AT_CMD_DEFAULT_TIMEOUT 3000
+#define AT_CMD_DEFAULT_RETRY 6
 
 // QLWULDATA timeout/retry
 #define AT_CMD_DATA_SEND_TIMEOUT 10000
@@ -550,10 +550,11 @@ static ModemStep_t init()
 		StepFlowIndex.init++;
 	} break;
 
+#define STEP_RESET_MODEM 19
 	case 6: {
 		sendAtCommand(AT_CMD_DEFAULT_TIMEOUT, AT_CMD_DEFAULT_RETRY, &AtCmdGetFwRev, NULL);
 		StepFlowIndex.init =
-			(modemCtx.proc.runInit) ? (StepFlowIndex.init + 1) : END_STEP_FLOW_INDEX;
+			(modemCtx.proc.runInit) ? (StepFlowIndex.init + 1) : STEP_RESET_MODEM;
 	} break;
 
 	case 7: {
@@ -632,7 +633,7 @@ static ModemStep_t init()
 		StepFlowIndex.init++;
 	} break;
 
-	case 19: {
+	case STEP_RESET_MODEM: {
 		sendAtCommand(AT_CMD_RESET_TIMEOUT, AT_CMD_RESET_RETRY, &AtCmdSwReset, NULL);
 		StepFlowIndex.init++;
 	} break;
@@ -935,7 +936,7 @@ static ModemStep_t certify()
 	} break;
 
 	case 1: {
-		if ((modemCtx.lwm2m.bsFinish) && (!modemCtx.lwm2m.regFinish)) {
+		if (modemCtx.lwm2m.bsFinish) {
 			sendAtCommand(AT_CMD_LWM2M_TIMEOUT, AT_CMD_LWM2M_RETRY, &AtCmdRunRegister,
 				      "=0");
 			StepFlowIndex.certify++;
@@ -1150,18 +1151,20 @@ static ModemStep_t detachNw()
 	static uint32 startEventTimeMsec = 0;
 	switch (StepFlowIndex.detach) {
 	case 0: {
+		sendAtCommand(AT_CMD_COMM_TIMEOUT, AT_CMD_COMM_DETACH_RETRY, &AtCmdRunRegister,
+			      "=1");
+		StepFlowIndex.detach++;
+	} break;
+	case 1: {
 		// FOTA 완료 시 기존 인증절차도 초기화 되므로 De-register를 할 필요가 없음.
 		// 다만, 단말 F/W에서 진행여부를 판단하는 Flag이므로 초기화는 안함.
-		// if (modemCtx.lwm2m.regFinish) {
-		// 	sendNoRespAtCommand(DEREGISTER_DELAY, &AtCmdRunRegister, "=1");
-		// }
 		sendAtCommand(AT_CMD_COMM_TIMEOUT, AT_CMD_COMM_DETACH_RETRY, &AtCmdDetachNw, "=0");
 
 		startEventTimeMsec = TIMER_getMsec();
 		StepFlowIndex.detach++;
 	} break;
 
-	case 1: {
+	case 2: {
 		// wait detach time
 		if (TIMER_getMsecDiff(startEventTimeMsec) >= DETACH_DELAY_TIME) {
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
