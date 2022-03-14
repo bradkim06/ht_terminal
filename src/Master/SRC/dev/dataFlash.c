@@ -129,6 +129,11 @@ static void writeSector(int sector, uint8 *buf)
 
 		__data20_write_long(address, 0);
 
+		// (Errata) Flash Read Error and Susceptibility for MSP430F54xxA
+		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+
 		FCTL3 = FWKEY; // clear lock
 		FCTL1 = FWKEY + WRT; // Set Write bit
 
@@ -160,6 +165,10 @@ static void eraseSector(int sector)
 		FCTL1 = FWKEY + ERASE; // Set Erase bit
 
 		__data20_write_char(address, 0);
+
+		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
 
 		waitIdle();
 

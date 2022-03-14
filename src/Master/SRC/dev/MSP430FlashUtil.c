@@ -50,6 +50,11 @@ BOOL MSP430FLASH_erasePage(unsigned char *addr)
 
 	*addr = 0; // Dummy write to erase Flash segment
 
+	// (Errata) Flash Read Error and Susceptibility for MSP430F54xxA
+	asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+	asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+	asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+
 	BOOL result = TRUE;
 	if (isBusyFlash(FLASH_SECTOR_PROGRAM_USEC)) {
 		result = FALSE;
