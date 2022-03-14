@@ -32,6 +32,7 @@
 
 uint8 AppTaskId;
 uint8 AppProcess = APP_IDLE;
+#pragma NOINIT(conf)
 Config_t conf;
 Metering_t Metering;
 

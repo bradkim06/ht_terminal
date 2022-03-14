@@ -38,20 +38,19 @@ typedef struct {
 	uint8 reportInterval; // 3
 	uint8 serverIp[4]; // 4, 5, 6, 7
 	uint8 serverPort[2]; // 8, 9
-	uint8 resetCount[2]; // 10, 11
-	uint8 isShortInterval; // 12
-	uint8 debugPrint; // 13
+	uint8 isShortInterval; // 10
+	uint8 debugPrint; // 11
 	// service code는 현재 LG플랫폼 연동시에만 유효
-	uint8 serviceCode[4]; // 14, 15, 16, 17
-	uint8 isModemInit; // 18
-	uint8 fotaIp[4]; // 19, 20, 21, 22
-	uint8 fotaPort[2]; // 23, 24
-	uint8 fotaInterval; // 25
-	uint8 riCtrlMode; // 26
-	uint8 periodMode; // 27
-	uint8 reportRange; // 28
-	uint8 dataSkipMode; // 29
-	uint8 reserved[1]; // 30
+	uint8 serviceCode[4]; // 12, 13, 14, 15
+	uint8 isModemInit; // 16
+	uint8 fotaIp[4]; // 17, 18, 19, 20
+	uint8 fotaPort[2]; // 21, 22
+	uint8 fotaInterval; // 23
+	uint8 riCtrlMode; // 24
+	uint8 periodMode; // 25
+	uint8 reportRange; // 26
+	uint8 dataSkipMode; // 27
+	uint8 reserved[3]; // 28, 29, 30
 	uint8 checksum; // 31
 } FlashConfig_t;
 

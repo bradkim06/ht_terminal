@@ -66,13 +66,14 @@ static void saveConfig(FlashConfig_t *pInfo)
 	}
 }
 
-static void readConfig(FlashConfig_t *pInfo)
+static BOOL readConfig(FlashConfig_t *pInfo)
 {
 	// Info Flash A와 C에 저장된 정보를 읽어서 checksum을 확인하여
 	// 저장된 값의 에러 여부를 확인함. 만일 두 부분 중 한 곳의 정보가
 	// 깨져 있다면 에러 없는 부분의 데이터를 복사하여 복구함.
 
 	uint8 flash[LEN_INFO_FLASH_SECTOR];
+	BOOL retVal = TRUE;
 
 	halIntState_t intState;
 
@@ -115,6 +116,7 @@ static void readConfig(FlashConfig_t *pInfo)
 		pInfo->periodMode = 0;
 		pInfo->isShortInterval = 0;
 		pInfo->debugPrint = 0;
+		pInfo->isModemInit = 0;
 
 #if NBIOT_DEVICE
 		ip2hexArray((char *)LG_DEFAULT_FOTA_SERVER_IP, pInfo->fotaIp);
@@ -123,10 +125,10 @@ static void readConfig(FlashConfig_t *pInfo)
 		pInfo->fotaInterval = LG_DEFAULT_FOTA_DAY_INTERVAL;
 		pInfo->dataSkipMode = 1;
 #endif
-
-		memset(pInfo->resetCount, 0, 2);
-		saveConfig(pInfo);
+		retVal = FALSE;
 	}
+
+	return retVal;
 }
 
 static void saveID(FlashId_t *pInfo)
@@ -162,13 +164,14 @@ static void saveID(FlashId_t *pInfo)
 	}
 }
 
-static void readID(FlashId_t *pInfo)
+static BOOL readID(FlashId_t *pInfo)
 {
 	// Info Flash B와 D에 저장된 정보를 읽어서 checksum을 확인하여
 	// 저장된 값의 에러 여부를 확인함. 만일 두 부분 중 한 곳의 정보가
 	// 깨져 있다면 에러 없는 부분의 데이터를 복사하여 복구함.
 
 	uint8 flash[LEN_INFO_FLASH_SECTOR];
+	BOOL retVal = TRUE;
 
 	halIntState_t intState;
 
@@ -203,6 +206,7 @@ static void readID(FlashId_t *pInfo)
 	} else {
 		memcpy((uint8 *)pInfo, (uint8 *)&info_b, sizeof(FlashId_t));
 		printf("ID: both side are false\n");
+		retVal = FALSE;
 		// 두개의 영역이 모두 깨지더라도 Serial Number는 지우지 않음.
 #if 0
         memset((uint8 *)pInfo, 0xff, sizeof(FlashId_t));
@@ -211,6 +215,7 @@ static void readID(FlashId_t *pInfo)
         saveID(pInfo);
 #endif
 	}
+	return retVal;
 }
 
 void bcd2int(uint8 *pBCD, uint32 *pInt, uint8 nDigit)
@@ -294,8 +299,6 @@ void FLASH_saveConfigInfo(Config_t *config)
 	flashConfig.isShortInterval = config->isShortInterval;
 	flashConfig.debugPrint = config->debugPrint;
 
-	memcpy(flashConfig.resetCount, &config->resetCount, 2);
-
 	Date_t date;
 	RTC_read(&date);
 
@@ -307,68 +310,74 @@ void FLASH_readConfigInfo(Config_t *config)
 {
 	// read others
 	FlashConfig_t flashConfig;
-	readConfig(&flashConfig);
+	BOOL result_conf = readConfig(&flashConfig);
+
+	if (result_conf == TRUE) {
+#if NBIOT_DEVICE
+		sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0],
+			flashConfig.serverIp[1], flashConfig.serverIp[2], flashConfig.serverIp[3]);
+		memcpy(&config->serverPort, flashConfig.serverPort, 2);
+		memcpy(config->serviceCode, flashConfig.serviceCode, 4);
+		config->serviceCode[4] = 0;
+		config->meterType = flashConfig.meterType;
+#endif
+	}
 
 	config->termModel = MISC_getDeviceType();
 	config->bslModel = MISC_getBslType();
 
-	config->meterType = flashConfig.meterType;
 	config->meterInterval = flashConfig.meterInterval;
 	config->reportInterval = flashConfig.reportInterval;
 	config->reportRange = flashConfig.reportRange;
-
-#if NBIOT_DEVICE
-	sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0], flashConfig.serverIp[1],
-		flashConfig.serverIp[2], flashConfig.serverIp[3]);
-	memcpy(&config->serverPort, flashConfig.serverPort, 2);
-	sprintf(config->fotaIp, "%d.%d.%d.%d", flashConfig.fotaIp[0], flashConfig.fotaIp[1],
-		flashConfig.fotaIp[2], flashConfig.fotaIp[3]);
-	memcpy(&config->fotaPort, flashConfig.fotaPort, 2);
-	config->fotaInterval = flashConfig.fotaInterval;
-	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
-	config->serviceCode[4] = 0;
-	config->isModemInit = flashConfig.isModemInit;
-	config->dataSkipMode = flashConfig.dataSkipMode;
-	if (config->dataSkipMode > 1) {
-		config->dataSkipMode = 1;
-	}
-#endif
 	config->sleepMode = flashConfig.sleepMode;
 	config->riCtrlMode = flashConfig.riCtrlMode;
 	config->periodMode = flashConfig.periodMode;
 	config->isShortInterval = flashConfig.isShortInterval;
 	config->debugPrint = flashConfig.debugPrint;
-
-	memcpy(&config->resetCount, flashConfig.resetCount, 2);
+	config->dataSkipMode = flashConfig.dataSkipMode;
+#if NBIOT_DEVICE
+	sprintf(config->fotaIp, "%d.%d.%d.%d", flashConfig.fotaIp[0], flashConfig.fotaIp[1],
+		flashConfig.fotaIp[2], flashConfig.fotaIp[3]);
+	memcpy(&config->fotaPort, flashConfig.fotaPort, 2);
+	config->fotaInterval = flashConfig.fotaInterval;
+	config->isModemInit = flashConfig.isModemInit;
+#endif
 
 	// read serial number
 	FlashId_t flashID;
-	readID(&flashID);
-
+	BOOL result_id = readID(&flashID);
+	if (result_id) {
 #if defined(AUX_REPEATER)
-	memcpy(&config->pan_id, &flashID.pan_id, 2);
-	memcpy(&config->nwk_addr, &flashID.nwk_addr, 4);
+		memcpy(&config->pan_id, &flashID.pan_id, 2);
+		memcpy(&config->nwk_addr, &flashID.nwk_addr, 4);
 
-	int zeroPos = getFirstZeroPosition(flashID.nwk_addr);
-	uint8 addr[4];
-	memcpy(addr, &flashID.nwk_addr, 4);
-	addr[zeroPos] = flashID.slaveId;
-	memcpy(&config->slaveNwk, addr, 4);
-	config->havePushButton = MISC_findPushButton();
+		int zeroPos = getFirstZeroPosition(flashID.nwk_addr);
+		uint8 addr[4];
+		memcpy(addr, &flashID.nwk_addr, 4);
+		addr[zeroPos] = flashID.slaveId;
+		memcpy(&config->slaveNwk, addr, 4);
 #endif
 
 #if LORA_DEVICE
-	memcpy(config->devEui, flashID.devEui, 8);
+		memcpy(config->devEui, flashID.devEui, 8);
 #else // NBIOT_DEVICE
-	memcpy(config->imei, flashID.imei, 8);
+		memcpy(config->imei, flashID.imei, 8);
+#endif
+		memcpy(config->serialNum, flashID.serialNum, SERIAL_NUM_LEN);
+	}
+#if defined(AUX_REPEATER)
+	config->havePushButton = MISC_findPushButton();
 #endif
 
-	memcpy(config->serialNum, flashID.serialNum, SERIAL_NUM_LEN);
 	int serialBase = ascii2Hex(config->serialNum[8]) * 1000 +
 			 ascii2Hex(config->serialNum[9]) * 100 +
 			 ascii2Hex(config->serialNum[10]) * 10 + ascii2Hex(config->serialNum[11]);
-
 	distributingReportTime(serialBase, config);
+
+	if ((result_id & result_conf) == FALSE) {
+		config->resetCount = 0;
+		FLASH_saveConfigInfo(config);
+	}
 }
 
 void ip2hexArray(char *ip, uint8 *hexIp)
@@ -397,7 +406,7 @@ void FLASH_updateResetCount(Config_t *config)
 {
 	if (config->resetCount < 65000) {
 		config->resetCount++;
-		FLASH_saveConfigInfo(config);
+		// FLASH_saveConfigInfo(config);
 	}
 }
 
