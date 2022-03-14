@@ -145,12 +145,27 @@ SECTIONS
     .stack      : {} > RAM (HIGH)           /* Software system stack             */
     MAIN		: {} > FLASHA
 
+    test_section {
+        mTest.obj (.text)
+        test.obj (.const)        
+        mTest.obj (.const)
+        shell.obj (.const)
+    } > FLASHB
+
+    shell_section {
+        test.obj (.text)        
+        shell.obj (.text)
+    } > FLASHD
+
 #ifndef __LARGE_CODE_MODEL__
     .text       : {} > FLASHB                /* Code                              */
 #else
     .text       : {} >> FLASHC | FLASHB      /* Code                              */
 #endif
-    .text:_isr  : {} > FLASHB                /* ISR Code space                    */
+/* Errata Flash Read Error and Susceptibility for MSP430F54xxA 
+Manual placement of interrupt service routines into memory locations above 0x008000
+can eliminate the effect on interrupt vector address fetches. */
+    .text:_isr  : {} > FLASHB (HIGH)                /* ISR Code space                    */
     .cinit      : {} > FLASHB                /* Initialization tables             */
 #ifndef __LARGE_DATA_MODEL__
     .const      : {} > FLASHB                /* Constant data                     */
