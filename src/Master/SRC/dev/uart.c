@@ -653,7 +653,6 @@ __interrupt void USCI_A0_ISR(void)
 {
 	if (UCA0IFG & UCTXIFG) {
 		if (uartA0->txBuf == NULL) {
-			UCA0IE &= ~UCTXIE;
 			return;
 		}
 
@@ -670,9 +669,7 @@ __interrupt void USCI_A0_ISR(void)
 
 	// rx interrupt를 사용하지 않음 - 혹시 발생하면 즉시 disable
 	if (UCA0IFG & UCRXIFG) {
-		UCA0IFG &= ~UCRXIFG;
 		if (uartA0->rxBuf == NULL) {
-			UCA0IE &= ~UCRXIE;
 			return;
 		}
 
@@ -695,7 +692,6 @@ __interrupt void USCI_A1_ISR(void)
 {
 	if (UCA1IFG & UCTXIFG) { // USCI_A1 TX
 		if (uartA1->txBuf == NULL) {
-			UCA1IE &= ~UCTXIE;
 			return;
 		}
 
@@ -711,9 +707,7 @@ __interrupt void USCI_A1_ISR(void)
 	}
 
 	if (UCA1IFG & UCRXIFG) { // USCI_A1 RX
-		UCA1IFG &= ~(UCRXIFG);
 		if (uartA1->rxBuf == NULL) {
-			UCA1IE &= ~UCRXIE;
 			return;
 		}
 
@@ -735,7 +729,6 @@ __interrupt void USCI_A2_ISR(void)
 {
 	if (UCA2IFG & UCTXIFG) { // USCI_A2 TX
 		if (uartA2->txBuf == NULL) {
-			UCA2IE &= ~UCTXIE;
 			return;
 		}
 
@@ -751,9 +744,7 @@ __interrupt void USCI_A2_ISR(void)
 	}
 
 	if (UCA2IFG & UCRXIFG) { // USCI_A2 RX
-		UCA2IFG &= ~(UCRXIFG);
 		if (uartA2->rxBuf == NULL) {
-			UCA2IE &= ~UCRXIE;
 			return;
 		}
 
@@ -777,7 +768,6 @@ __interrupt void USCI_A3_ISR(void)
 {
 	if (UCA3IFG & UCTXIFG) {
 		if (uartA3->txBuf == NULL) {
-			UCA3IE &= ~UCTXIE;
 			return;
 		}
 
@@ -793,9 +783,7 @@ __interrupt void USCI_A3_ISR(void)
 	}
 
 	if (UCA3IFG & UCRXIFG) { // USCI_A3 RX
-		UCA3IFG &= ~(UCRXIFG);
 		if (uartA3->rxBuf == NULL) {
-			UCA3IE &= ~UCRXIE;
 			return;
 		}
 

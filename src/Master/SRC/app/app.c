@@ -138,7 +138,6 @@ void REBOOT_SYSTEM()
 __interrupt void RTC_ISR(void)
 {
 	if (RTCIV & RTCAIFG) {
-		RTCIV &= ~(RTCAIFG);
 		WAKEUP_DEVICE();
 		OSAL_setEvent(AppTaskId, APP_EVENT_RTC_ALARM);
 	}
@@ -148,24 +147,13 @@ __interrupt void RTC_ISR(void)
 #pragma vector = PORT1_VECTOR
 __interrupt void Port_1(void)
 {
-	if (PORT1_IFG & BM(PORT_NFC_TAG)) {
-		PORT1_IFG &= ~BM(PORT_NFC_TAG);
-		NFC_tagDetect();
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
-		WAKEUP_DEVICE();
-
-		NFCAPP_clearAsyncCmd();
-	}
-
 	if (PORT1_IFG & BM(PORT_NFC_FD_IN)) {
-		PORT1_IFG &= ~BM(PORT_NFC_FD_IN);
 		NFC_recvMessage();
 		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
 	}
 
 #if defined(AUX_REPEATER)
 	if (PORT1_IFG & BM(PORT_LCD_SWITCH)) {
-		PORT1_IFG &= ~BM(PORT_LCD_SWITCH);
 		if (conf.havePushButton) {
 			OSAL_stopEventTimer(AppTaskId, APP_EVENT_SENSOR_REED);
 			if (TEST_isTestMode() == TRUE) {
@@ -177,6 +165,15 @@ __interrupt void Port_1(void)
 		}
 	}
 #endif
+
+	if (PORT1_IFG & BM(PORT_NFC_TAG)) {
+		PORT1_IE &= ~BM(PORT_NFC_TAG); // Interrupt diabled
+		NFC_tagDetect();
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
+		WAKEUP_DEVICE();
+
+		NFCAPP_clearAsyncCmd();
+	}
 }
 
 // Port 2 interrupt service routine - Reed, Tamper, Flood
@@ -189,7 +186,6 @@ __interrupt void Port_2(void)
 	}
 
 	if (PORT_SENSOR_IFG & BM(PORT_SENSOR_REED)) {
-		PORT_SENSOR_IFG &= ~BM(PORT_SENSOR_REED); // P1.2 IFG cleared
 		OSAL_stopEventTimer(AppTaskId, APP_EVENT_SENSOR_REED);
 		if (TEST_isTestMode() == TRUE) {
 			OSAL_startEventTimer(AppTaskId, APP_EVENT_SENSOR_REED, (uint32)10);
@@ -202,8 +198,6 @@ __interrupt void Port_2(void)
 #if defined(AUX_REPEATER)
 	// CC1200 tx/rx interrupt
 	if (PORT_SENSOR_IFG & BM(PORT_CC1200_GPIO0)) {
-		PORT_SENSOR_IFG &= ~BM(PORT_CC1200_GPIO0);
-
 		if (SLAVE_getAccessState() == SLAVE_ACCESS_IDLE &&
 		    CC1200_getRfMode() == RF_MODE_RX) {
 			// Rx 동작은 Slave operating이 아닌 경우 쓰레기 값으로 간주하고 그 외에는 모두 처리.
@@ -241,18 +235,15 @@ __interrupt void Port_2(void)
 __interrupt void UNMI_ISR(void)
 {
 	if (SFRIFG1 & OFIFG) { // OSC fault interrupt flag
-		SFRIFG1 &= ~OFIFG; // Clear OSC Fault flag
-		UCSCTL7 &= ~(XT1LFOFFG + DCOFFG); // Clear XT1 & DCO fault flags
+		// UCSCTL7 &= ~(XT1LFOFFG + DCOFFG); // Clear XT1 & DCO fault flags
 		SYSTEM_RESET();
 	}
 
 	if (SFRIFG1 & NMIIFG) { // NMI pin interrupt flag
-		SFRIFG1 &= ~NMIIFG;
 		SYSTEM_RESET();
 	}
 
 	if (SFRIFG1 & VMAIFG) { // Vacant memory access interrupt flag
-		SFRIFG1 &= ~VMAIFG;
 		SYSTEM_RESET();
 	}
 }
