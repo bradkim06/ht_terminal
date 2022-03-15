@@ -212,7 +212,7 @@ void initSystem()
 #pragma CODE_SECTION(main, "MAIN")
 int main()
 {
-	WDTCTL = WDT_VRST_3SEC; // Start watchdog timer(3.2768 sec)
+	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 	initSystem();
 
 	// 시스템 초기화 및 테스트모드 여부 확인 후 WDT는 16초로 재설정

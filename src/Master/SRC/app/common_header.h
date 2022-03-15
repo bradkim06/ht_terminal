@@ -81,8 +81,8 @@
 #define POWER_MODE LPM3_bits //RTC 동작시 파워모드
 #define POWER_ACTIVE_OFF LPM2_bits //ACTIVE_OFF시 파워모드
 
-#define WDT_ARST_16SEC (WDTPW + WDTCNTCL + WDTSSEL0 + WDTIS1 + WDTIS0) // Use ACLK, 16sec
-#define WDT_VRST_3SEC (WDTPW + WDTCNTCL + WDTSSEL1 + WDTIS2) // Use VLOCLK, abour 3~4sec
+#define WDT_ARST_16SEC (WDTPW + WDTCNTCL + WDTSSEL0 + WDTIS0) // Use ACLK, 1hour 8min
+#define WDT_VRST_50SEC (WDTPW + WDTCNTCL + WDTSSEL1 + WDTIS1 + WDTIS0) // Use VLOCLK, abour 50sec
 
 //==============================================================================
 // HAL data type
@@ -223,6 +223,7 @@ extern void MODEM_disable();
 
 #define SLEEP_DEVICE()                                                                             \
 	do {                                                                                       \
+		WDTCTL = WDT_ARST_16SEC;                                                           \
 		if (device_sleep_state == FALSE) {                                                 \
 			P2OUT &= ~0x20;                                                            \
 			TIMER_stop();                                                              \
@@ -230,7 +231,6 @@ extern void MODEM_disable();
 			METER_disable();                                                           \
 			PRINT_disable();                                                           \
 			MODEM_disable();                                                           \
-			WDTCTL = WDTPW | WDTHOLD;                                                  \
 			device_sleep_state = TRUE;                                                 \
 			__bis_SR_register(POWER_MODE + GIE);                                       \
 		}                                                                                  \
