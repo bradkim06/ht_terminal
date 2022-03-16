@@ -478,13 +478,13 @@ void MODEM_response(char *pHead, int len)
 #define PATTERN_SERVER_NOTIFY "+QLWEVTIND:"
 	p = pHead;
 	do {
-		if (p = strstr(p, PATTERN_SERVER_NOTIFY)) {
+		if ((p = strstr(p, PATTERN_SERVER_NOTIFY))) {
 			parse_server_notify(p += strlen(PATTERN_SERVER_NOTIFY));
 		}
 	} while (p);
 
 #define PATTERN_PF_DL "+NNMI:"
-	if (p = strstr(pHead, PATTERN_PF_DL)) {
+	if ((p = strstr(pHead, PATTERN_PF_DL))) {
 		parse_pf_downlink(p + strlen(PATTERN_PF_DL));
 		modemCtx.pfDlCnt++;
 	}
@@ -492,11 +492,11 @@ void MODEM_response(char *pHead, int len)
 #define PATTERN_CHK_PSM_PREFIX "+NPSMR:"
 #define PATTERN_CHK_PSM_PREFIX2 "+NPSMR:1,"
 #define PATTERN_ENTER_PSM 1
-	if (p = strstr(pHead, PATTERN_CHK_PSM_PREFIX2)) {
+	if ((p = strstr(pHead, PATTERN_CHK_PSM_PREFIX2))) {
 		p += strlen(PATTERN_CHK_PSM_PREFIX2);
 		modemCtx.status.psmOn = (atoi(p) == PATTERN_ENTER_PSM) ? 1 : 0;
 		printf_ts("MODEM : Get PSM Status(%d).\n", modemCtx.status.psmOn);
-	} else if (p = strstr(pHead, PATTERN_CHK_PSM_PREFIX)) {
+	} else if ((p = strstr(pHead, PATTERN_CHK_PSM_PREFIX))) {
 		p += strlen(PATTERN_CHK_PSM_PREFIX);
 		modemCtx.status.psmOn = (atoi(p) == PATTERN_ENTER_PSM) ? 1 : 0;
 		printf_ts("MODEM : event of changing PSM(%d).\n", modemCtx.status.psmOn);
@@ -509,24 +509,24 @@ void MODEM_response(char *pHead, int len)
 // No service event 발생 시 attach flag 초기화.
 #define PATTERN_CEREG_NO_SERVICE_PREFIX "+CEREG:4"
 
-	if (p = strstr(pHead, PATTERN_CEREG_ATTACH_EVENT)) {
+	if ((p = strstr(pHead, PATTERN_CEREG_ATTACH_EVENT))) {
 		modemCtx.status.cellreg = MODEM_CELLREG_ATTACHED;
-	} else if (p = strstr(pHead, PATTERN_CEREG_TRY_ATTACH_EVENT)) {
+	} else if ((p = strstr(pHead, PATTERN_CEREG_TRY_ATTACH_EVENT))) {
 		modemCtx.lwm2m.regFinish = 0;
 		modemCtx.lwm2m.obsObj10250 = 0;
 		modemCtx.lwm2m.obsObj16241 = 0;
 		modemCtx.status.cellreg = MODEM_CELLREG_PAUSE;
-	} else if (p = strstr(pHead, PATTERN_CEREG_NOT_REG_EVENT)) {
+	} else if ((p = strstr(pHead, PATTERN_CEREG_NOT_REG_EVENT))) {
 		modemCtx.lwm2m.regFinish = 0;
 		modemCtx.lwm2m.obsObj10250 = 0;
 		modemCtx.lwm2m.obsObj16241 = 0;
 		modemCtx.status.cellreg = MODEM_CELLREG_NOT_REG;
-	} else if (p = strstr(pHead, PATTERN_CEREG_NO_SERVICE_PREFIX)) {
+	} else if ((p = strstr(pHead, PATTERN_CEREG_NO_SERVICE_PREFIX))) {
 		modemCtx.lwm2m.regFinish = 0;
 		modemCtx.lwm2m.obsObj10250 = 0;
 		modemCtx.lwm2m.obsObj16241 = 0;
 		modemCtx.status.cellreg = MODEM_CELLREG_NO_SERVICE;
-	} else if (p = strstr(pHead, PATTERN_CEREG_REJECT_EVENT)) {
+	} else if ((p = strstr(pHead, PATTERN_CEREG_REJECT_EVENT))) {
 		modemCtx.lwm2m.regFinish = 0;
 		modemCtx.lwm2m.obsObj10250 = 0;
 		modemCtx.lwm2m.obsObj16241 = 0;
@@ -551,7 +551,7 @@ void MODEM_response(char *pHead, int len)
 
 	case AT_CMD_IDX_GET_IMEI:
 #define PATTERN_IMEI "+CGSN:"
-		if (p = strstr(pHead, PATTERN_IMEI)) {
+		if ((p = strstr(pHead, PATTERN_IMEI))) {
 			if (parse_imei(p + strlen(PATTERN_IMEI))) {
 				isRleaseBusy = TRUE;
 			}
@@ -560,7 +560,7 @@ void MODEM_response(char *pHead, int len)
 
 	case AT_CMD_IDX_GET_IMSI:
 #define PATTERN_IMSI IMSI_MCC_KOREA
-		if (p = strstr(pHead, PATTERN_IMSI)) {
+		if ((p = strstr(pHead, PATTERN_IMSI))) {
 			if (parse_imsi(p)) {
 				isRleaseBusy = TRUE;
 			}
@@ -569,7 +569,7 @@ void MODEM_response(char *pHead, int len)
 
 	case AT_CMD_IDX_GET_ICCID:
 #define PATTERN_ICCID "+NCCID:"
-		if (p = strstr(pHead, PATTERN_ICCID)) {
+		if ((p = strstr(pHead, PATTERN_ICCID))) {
 			if (parse_iccid(p + strlen(PATTERN_ICCID))) {
 				isRleaseBusy = TRUE;
 			}
@@ -578,7 +578,7 @@ void MODEM_response(char *pHead, int len)
 
 	case AT_CMD_IDX_GET_RADIO_QUALITY:
 #define PATTERN_NUESTATS_RADIO "NUESTATS:RADIO,"
-		if (p = strstr(pHead, PATTERN_NUESTATS_RADIO)) {
+		if ((p = strstr(pHead, PATTERN_NUESTATS_RADIO))) {
 			if (parse_radioQuality(p + strlen(PATTERN_NUESTATS_RADIO))) {
 				isRleaseBusy = TRUE;
 			}
@@ -599,7 +599,7 @@ void MODEM_response(char *pHead, int len)
 
 	case AT_CMD_IDX_GET_TIME:
 #define PATTERN_CCLK "+CCLK:"
-		if (p = strstr(pHead, PATTERN_CCLK)) {
+		if ((p = strstr(pHead, PATTERN_CCLK))) {
 			if (parse_cclk(p + strlen(PATTERN_CCLK))) {
 				isRleaseBusy = TRUE;
 			}
@@ -612,7 +612,7 @@ void MODEM_response(char *pHead, int len)
 			isRleaseBusy = TRUE;
 		} else {
 #define PATTERN_READ_NCDP "+NCDP:"
-			if (p = strstr(pHead, PATTERN_READ_NCDP)) {
+			if ((p = strstr(pHead, PATTERN_READ_NCDP))) {
 				if (!parse_ncdp(p + strlen(PATTERN_READ_NCDP))) {
 					modemCtx.proc.runInit = 1;
 				}
@@ -630,7 +630,7 @@ void MODEM_response(char *pHead, int len)
 			isRleaseBusy = TRUE;
 		} else {
 #define PATTERN_READ_BS_SERVER "+QLWSERVERIP:BS,"
-			if (p = strstr(pHead, PATTERN_READ_BS_SERVER)) {
+			if ((p = strstr(pHead, PATTERN_READ_BS_SERVER))) {
 				if (!parse_lwm2m_server(p + strlen(PATTERN_READ_BS_SERVER))) {
 					modemCtx.proc.runInit = 1;
 				}
@@ -651,7 +651,7 @@ void MODEM_response(char *pHead, int len)
 			isRleaseBusy = TRUE;
 		} else {
 #define PATTERN_READ_EPN "+QLWEPNS: "
-			if (p = strstr(pHead, PATTERN_READ_EPN)) {
+			if ((p = strstr(pHead, PATTERN_READ_EPN))) {
 				p += strlen(PATTERN_READ_EPN);
 				if (!parse_ep_name(p)) {
 					modemCtx.proc.runInit = 1;
@@ -670,7 +670,7 @@ void MODEM_response(char *pHead, int len)
 			isRleaseBusy = TRUE;
 		} else {
 #define PATTERN_READ_BS_PARAM "+QLWMBSPS: "
-			if (p = strstr(pHead, PATTERN_READ_BS_PARAM)) {
+			if ((p = strstr(pHead, PATTERN_READ_BS_PARAM))) {
 				p += strlen(PATTERN_READ_BS_PARAM);
 				if (!parse_bs_param(p)) {
 					modemCtx.proc.runInit = 1;
@@ -680,12 +680,6 @@ void MODEM_response(char *pHead, int len)
 			if (isAckOk) {
 				isRleaseBusy = TRUE;
 			}
-		}
-		break;
-
-	case AT_CMD_IDX_RUN_BOOTSTRAP:
-		if (modemCtx.lwm2m.bsFinish) {
-			isRleaseBusy = TRUE;
 		}
 		break;
 
@@ -721,9 +715,9 @@ void MODEM_response(char *pHead, int len)
 			}
 
 #define PATTERN_RECV_DL "+NSONMI:"
-			if (p = strstr(pHead, PATTERN_RECV_DL)) {
+			if ((p = strstr(pHead, PATTERN_RECV_DL))) {
 				if (modemCtx.socket == atoi(p + strlen(PATTERN_RECV_DL))) {
-					if (p = strstr(p, ",")) {
+					if ((p = strstr(p, ","))) {
 						modemComm.dlDataLen = atoi(++p);
 						isRleaseBusy = TRUE;
 						modemCtx.dlCnt++;
@@ -741,7 +735,7 @@ void MODEM_response(char *pHead, int len)
 
 	case AT_CMD_IDX_SOCKET_CREATE:
 #define PATTERN_CREATE_SOCKET "OK"
-		if (p = strstr(pHead, PATTERN_CREATE_SOCKET)) {
+		if ((p = strstr(pHead, PATTERN_CREATE_SOCKET))) {
 			// 'OK'를 기준으로 '\r\n\r\n' 이전에 socket number 값이 존재.
 			isRleaseBusy = TRUE;
 			modemCtx.socket = atoi(p -= 5);
@@ -758,7 +752,7 @@ void MODEM_response(char *pHead, int len)
 	case AT_CMD_IDX_GET_SWITCH_LWM2M:
 #define PATTERN_SWT_LWM2M "+QREGSWT:"
 #define FLAG_DISABLE_LWM2M 2
-		if (p = strstr(pHead, PATTERN_SWT_LWM2M)) {
+		if ((p = strstr(pHead, PATTERN_SWT_LWM2M))) {
 			isRleaseBusy = TRUE;
 			int status = atoi(p + strlen(PATTERN_SWT_LWM2M));
 			if (status != FLAG_DISABLE_LWM2M) {
@@ -789,7 +783,7 @@ void MODEM_response(char *pHead, int len)
 		break;
 
 	case AT_CMD_IDX_GET_REPORT_PSM:
-		if (p = strstr(pHead, PATTERN_CHK_PSM_PREFIX)) {
+		if ((p = strstr(pHead, PATTERN_CHK_PSM_PREFIX))) {
 			if (modemCtx.status.psmOn == 0) {
 				isRleaseBusy = TRUE;
 			}
