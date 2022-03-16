@@ -92,18 +92,20 @@ int MISC_getDeviceType()
 
 void MISC_delayUs(uint32 timeout)
 {
+	volatile uint32 t = timeout;
 	// This sequence uses exactly 8 clock cycle for each round (1 micro sec)
 	do {
 		NOP();
 		NOP();
 		NOP();
 		NOP();
-	} while (--timeout);
+	} while (--t);
 } // MISC_delayUs
 
 void MISC_delayMs(uint32 timeout)
 {
-	unsigned int i;
+	volatile uint32 t = timeout;
+	volatile unsigned int i;
 	// This sequence uses exactly 8000 clock cycle for each round (1ms)
 	do {
 		i = 1000;
@@ -113,7 +115,7 @@ void MISC_delayMs(uint32 timeout)
 			NOP();
 			NOP();
 		} while (--i);
-	} while (--timeout);
+	} while (--t);
 } // MISC_delayMs
 
 /////////////////////////////////////////////////////////////////
