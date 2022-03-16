@@ -112,7 +112,7 @@ void MODEM_turnOff()
 
 		modemCtx.lwm2m.value = 0;
 		modemCtx.status.cellreg = 0;
-		memset(&modem.lastCertifyTime, 0, sizeof(Date_t));
+		/* memset(&modem.lastCertifyTime, 0, sizeof(Date_t)); */
 	}
 }
 
@@ -383,10 +383,6 @@ void MODEM_timeout()
 
 		OSAL_startEventTimer(AppTaskId, APP_EVENT_MODEM_TIMEOUT, modemComm.timeout);
 	} else {
-		printf_ts("MODEM : state(%s) retry state(%s) retry count(%d)",
-			  MODEM_STEP_STRING(modemCtx.step), MODEM_STEP_STRING(modemCtx.retryStep),
-			  modemCtx.retryCount);
-
 		// Clear MODEM AT command working flag
 		modemCtx.status.busy = 0;
 
@@ -404,11 +400,18 @@ void MODEM_timeout()
 			case MODEM_STEP_CERTIFY:
 				maxRetryCount = NBIOT_ONEM2M_RETRY;
 				break;
+			case MODEM_STEP_TRANSFER:
+				maxRetryCount = NBIOT_TRANSFER_RETRY;
+				break;
 			default:
 				maxRetryCount = 0;
 				break;
 			}
 		}
+
+		printf_ts("MODEM : state(%s) retry state(%s) retry count(%d)",
+			  MODEM_STEP_STRING(modemCtx.step), MODEM_STEP_STRING(modemCtx.retryStep),
+			  modemCtx.retryCount);
 
 		// 재시도 과정에서 실패할 경우 재시도 횟수와 관계없이 Fail처리.
 		if (modemCtx.step != MODEM_STEP_RETRY && modemCtx.retryCount < maxRetryCount) {

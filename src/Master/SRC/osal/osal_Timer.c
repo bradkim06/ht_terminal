@@ -286,10 +286,9 @@ __interrupt void TIMER1_A0_ISR(void)
 
 			// When timeout, execute the task
 			if (srchTimer->timeout == 0) {
-				OSAL_setEvent(srchTimer->taskId, srchTimer->event_flag);
-
 				//Active ON시 Power Mode를 종료한다.
 				SET_ACTIVE_OFF_LPM(FALSE);
+				OSAL_setEvent(srchTimer->taskId, srchTimer->event_flag);
 
 				// Take out of list
 				if (prevTimer == NULL)

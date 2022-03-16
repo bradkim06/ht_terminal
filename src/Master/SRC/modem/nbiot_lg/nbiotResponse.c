@@ -785,7 +785,6 @@ void MODEM_response(char *pHead, int len)
 	case AT_CMD_IDX_DETACH_NW:
 		if (isAckOk) {
 			isRleaseBusy = TRUE;
-			/* modemCtx.status.cellreg = 0; */
 		}
 		break;
 

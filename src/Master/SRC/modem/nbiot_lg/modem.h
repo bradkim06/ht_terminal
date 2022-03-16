@@ -20,9 +20,10 @@
 #define LG_PUASED_RETRY_HOUR_INTERVAL 24
 
 // NB-IoT 총 재시도 횟수 (마지막 1회는 H/W reset, 그 외 재시도는 S/W reset)
-#define NBIOT_BIP_RETRY 2
-#define NBIOT_ATTACH_RETRY 1
-#define NBIOT_ONEM2M_RETRY 1
+#define NBIOT_BIP_RETRY 1
+#define NBIOT_ATTACH_RETRY 2
+#define NBIOT_ONEM2M_RETRY 2
+#define NBIOT_TRANSFER_RETRY 2
 
 // LG platform 연동시 생성하는 데이터 길이 정의
 #define LEN_MODEM_IMEI_IMSI 15
