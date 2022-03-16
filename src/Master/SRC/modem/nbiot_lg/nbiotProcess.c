@@ -1156,7 +1156,7 @@ static ModemStep_t detachNw()
 	switch (StepFlowIndex.detach) {
 	case 0: {
 		if (modemCtx.lwm2m.regFinish) {
-#define DETACH_DELAY 1000
+#define DETACH_DELAY 2000
 			sendNoRespAtCommand(DETACH_DELAY, &AtCmdRunRegister, "=1");
 		} else {
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
