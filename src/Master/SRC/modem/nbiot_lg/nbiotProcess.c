@@ -61,7 +61,7 @@
 #define MODEM_FOTA_COMPLETE_WAIT 60000
 
 #define MODEM_EVENT_INTERVAL 1000
-#define MODEM_BOOTUP_INTERVAL 10000
+#define MODEM_BOOTUP_INTERVAL 8000
 
 #define END_STEP_FLOW_INDEX 0xFF
 #define ENTER_PSM_FLOW_INDEX 0xFE
@@ -1155,15 +1155,6 @@ static ModemStep_t detachNw()
 	static uint32 startEventTimeMsec = 0;
 	switch (StepFlowIndex.detach) {
 	case 0: {
-		if (modemCtx.lwm2m.regFinish) {
-#define DETACH_DELAY 2000
-			sendNoRespAtCommand(DETACH_DELAY, &AtCmdRunRegister, "=1");
-		} else {
-			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
-		}
-		StepFlowIndex.detach++;
-	} break;
-	case 1: {
 		// FOTA 완료 시 기존 인증절차도 초기화 되므로 De-register를 할 필요가 없음.
 		// 다만, 단말 F/W에서 진행여부를 판단하는 Flag이므로 초기화는 안함.
 		sendAtCommand(AT_CMD_COMM_TIMEOUT, AT_CMD_COMM_DETACH_RETRY, &AtCmdDetachNw, "=0");
@@ -1172,7 +1163,7 @@ static ModemStep_t detachNw()
 		StepFlowIndex.detach++;
 	} break;
 
-	case 2: {
+	case 1: {
 		// wait detach time
 		if (TIMER_getMsecDiff(startEventTimeMsec) >= DETACH_DELAY_TIME) {
 			OSAL_setEvent(AppTaskId, APP_EVENT_MODEM_PROCESS);
