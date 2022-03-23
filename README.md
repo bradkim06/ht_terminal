@@ -27,8 +27,13 @@ flowchart TD
 
 #### Main
 
-- [ ] Flash Read시 쓰레기 데이터가 들어오는지 확인, 초기화하는 기능 추가 필요
-- [ ] 최종버전(U325) 현장 불량 검토 --> 신규 불량이 존재하는지?
+- [x] Flash Read시 쓰레기 데이터가 들어오는지 확인, 초기화하는 기능 추가 필요
+
+- [x] 최종버전(U325) 현장 불량 검토 --> 신규 불량이 존재하는지?
+
+  - [x] NFC 불량
+  - [x] Flash 불량
+  - [x] 통신 불량
 
 - [x] 유선 펌웨어 업그레이드 기능 확인
 
@@ -52,13 +57,139 @@ flowchart TD
 
 # 단말기 변경 이력
 
-### LoRa SKT F/W 유선 업그레이드 Test (2022-03-03)
+## NB-IoT
 
-- [x] Test Ok
+### NB-IoT P/F 개선
 
-#### dataSkipMode LoRa 구조체에도 추가
+#### NB-IoT 통신 절차 개선 (2022-03-16)
 
-### LoRa SKT Project 생성 (2022-03-03)
+##### Timeout / Retry 변경
+
+| Step                    | Timeout(기존->변경) | Retry(기존->변경) |
+| ----------------------- | ------------------- | ----------------- |
+| Attach                  | X(120sec)           | 1->2              |
+| P/F Bootstrap, Register | X(90sec)            | 1->2              |
+| Uplink Data             | 10sec -> 30sec      | 0->2              |
+| Check Time              | 120sec-> 60sec      | X                 |
+| Bip                     | 300sec -> 50sec     | X                 |
+
+> 기존 Uplink는 OK Response만 받았으나 이제 Uplink 전송여부를 받으므로 시간 증가.
+
+> Bip 원격개통을 하지 않으므로 시간 감소
+
+##### 절차 변경
+
+- P/F Register시 Fail이 자주 발생. Uplink 후 Deregister를 하도록 변경.
+- 마지막 Retry는 Modem 종료후 2분뒤 시도하도록 변경
+
+#### 최적화 기능 lv2 ON (2022-03-16)
+
+delay 함수들 변수 volatile type 변경 (최적화 방지)
+
+#### Interrupt Service Routine 에서 Interrupt Enable bit 조작시 MCU hang (2022-03-16)
+
+NFC Service Routine 제외 bit 조작처리 삭제.
+발생하더라도 WDTHOLD를 하지 않게 수정 했으므로 1시간 뒤 복구.
+
+#### MSP430F5419A Errata(FLASH35) 적용. (2022-03-15)
+
+특정 상황에서 Flash Read Error 발생하는 칩 버그
+
+##### 발생 상황 시나리오
+
+펌웨어에서 해당되는 사항들만 기록.  
+해당 사항들은 MCU hang, Flash 깨짐 불량의 원인중 하나로 보임
+
+###### Affected Devices
+
+- MSP430F5419AIPZ
+- MSP430F5419AIPZR
+- MSP430F5419AIZQW
+- MSP430F5419AIZQWR
+- MSP430F5419AIZQWT
+
+###### Affected Memory Location
+
+- bank 0/2
+- Info A/C
+- BSL 0/2
+
+###### Affected Flash Idle Time
+
+Flash Access한 시간이 아래 상황의 Idle Time보다 길면 첫번째 Flash Access에서 발생 가능
+
+> Flash Access Time은 Bank 각각으로 적용됨.
+> example) Flash A Bank실행 200ms후 B Bank로 넘어가면 발생가능
+
+| 온도[°C] | Idle Time Typical [ms] |
+| -------- | ---------------------- |
+| 30       | 15                     |
+| 50       | 2                      |
+| 85       | 0.5                    |
+
+###### LPM Use
+
+LPM 사용 후 실행된 ISR_VECTOR가 Flash Read Error로 잘못된 주소로 실행될 수 있음.
+
+###### Flash Segment Erase
+
+Flash Segment Erase시 기본적으로 23ms~32ms가 소모됨.  
+Flash Idle Time을 넘으므로 Flash Read Error 발생 가능함
+
+###### BSL Entry and Exit
+
+BSL 진입, 퇴장시 발생 가능
+
+##### Application Robustness
+
+TI에서 제안한 방법은 아래에 적용하지만 불가능한 부분들이 존재.
+불가능한 부분은 잘못된 code memory 접근시 무한루프 빠짐,  
+따라서 WDT Time 16s->1h 8min으로 변경 & WDTHOLD를 하지 않는것으로 대처
+
+- 대처 방안
+  - [x] Vcore Level low
+  - [x] ISR memory location above 0x8000
+  - [x] Flash Erase시 asm코드(asm(" bis.w #0,R3 ");) 추가
+
+##### See Detail Errata Sheet
+
+[MSP430F5419A Microcontroller Errata (Rev. AC)](https://www.ti.com/lit/er/slaz282ac/slaz282ac.pdf?ts=1647223226855&ref_url=https%253A%252F%252Fwww.ti.com%252Fdocument-viewer%252FMSP430F5419A%252Fdatasheet%252FGUID-82181F47-3DE4-4ED4-9826-67BF00DB88C6)
+
+[Flash Read Error and Susceptibility for MSP430F54xxA](https://www.ti.com/lit/an/slaa470/slaa470.pdf?ts=1647398329345&ref_url=https%253A%252F%252Fwww.google.com%252F)
+
+#### Flash 불량(깨짐) 개선 (2022-03-14)
+
+Flash Memory가 깨져 Server IP,Port, 서비스코드등이 부정확해져 통신실패가 발생하는 불량 개선.
+
+- config_t, 설정 전역변수(RAM) NO_INIT Pragma
+- FLASH Write Fail시 Reboot (x)
+- FLASH Read Fail시 Server IP,Port,S/N, IMEI등의 정보는 초기화 하지 않음.
+  - FLASH Read Ok시 이전과 동일하게 설정 전역변수 모두 Flash Data로 덮어씀.
+
+#### malloc() 실패시 Reboot 추가 (2022-03-11)
+
+일부 malloc()실패해도 Reboot되지 않는 부분 수정.
+
+#### Flash Code Refactoring (2022-03-11)
+
+- Flash Write 실패시 Reboot 삭제.
+- Flash Busy시 printf 추가
+
+#### NB bip() Timeout / Retry 변경 (2022-03-11)
+
+- 20초/15회 -> 5초/10회
+
+#### 사용하지 않는 코드 삭제 (2022-03-11)
+
+- app.c
+  - APP_runPeriodicCheckNFC()
+- MSP430FlashUtil.c
+  - initFlash()
+  - doneFlash()
+- NFC_i2c.c
+  - NFC_checkTagSetting()
+- flashDriver.c
+  - FLASH_readResetCause()
 
 ### BSL 기능 수정, 테스트 (2022-03-02)
 
@@ -295,3 +426,13 @@ QLWULDATASTATUS:[Status] Status가 4가 아니라면 Uplink실패이므로 재�
 ### 강나루 대리 변경사항 Merge (2022-01-24)
 
 Bsl Update 기능 오류 수정
+
+## LoRa
+
+### LoRa SKT F/W 유선 업그레이드 Test (2022-03-03)
+
+- [x] Test Ok
+
+#### dataSkipMode LoRa 구조체에도 추가
+
+### LoRa SKT Project 생성 (2022-03-03)
