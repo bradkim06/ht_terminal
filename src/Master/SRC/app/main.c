@@ -212,6 +212,13 @@ void initSystem()
 #pragma CODE_SECTION(main, "MAIN")
 int main()
 {
+	WDTCTL = WDTPW | WDTHOLD;
+#define ISR_RAM_ADDR 0x1C00
+#define ISR_FLASH_ADDR 0x20000
+#define ISR_SIZE 0x4D0
+	// isr copy ram (size & addr need to check lnk.cmd)
+	memcpy((void *)ISR_RAM_ADDR, (const void *)ISR_FLASH_ADDR, ISR_SIZE);
+
 	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 	initSystem();
 

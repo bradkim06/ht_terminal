@@ -4,6 +4,7 @@
 #include "common_header.h"
 #include "osal_Timer.h"
 #include "port_desc.h"
+#include "uart.h"
 
 #include "Task_Mgr.h"
 #include "check_meter_misc.h"

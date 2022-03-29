@@ -1073,7 +1073,7 @@ void TEST_run()
 #else // NBIOT_DEVICE
 	printf("(NB-IoT)\n");
 #endif
-	printf("   Compiled at (%s / %s)\n", __DATE__, __TIME__);
+	/* printf("   Compiled at (%s / %s)\n", __DATE__, __TIME__); */
 	printf("===========================================\n");
 	printf("\n");
 
