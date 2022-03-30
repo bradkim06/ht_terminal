@@ -11,6 +11,28 @@
 #include "battery.h"
 
 static BOOL IsTestModeOn = FALSE;
+
+static BOOL checkTestMode()
+{
+	// P1.0 --> if 0 with inernal pull-up, test mode
+	//          else normal mode
+
+	P1DIR |= 0x01;
+	P1REN |= 0x01;
+	P1OUT |= 0x01;
+
+	P1DIR &= ~0x01;
+
+	MISC_delayUs(1); // specific case need this delay
+
+	BOOL IsTestMode = (P1IN & 0x01) ? FALSE : TRUE;
+
+	P1DIR |= 0x01;
+	P1OUT &= ~0x01;
+
+	return IsTestMode;
+}
+
 void initClock(void)
 {
 	UCSCTL3 |= SELREF_2; // Set DCO FLL reference = REFO
@@ -201,7 +223,7 @@ void initSystem()
 #define TEST_WAIT_DELAY (100)
 #define TEST_CHECK_COUNT (500 / TEST_WAIT_DELAY)
 	for (int i = 0; i < TEST_CHECK_COUNT; i++) {
-		IsTestModeOn = TEST_checkTestMode();
+		IsTestModeOn = checkTestMode();
 		if (IsTestModeOn == FALSE) {
 			break;
 		}
@@ -215,12 +237,12 @@ int main()
 	WDTCTL = WDTPW | WDTHOLD;
 #define ISR_RAM_ADDR 0x1C00
 #define ISR_FLASH_ADDR 0x20000
-#define ISR_SIZE 0x4D0
+#define ISR_SIZE 0x600
 	// isr copy ram (size & addr need to check lnk.cmd)
-	memcpy((void *)ISR_RAM_ADDR, (const void *)ISR_FLASH_ADDR, ISR_SIZE);
+	memcpy((void *)ISR_RAM_ADDR, (void *)ISR_FLASH_ADDR, ISR_SIZE);
 
-	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 	initSystem();
+	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 
 	// 시스템 초기화 및 테스트모드 여부 확인 후 WDT는 16초로 재설정
 	// 1. App level의 코드 구동 시 Console 출력이 포함되어 동작 시간이 유동적으로 변함.
@@ -228,6 +250,7 @@ int main()
 
 	WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 	if (IsTestModeOn) {
+		TEST_checkTestMode();
 		TEST_run();
 	} else {
 		TASKMGR_init();

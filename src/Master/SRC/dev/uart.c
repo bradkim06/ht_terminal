@@ -12,6 +12,7 @@
 #include "rtcAlarm.h"
 #include "modem.h"
 #include "test.h"
+#include "fota.h"
 
 #define USCI_A0_TX_PIN BM(4)
 #define USCI_A0_RX_PIN BM(5)
@@ -756,7 +757,9 @@ __interrupt void USCI_A2_ISR(void)
 			if (++p->wpos >= p->len) {
 				p->wpos = 0;
 			}
-			OSAL_startEventTimer(AppTaskId, APP_EVENT_MODEM_RX, (uint32)200);
+			if (fotaStatus == 0) {
+				OSAL_startEventTimer(AppTaskId, APP_EVENT_MODEM_RX, (uint32)200);
+			}
 		}
 	}
 }

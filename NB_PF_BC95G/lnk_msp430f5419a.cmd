@@ -109,7 +109,7 @@
 #define MODEM_LEN 0x1000
 
 #define ISR_ADDR 0x1C00
-#define ISR_LEN 0x600
+#define ISR_LEN 0x500
 
 #define RAM_ADDR ISR_ADDR + ISR_LEN
 
@@ -119,7 +119,7 @@ MEMORY
     PERIPHERALS_8BIT        : origin = 0x0010, length = 0x00F0
     PERIPHERALS_16BIT       : origin = 0x0100, length = 0x0100
     ISR                     : origin = ISR_ADDR, length = ISR_LEN
-    RAM                     : origin = RAM_ADDR, length = 0x3A00
+    RAM                     : origin = RAM_ADDR, length = 0x3B00
     INFOA                   : origin = 0x1980, length = 0x0080
     INFOB                   : origin = 0x1900, length = 0x0080
     INFOC                   : origin = 0x1880, length = 0x0080
@@ -148,47 +148,6 @@ MEMORY
     /* MODEM                   : origin = MODEM_ADDR, length = MODEM_LEN */
     FLASHC                  : origin = 0x10200,length = 0xFE00
     FLASHD                  : origin = 0x20000,length = 0x3300
-    /* INT00                   : origin = 0xFF80, length = 0x0002 */
-    /* INT01                   : origin = 0xFF82, length = 0x0002 */
-    /* INT02                   : origin = 0xFF84, length = 0x0002 */
-    /* INT03                   : origin = 0xFF86, length = 0x0002 */
-    /* INT04                   : origin = 0xFF88, length = 0x0002 */
-    /* INT05                   : origin = 0xFF8A, length = 0x0002 */
-    /* INT06                   : origin = 0xFF8C, length = 0x0002 */
-    /* INT07                   : origin = 0xFF8E, length = 0x0002 */
-    /* INT08                   : origin = 0xFF90, length = 0x0002 */
-    /* INT09                   : origin = 0xFF92, length = 0x0002 */
-    /* INT10                   : origin = 0xFF94, length = 0x0002 */
-    /* INT11                   : origin = 0xFF96, length = 0x0002 */
-    /* INT12                   : origin = 0xFF98, length = 0x0002 */
-    /* INT13                   : origin = 0xFF9A, length = 0x0002 */
-    /* INT14                   : origin = 0xFF9C, length = 0x0002 */
-    /* INT15                   : origin = 0xFF9E, length = 0x0002 */
-    /* INT16                   : origin = 0xFFA0, length = 0x0002 */
-    /* INT17                   : origin = 0xFFA2, length = 0x0002 */
-    /* INT18                   : origin = 0xFFA4, length = 0x0002 */
-    /* INT19                   : origin = 0xFFA6, length = 0x0002 */
-    /* INT20                   : origin = 0xFFA8, length = 0x0002 */
-    /* INT21                   : origin = 0xFFAA, length = 0x0002 */
-    /* INT22                   : origin = 0xFFAC, length = 0x0002 */
-    /* INT23                   : origin = 0xFFAE, length = 0x0002 */
-    /* INT24                   : origin = 0xFFB0, length = 0x0002 */
-    /* INT25                   : origin = 0xFFB2, length = 0x0002 */
-    /* INT26                   : origin = 0xFFB4, length = 0x0002 */
-    /* INT27                   : origin = 0xFFB6, length = 0x0002 */
-    /* INT28                   : origin = 0xFFB8, length = 0x0002 */
-    /* INT29                   : origin = 0xFFBA, length = 0x0002 */
-    /* INT30                   : origin = 0xFFBC, length = 0x0002 */
-    /* INT31                   : origin = 0xFFBE, length = 0x0002 */
-    /* INT32                   : origin = 0xFFC0, length = 0x0002 */
-    /* INT33                   : origin = 0xFFC2, length = 0x0002 */
-    /* INT34                   : origin = 0xFFC4, length = 0x0002 */
-    /* INT35                   : origin = 0xFFC6, length = 0x0002 */
-    /* INT36                   : origin = 0xFFC8, length = 0x0002 */
-    /* INT37                   : origin = 0xFFCA, length = 0x0002 */
-    /* INT38                   : origin = 0xFFCC, length = 0x0002 */
-    /* INT39                   : origin = 0xFFCE, length = 0x0002 */
-    /* INT40                   : origin = 0xFFD0, length = 0x0002 */
     INT41                   : origin = 0xFFD2, length = 0x0002
     INT42                   : origin = 0xFFD4, length = 0x0002
     INT43                   : origin = 0xFFD6, length = 0x0002
@@ -225,17 +184,17 @@ SECTIONS
     .TI.noinit  : {} > RAM                  /* For #pragma noinit                */
     .sysmem     : {} > RAM                  /* Dynamic memory allocation area    */
     .stack      : {} > RAM (HIGH)           /* Software system stack             */
-    MAIN		: {} > MAIN_CODE
+    MAIN		: {} > FLASHD
 
     test_section {
+        md5.obj (.text)
+        uuid.obj (.text)
         mTest.obj (.text)
         test.obj (.text)        
         shell.obj (.text)
         test.obj (.const)        
         mTest.obj (.const)
         shell.obj (.const)
-        md5.obj (.text)
-        uuid.obj (.text)
     } > TEST
 
     /* meter { */
@@ -333,25 +292,8 @@ SECTIONS
     /*     modem.obj (.const) */
     /* } > MODEM */
 
-    /* test : > FLASHD */
-    /* { */
-    /*     --library=rts430x_lc_ld_eabi.lib(.text:snprintf) */
-    /* } */
-
     isr_code {
         * (.text:_isr)
-        /* app.obj (.text:_isr:Port_1) */
-        /* app.obj (.text:_isr:Port_2) */
-        /* app.obj (.text:_isr:RTC_ISR) */
-        /* app.obj (.text:_isr:UNMI_ISR) */
-        /* uart.obj (.text:_isr:USCI_A0_ISR) */
-        /* uart.obj (.text:_isr:USCI_A1_ISR) */
-        /* uart.obj (.text:_isr:USCI_A2_ISR) */
-        /* uart.obj (.text:_isr:USCI_A3_ISR) */
-        /* NFC_i2c.obj (.text:_isr:USCI_B3_ISR) */
-        /* osal_Timer.obj (.text:_isr:TIMER1_A0_ISR) */
-        /* --library=rts430x_lc_ld_eabi.lib(.text:_isr) */
-        /* --library=rts430x_lc_ld_eabi.lib(.text:_isr:__TI_ISR_TRAP) */
     } load=0x20000, run=ISR
 
     library_section : > FLASHB (HIGH)
@@ -363,6 +305,7 @@ SECTIONS
         uart.obj (.text:UART_send)
         uart.obj (.text:UART_receive)
         check_meter_misc.obj (.text:MISC_delayMs)
+        test.obj (.text:TEST_isTestMode)
     } load=FLASHD, run=RAM, table(BINIT)
 
 #ifndef __LARGE_CODE_MODEL__

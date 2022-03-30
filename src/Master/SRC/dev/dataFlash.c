@@ -22,7 +22,7 @@ static uint32 testMeterData = 0;
 static void waitIdle()
 {
 	int idle = 0;
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 10000; i++) {
 		if ((FCTL3 & BUSY) == 0) {
 			idle = 1;
 			break;
@@ -133,6 +133,11 @@ static void writeSector(int sector, uint8 *buf)
 		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
 		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
 		asm(" bis.w #0,R3 "); // Flash contents: 0x03 0xd3
+
+		FCTL1 = FWKEY;
+		FCTL3 = FWKEY + LOCK;
+
+		waitIdle();
 
 		FCTL3 = FWKEY; // clear lock
 		FCTL1 = FWKEY + WRT; // Set Write bit
