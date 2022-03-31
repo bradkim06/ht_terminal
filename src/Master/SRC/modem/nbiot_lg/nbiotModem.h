@@ -45,6 +45,8 @@
 #define AT_CMD_IDX_GET_DATA_STATUS 38
 #define AT_CMD_IDX_GET_REPORT_PSM 39
 #define AT_CMD_IDX_QLWULDATAEX 40
+#define AT_CMD_IDX_TCP_CONNECT 41
+#define AT_CMD_IDX_TCP_SEND_UL 42
 
 #define MODEM_CELLREG_NOT_REG 0
 #define MODEM_CELLREG_ATTACHED 1
@@ -61,6 +63,7 @@ typedef enum {
 	MODEM_STEP_TRANSFER, // Send UDP uplink
 	MODEM_STEP_CERTIFY,
 	MODEM_STEP_FOTA,
+	MODEM_STEP_DFOTA,
 	MODEM_STEP_UPDATE_QA,
 	MODEM_STEP_DETACH_NW,
 	MODEM_STEP_RETRY, // MODEM step retry operation
@@ -166,24 +169,17 @@ extern ModemComm_t modemComm;
 extern ModemContext_t modemCtx;
 
 #define MODEM_STEP_STRING(x)                                                                       \
-	(((x) == MODEM_STEP_IDLE) ?                                                                \
-		 "IDLE" :                                                                          \
-		 ((x) == MODEM_STEP_BIP) ?                                                         \
-		 "BIP" :                                                                           \
-		 ((x) == MODEM_STEP_INIT) ?                                                        \
-		 "INIT" :                                                                          \
-		 ((x) == MODEM_STEP_ATTACH_NW) ?                                                   \
-		 "ATTACH NW" :                                                                     \
-		 ((x) == MODEM_STEP_DETACH_NW) ?                                                   \
-		 "DETACH NW" :                                                                     \
-		 ((x) == MODEM_STEP_FOTA) ?                                                        \
-		 "FOTA" :                                                                          \
-		 ((x) == MODEM_STEP_UPDATE_QA) ?                                                   \
-		 "UPDATE QA" :                                                                     \
-		 ((x) == MODEM_STEP_CERTIFY) ?                                                     \
-		 "CERTIFY" :                                                                       \
-		 ((x) == MODEM_STEP_TRANSFER) ? "TRANSFER" :                                       \
-						((x) == MODEM_STEP_RETRY) ? "RETRY" : "UNKNOWN")
+	(((x) == MODEM_STEP_IDLE)      ? "IDLE" :                                                  \
+	 ((x) == MODEM_STEP_BIP)       ? "BIP" :                                                   \
+	 ((x) == MODEM_STEP_INIT)      ? "INIT" :                                                  \
+	 ((x) == MODEM_STEP_ATTACH_NW) ? "ATTACH NW" :                                             \
+	 ((x) == MODEM_STEP_DETACH_NW) ? "DETACH NW" :                                             \
+	 ((x) == MODEM_STEP_FOTA)      ? "FOTA" :                                                  \
+	 ((x) == MODEM_STEP_UPDATE_QA) ? "UPDATE QA" :                                             \
+	 ((x) == MODEM_STEP_CERTIFY)   ? "CERTIFY" :                                               \
+	 ((x) == MODEM_STEP_TRANSFER)  ? "TRANSFER" :                                              \
+	 ((x) == MODEM_STEP_RETRY)     ? "RETRY" :                                                 \
+					       "UNKNOWN")
 
 void MODEM_detach();
 BOOL MODEM_process();

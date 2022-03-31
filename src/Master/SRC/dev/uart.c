@@ -728,36 +728,40 @@ __interrupt void USCI_A1_ISR(void)
 #pragma vector = USCI_A2_VECTOR
 __interrupt void USCI_A2_ISR(void)
 {
-	if (UCA2IFG & UCTXIFG) { // USCI_A2 TX
-		if (uartA2->txBuf == NULL) {
-			return;
+	if (fotaStatus) {
+		if (UCA2IFG & UCRXIFG) {
+			rxBuf[rxLen++] = UCA2RXBUF;
 		}
+	} else {
+		if (UCA2IFG & UCTXIFG) { // USCI_A2 TX
+			if (uartA2->txBuf == NULL) {
+				return;
+			}
 
-		UartBuf_t *p = uartA2->txBuf;
-		if (p->rpos == p->wpos) {
-			UCA2IE &= ~UCTXIE; // txbuf empty --> disable tx interrupt
-		} else {
-			UCA2TXBUF = p->buf[p->rpos++]; // send the data
-			if (p->rpos >= p->len) {
-				p->rpos = 0;
+			UartBuf_t *p = uartA2->txBuf;
+			if (p->rpos == p->wpos) {
+				UCA2IE &= ~UCTXIE; // txbuf empty --> disable tx interrupt
+			} else {
+				UCA2TXBUF = p->buf[p->rpos++]; // send the data
+				if (p->rpos >= p->len) {
+					p->rpos = 0;
+				}
 			}
 		}
-	}
 
-	if (UCA2IFG & UCRXIFG) { // USCI_A2 RX
-		if (uartA2->rxBuf == NULL) {
-			return;
-		}
-
-		UartBuf_t *p = uartA2->rxBuf;
-		if (((p->wpos + 1) % p->len) == p->rpos) {
-			p->wpos = p->rpos = 0;
-		} else {
-			p->buf[p->wpos] = UCA2RXBUF;
-			if (++p->wpos >= p->len) {
-				p->wpos = 0;
+		if (UCA2IFG & UCRXIFG) { // USCI_A2 RX
+			if (uartA2->rxBuf == NULL) {
+				return;
 			}
-			if (fotaStatus == 0) {
+
+			UartBuf_t *p = uartA2->rxBuf;
+			if (((p->wpos + 1) % p->len) == p->rpos) {
+				p->wpos = p->rpos = 0;
+			} else {
+				p->buf[p->wpos] = UCA2RXBUF;
+				if (++p->wpos >= p->len) {
+					p->wpos = 0;
+				}
 				OSAL_startEventTimer(AppTaskId, APP_EVENT_MODEM_RX, (uint32)200);
 			}
 		}

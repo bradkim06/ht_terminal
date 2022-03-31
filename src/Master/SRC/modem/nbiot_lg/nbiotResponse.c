@@ -1,3 +1,4 @@
+#include "nbiotModem.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -234,7 +235,7 @@ static int parse_udp_downlink(char *p)
 
 	do {
 		// ip address Search (Downlink 응답이 아닌것을 필터링)
-		strncpy(ipAddr, conf.serverIp, SERVER_IP_STR_LEN);
+		strncpy(ipAddr, DFOTA_IP, SERVER_IP_STR_LEN);
 		if ((p = strstr(p, ipAddr)) == NULL) {
 			break;
 		}
@@ -301,7 +302,10 @@ static int parse_udp_downlink(char *p)
 		// more field
 		int more = atoi(p);
 
-		valid = 1;
+		if (strstr(modemComm.dlData, "fota")) {
+			printf("dlData(%s), len(%d)\n", modemComm.dlData, modemComm.dlDataLen);
+			valid = 1;
+		}
 	} while (0);
 
 	return valid;
@@ -473,6 +477,11 @@ void MODEM_response(char *pHead, int len)
 #define PATTERN_FOTA_RESET "REBOOT_CAUSE_SECURITY_FOTA_UPGRADE"
 	if (strstr(pHead, PATTERN_FOTA_RESET)) {
 		modemCtx.lwm2m.fotaFinish = 1;
+	}
+
+#define PATTERN_BOOTSTRAP "REGISTERNOTIFY"
+	if (strstr(pHead, PATTERN_BOOTSTRAP)) {
+		modemCtx.lwm2m.bsFinish = 1;
 	}
 
 #define PATTERN_SERVER_NOTIFY "+QLWEVTIND:"
@@ -773,6 +782,26 @@ void MODEM_response(char *pHead, int len)
 		if (parseQLWULDATAEX(pHead, &modemCtx)) {
 			modemCtx.pfUlCnt++;
 			isRleaseBusy = TRUE;
+		}
+		break;
+
+	case AT_CMD_IDX_TCP_SEND_UL:
+#define PATTERN_TCP_UPLINK_CONFIRM "+NSOSTR:1,101,1"
+		if ((strstr(pHead, PATTERN_TCP_UPLINK_CONFIRM))) {
+			isRleaseBusy = TRUE;
+		}
+		break;
+
+	case AT_CMD_IDX_TCP_CONNECT:
+#define PATTERN_RECV_DL "+NSONMI:"
+		if ((p = strstr(pHead, PATTERN_RECV_DL))) {
+			if (modemCtx.socket == atoi(p + strlen(PATTERN_RECV_DL))) {
+				if ((p = strstr(p, ","))) {
+					modemComm.dlDataLen = atoi(++p);
+					isRleaseBusy = TRUE;
+					modemCtx.dlCnt++;
+				}
+			}
 		}
 		break;
 

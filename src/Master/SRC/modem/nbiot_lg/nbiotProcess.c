@@ -1,4 +1,6 @@
-#include "meter.h"
+#include "device.h"
+#include "flashDriver.h"
+#include "stdio.h"
 #include <msp430.h>
 #include <ctype.h>
 #include <time.h>
@@ -6,6 +8,9 @@
 #include "common_header.h"
 #include "uart.h"
 #include "check_meter_misc.h"
+#include "Task_Mgr.h"
+#include "meter.h"
+#include "osal.h"
 #include "osal_Timer.h"
 #include "app.h"
 #include "rtcAlarm.h"
@@ -16,9 +21,15 @@
 #include "uuid.h"
 #include "message.h"
 #include "nbiotModem.h"
+#include "fota.h"
+#include "nbiotResponse.h"
 
 // AT command deregister delay
 #define DEREGISTER_DELAY 5000
+
+// FOTA timeout
+#define FOTA_TIMEOUT 10000
+#define FOTA_RETRY 0
 
 // AT command default timeout/retry
 #define AT_CMD_DEFAULT_TIMEOUT 3000
@@ -84,6 +95,7 @@ typedef struct {
 	uint8 transfer;
 	uint8 certify;
 	uint8 fota;
+	uint8 dfota;
 	uint8 detach;
 	uint8 retry;
 } StepFlowIndex_t;
@@ -104,13 +116,13 @@ static AtCmd_t AtCmdSetBAND = { AT_CMD_IDX_SET_BAND, "AT+NBAND" };
 static AtCmd_t AtCmdSetReselect = { AT_CMD_IDX_SET_RESELECT, "AT+NCONFIG" };
 static AtCmd_t AtCmdSetNwAlarm = { AT_CMD_IDX_SET_NW_ALARM, "AT+CEREG" };
 static AtCmd_t AtCmdSocketCreate = { AT_CMD_IDX_SOCKET_CREATE, "AT+NSOCR" };
+static AtCmd_t AtCmdTcpConnect = { AT_CMD_IDX_TCP_CONNECT, "AT+NSOCO" };
+static AtCmd_t AtCmdTcpSendUL = { AT_CMD_IDX_TCP_SEND_UL, "AT+NSOSD" };
 static AtCmd_t AtCmdSocketSendUL = { AT_CMD_IDX_SOCKET_SEND_UL, "AT+NSOST" };
 static AtCmd_t AtCmdSocketClose = { AT_CMD_IDX_SOCKET_CLOSE, "AT+NSOCL" };
 static AtCmd_t AtCmdSetReportPSM = { AT_CMD_IDX_SET_REPORT_PSM, "AT+NPSMR" };
 static AtCmd_t AtCmdGetReportPSM = { AT_CMD_IDX_GET_REPORT_PSM, "AT+NPSMR?" };
-#if defined(NBIOT_BASE_TYPE)
 static AtCmd_t AtCmdSocketRecvDL = { AT_CMD_IDX_SOCKET_RECV_DL, "AT+NSORF" };
-#endif
 
 static AtCmd_t AtCmdGetFwRev = { AT_CMD_IDX_GET_FW_REV, "AT+QGMR" };
 static AtCmd_t AtCmdSetLWM2M = { AT_CMD_IDX_SET_LWM2M, "AT+QBOOTSTRAPHOLDOFF" };
@@ -728,11 +740,12 @@ static ModemStep_t attachNw()
 		    modemCtx.retryStep != MODEM_STEP_ATTACH_NW) {
 			nextStep = MODEM_STEP_CERTIFY;
 		} else {
-			if (modemCtx.proc.updateQa) {
-				nextStep = MODEM_STEP_UPDATE_QA;
-			} else {
-				nextStep = MODEM_STEP_CERTIFY;
-			}
+			/* if (modemCtx.proc.updateQa) { */
+			/* 	nextStep = MODEM_STEP_UPDATE_QA; */
+			/* } else { */
+			/* nextStep = MODEM_STEP_CERTIFY; */
+			/* } */
+			nextStep = MODEM_STEP_DFOTA;
 		}
 	} break;
 	}
@@ -907,7 +920,8 @@ static ModemStep_t transfer()
 		if (modemCtx.lwm2m.fotaDownReq && modemCtx.proc.runFota) {
 			nextStep = MODEM_STEP_FOTA;
 		} else {
-			nextStep = MODEM_STEP_DETACH_NW;
+			/* nextStep = MODEM_STEP_DETACH_NW; */
+			nextStep = MODEM_STEP_DFOTA;
 		}
 	} break;
 	}
@@ -1138,6 +1152,56 @@ static ModemStep_t fota()
 	return nextStep;
 }
 
+static ModemStep_t dFota()
+{
+	ModemStep_t nextStep =
+		modemCtx.step; // step 종료 전 까지 현재 step을 next step 으로 return.
+	modemCtx.errCode = MODEM_ERROR_AT_CMD_NO_RESP;
+
+	if (modemCtx.stepReset) {
+		StepFlowIndex.dfota = 0;
+	}
+
+	switch (StepFlowIndex.dfota) {
+	case 0: {
+		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdSocketCreate, "=STREAM,6,0,1");
+		StepFlowIndex.dfota++;
+	} break;
+
+	case 1: {
+		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdTcpConnect, "=%d,%s,%s",
+			      modemCtx.socket, DFOTA_IP, DFOTA_PORT);
+		StepFlowIndex.dfota++;
+	} break;
+
+	case 2: {
+		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdSocketRecvDL, "=%d,%d",
+			      modemCtx.socket, modemComm.dlDataLen);
+		StepFlowIndex.dfota++;
+	} break;
+
+	case 3: {
+		int dataLen = (FIRMWARE_VER_LEN * 2) + 1;
+		char version[FIRMWARE_VER_LEN + 1] = FIRMWARE_VER;
+		memset(ul_data, 0, sizeof(ul_data));
+
+		for (int i = 0; i < dataLen; i++) {
+			snprintf(ul_data, dataLen, "%s%02X", ul_data, *(version + i));
+		}
+		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdTcpSendUL, "=%d,%d,%s,0x100,101",
+			      modemCtx.socket, FIRMWARE_VER_LEN, ul_data);
+		StepFlowIndex.dfota++;
+	} break;
+
+	default:
+		MISC_delayMs(2000);
+		startFota();
+		break;
+	}
+
+	return nextStep;
+}
+
 /**
  * @brief Detach step operator
  *
@@ -1346,6 +1410,9 @@ BOOL MODEM_process()
 		break;
 	case MODEM_STEP_RETRY:
 		nextStep = retry();
+		break;
+	case MODEM_STEP_DFOTA:
+		nextStep = dFota();
 		break;
 	default:
 		return FALSE;

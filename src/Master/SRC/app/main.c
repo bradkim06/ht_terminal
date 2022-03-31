@@ -108,13 +108,13 @@ void initPort()
 	P2SEL = 0x00;
 	P2DIR = 0xFF;
 #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY)
-	// P2.5 (MCU_RESET) : NC µÇ¾úÀ¸¹Ç·Î ouput low
-	// P2.3 (NRESET)    : NC µÇ¾úÀ¸¹Ç·Î ouput low
+	// P2.5 (MCU_RESET) : NC ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ouput low
+	// P2.3 (NRESET)    : NC ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ouput low
 	// P2.0 (LDO_EN)    : power off Modem (output high)
 	P2OUT = 0x01;
 #else
-	// P2.5 (MCU_RESET) : NC µÇ¾úÀ¸¹Ç·Î ouput low
-	// P2.3 (NRESET)    : NC µÇ¾úÀ¸¹Ç·Î ouput low
+	// P2.5 (MCU_RESET) : NC ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ouput low
+	// P2.3 (NRESET)    : NC ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ouput low
 	// P2.0 (LDO_EN)    : power off Modem (output low)
 	P2OUT = 0x00;
 #endif
@@ -128,7 +128,7 @@ void initPort()
 	P4OUT = 0x00;
 
 #if defined(AUX_REPEATER)
-	// ÃÊ±â CC1200 power off
+	// ï¿½Ê±ï¿½ CC1200 power off
 	P4SEL &= ~0x10;
 	P4DIR |= 0x10;
 	P4OUT |= 0x10;
@@ -237,16 +237,22 @@ int main()
 	WDTCTL = WDTPW | WDTHOLD;
 #define ISR_RAM_ADDR 0x1C00
 #define ISR_FLASH_ADDR 0x20000
-#define ISR_SIZE 0x600
+#define ISR_SIZE 0x500
 	// isr copy ram (size & addr need to check lnk.cmd)
 	memcpy((void *)ISR_RAM_ADDR, (void *)ISR_FLASH_ADDR, ISR_SIZE);
+
+#define FOTA_RAM_ADDR 0x2100
+#define FOTA_FLASH_ADDR 0x20500
+#define FOTA_SIZE 0xB00
+	// isr copy ram (size & addr need to check lnk.cmd)
+	memcpy((void *)FOTA_RAM_ADDR, (void *)FOTA_FLASH_ADDR, FOTA_SIZE);
 
 	initSystem();
 	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 
-	// ½Ã½ºÅÛ ÃÊ±âÈ­ ¹× Å×½ºÆ®¸ðµå ¿©ºÎ È®ÀÎ ÈÄ WDT´Â 16ÃÊ·Î Àç¼³Á¤
-	// 1. App levelÀÇ ÄÚµå ±¸µ¿ ½Ã Console Ãâ·ÂÀÌ Æ÷ÇÔµÇ¾î µ¿ÀÛ ½Ã°£ÀÌ À¯µ¿ÀûÀ¸·Î º¯ÇÔ.
-	// 2. ½Ã½ºÅÛ ÃÊ±âÈ­ ÀÌÈÄ¿¡´Â Clock ¼³Á¤ÀÌ ¿Ï·áµÈ »óÅÂÀÌ¹Ç·Î WDT¸¦ Àç¼³Á¤ÇØµµ ¹«¹æ.
+	// ï¿½Ã½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ ï¿½×½ï¿½Æ®ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ WDTï¿½ï¿½ 16ï¿½Ê·ï¿½ ï¿½ç¼³ï¿½ï¿½
+	// 1. App levelï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Console ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÔµÇ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+	// 2. ï¿½Ã½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ Clock ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ WDTï¿½ï¿½ ï¿½ç¼³ï¿½ï¿½ï¿½Øµï¿½ ï¿½ï¿½ï¿½ï¿½.
 
 	WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 	if (IsTestModeOn) {
