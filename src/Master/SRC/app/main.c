@@ -250,9 +250,9 @@ int main()
 	initSystem();
 	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 
-	// �ý��� �ʱ�ȭ �� �׽�Ʈ��� ���� Ȯ�� �� WDT�� 16�ʷ� �缳��
-	// 1. App level�� �ڵ� ���� �� Console ����� ���ԵǾ� ���� �ð��� ���������� ����.
-	// 2. �ý��� �ʱ�ȭ ���Ŀ��� Clock ������ �Ϸ�� �����̹Ƿ� WDT�� �缳���ص� ����.
+	// 시스템 초기화 및 테스트모드 여부 확인 후 WDT는 16초로 재설정
+	// 1. App level의 코드 구동 시 Console 출력이 포함되어 동작 시간이 유동적으로 변함.
+	// 2. 시스템 초기화 이후에는 Clock 설정이 완료된 상태이므로 WDT를 재설정해도 무방.
 
 	WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 	if (IsTestModeOn) {
