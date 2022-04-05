@@ -50,7 +50,7 @@ void APP_showConfig(Config_t *p)
 #endif
 	printf("===========================================\n");
 	printf(" [ Model      ] %s \n", TERM_MODEL_STRING(p->termModel));
-	/* printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__, FIRMWARE_VER); */
+	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__, FIRMWARE_VER);
 	printf(" [ S/N        ] %s\n", serial);
 #if LORA_DEVICE
 	printf(" [ Device EUI ] %02x%02x%02x-%02x%02x-%02x%02x%02x\n", p->devEui[0], p->devEui[1],

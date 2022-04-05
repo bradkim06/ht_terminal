@@ -27,6 +27,7 @@
 #define FIRMWARE_VER "U" FW_VER_MAIN "01"
 #else
 #define FW_VER_MAIN "3"
+// #define FIRMWARE_VER "U" FW_VER_MAIN "26"
 #define FIRMWARE_VER "U" FW_VER_MAIN "26"
 #endif
 #else

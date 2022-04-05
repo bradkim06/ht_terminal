@@ -657,6 +657,7 @@ int METER_getFirstValidPos();
 BOOL METER_isAllFF(uchar *p, int len);
 int METER_getSaveInterval();
 int METER_needNewMetering(int secLimit);
+uint8 std_checksum(uint8 *from, int size);
 
 void METER_bypassReq(uint8 *body, int bodyLen);
 BOOL METER_bypassResp();

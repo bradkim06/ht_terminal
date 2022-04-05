@@ -108,11 +108,8 @@
 #define MODEM_ADDR MESSAGE_ADDR + MESSAGE_LEN
 #define MODEM_LEN 0x1000
 
-#define ISR_ADDR 0x1C00
-#define ISR_LEN 0x500
-
-#define FOTA_ADDR ISR_ADDR + ISR_LEN
-#define FOTA_LEN 0x800
+#define FOTA_ADDR 0x1C00
+#define FOTA_LEN 0xC00
 
 #define RAM_ADDR FOTA_ADDR + FOTA_LEN
 
@@ -121,16 +118,15 @@ MEMORY
     SFR                     : origin = 0x0000, length = 0x0010
     PERIPHERALS_8BIT        : origin = 0x0010, length = 0x00F0
     PERIPHERALS_16BIT       : origin = 0x0100, length = 0x0100
-    ISR_RAM                 : origin = ISR_ADDR, length = ISR_LEN
     FOTA_RAM                : origin = FOTA_ADDR, length = FOTA_LEN
-    RAM                     : origin = RAM_ADDR, length = 0x3300
+    RAM                     : origin = RAM_ADDR, length = 0x3400
     INFOA                   : origin = 0x1980, length = 0x0080
     INFOB                   : origin = 0x1900, length = 0x0080
     INFOC                   : origin = 0x1880, length = 0x0080
     INFOD                   : origin = 0x1800, length = 0x0080
     MAIN_CODE	        	: origin = 0x5C00, length = 0x0200
-    TEST                    : origin = 0x5E00, length = 0x5C00
-    FLASHB                  : origin = 0xBA00, length = 0x45D2
+    TEST                    : origin = 0x5E00, length = 0x5200
+    FLASHB                  : origin = 0xB000, length = 0x4FD2
     /* METER                   : origin = METER_ADDR, length = METER_LEN */
     /* APP                     : origin = APP_ADDR, length = APP_LEN */
     /* NFC_PROTOCOL            : origin = NFC_PROTOCOL_ADDR, length = NFC_PROTOCOL_LEN */
@@ -151,9 +147,8 @@ MEMORY
     /* MESSAGE                 : origin = MESSAGE_ADDR, length = MESSAGE_LEN */
     /* MODEM                   : origin = MODEM_ADDR, length = MODEM_LEN */
     FLASHC                  : origin = 0x10200,length = 0xFE00
-    ISR_FLASH               : origin = 0x20000, length = ISR_LEN
-    FOTA_FLASH              : origin = 0x20000+ISR_LEN, length = FOTA_LEN
-    FLASHD                  : origin = 0x20000+ISR_LEN+FOTA_LEN,length = 0x2700
+    FOTA_FLASH              : origin = 0x20000, length = FOTA_LEN
+    FLASHD                  : origin = 0x20000+FOTA_LEN,length = 0x2800
     INT41                   : origin = 0xFFD2, length = 0x0002
     INT42                   : origin = 0xFFD4, length = 0x0002
     INT43                   : origin = 0xFFD6, length = 0x0002
@@ -193,15 +188,18 @@ SECTIONS
     MAIN		: {} > MAIN_CODE
 
     test_section {
-        md5.obj (.text)
-        uuid.obj (.text)
         mTest.obj (.text)
-        test.obj (.text)        
-        shell.obj (.text)
-        test.obj (.const)        
         mTest.obj (.const)
+        test.obj (.text)        
+        test.obj (.const)        
+        shell.obj (.text)
         shell.obj (.const)
     } > TEST
+
+    md5_section {
+        md5.obj (.text)
+        uuid.obj (.text)
+    } > FLASHD
 
     /* meter { */
     /*     meter.obj (.text) */ 
@@ -298,35 +296,45 @@ SECTIONS
     /*     modem.obj (.const) */
     /* } > MODEM */
 
-    library_section : > FLASHB (HIGH)
+    library_section : > FLASHB
+    {
+         --library=rts430x_lc_ld_eabi.lib(.text)
+         --library=rts430x_lc_ld_eabi.lib(.const)
+    }
+
+    int00_section : > FLASHB(HIGH)
     {
          --library=rts430x_lc_ld_eabi.lib(.text:_isr:_c_int00_noargs)
     }
 
-    isr_code {
-        * (.text:_isr)
-    } load=ISR_FLASH, run=ISR_RAM
-
     ram_code {
+        * (.text:_isr)
+        test.obj (.text:TEST_isTestMode)
         check_meter_misc.obj (.text:MISC_delayMs)
+        flashDriver.obj (.text:ascii2BCD)
+        flashDriver.obj (.text:ascii2Hex)
+        meter.obj (.text:std_checksum)
+        --library=rts430x_lc_ld_eabi.lib(.text:strlen)
+        --library=rts430x_lc_ld_eabi.lib(.text:strstr)
+        --library=rts430x_lc_ld_eabi.lib(.text:memset)
         fota.obj (.text)
         fota.obj (.const)
-        --library=rts430x_lc_ld_eabi.lib(.text:strstr)
     } load=FOTA_FLASH, run=FOTA_RAM
 
 #ifndef __LARGE_CODE_MODEL__
     .text       : {} > FLASHC       /* Code                              */
 #else
-    .text       : {} > FLASHC       /* Code                              */
+    .text       : {} >> FLASHC | FLASHB       /* Code                              */
 #endif
 /* Errata Flash Read Error and Susceptibility for MSP430F54xxA 
 Manual placement of interrupt service routines into memory locations above 0x008000
 can eliminate the effect on interrupt vector address fetches. */
+    .text:_isr  : {} > FLASHB
     .cinit      : {} > FLASHC                /* Initialization tables             */
 #ifndef __LARGE_DATA_MODEL__
     .const      : {} > FLASHC                /* Constant data                     */
 #else
-    .const      : {} >> FLASHC      /* Constant data                     */
+    .const      : {} >> FLASHC | FLASHB      /* Constant data                     */
 #endif
     .cio        : {} > RAM                  /* C I/O Buffer                      */
 

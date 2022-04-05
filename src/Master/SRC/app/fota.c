@@ -1,12 +1,18 @@
+#include "app.h"
 #include "check_meter_misc.h"
 #include "intrinsics.h"
 #include "modem.h"
 #include "osal.h"
 #include "osal_Timer.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 #include <msp430.h>
 #include "common_header.h"
 #include "fota.h"
 #include "uart.h"
+#include "flashDriver.h"
+#include "meter.h"
 
 #define CONNECT_SERVER 1
 #define SEND_FW_VER 2
@@ -15,21 +21,28 @@
 #define MASS_ERASE 1
 #define SECT_ERASE 2
 
+#define SEND_READY 1
+#define SEND_ACK 2
+#define SEND_REPEAT 3
+#define SEND_FINISH 4
+
+#define FOTA_DELAY 50
+
 int fotaStep = 0;
 int fotaStatus = 0;
 
-char rxBuf[512];
+char rxBuf[RX_MAX_LEN];
 int rxLen;
+
+static volatile unsigned long address = 0;
 
 static int checkFlashBusy()
 {
-	for (int i = 0; i < 800000; i++) {
+	while (1) {
 		if ((FCTL3 & BUSY) == 0) {
 			return 1;
 		}
 	}
-
-	return 0;
 }
 
 static void eraseCode(unsigned long addr, int option)
@@ -55,24 +68,18 @@ static void eraseCode(unsigned long addr, int option)
 			FCTL3 = FWKEY + LOCK;
 		}
 	}
+	checkFlashBusy();
 }
 
-char test_data[74] = { 0x81, 0x00, 0x00, 0x5C, 0xB1, 0x13, 0x22, 0xCE, 0x0C, 0x93, 0x02, 0x24, 0xB1,
-		       0x13, 0x1C, 0x9A, 0x0C, 0x43, 0xB0, 0x13, 0x00, 0x5C, 0x1C, 0x43, 0xB1, 0x13,
-		       0x10, 0xCE, 0x84, 0x20, 0xB2, 0x1F, 0x1E, 0x20, 0xCC, 0x1C, 0xE4, 0x20, 0x12,
-		       0x1E, 0x30, 0x1F, 0xE4, 0x20, 0xA8, 0x1E, 0xE4, 0x20, 0xE4, 0x20, 0x00, 0x1C,
-		       0xE4, 0x20, 0xE4, 0x20, 0xE4, 0x20, 0xE4, 0x20, 0x7C, 0x1D, 0xE4, 0x20, 0xE4,
-		       0x20, 0xE4, 0x20, 0xBC, 0x20, 0xE4, 0x20, 0xB6, 0xFF };
-
-static void writeCode(unsigned long addr)
+static void writeCode(unsigned long addr, volatile unsigned char data[], int size)
 {
 	if (checkFlashBusy()) {
 		FCTL3 = FWKEY; // clear lock
 		FCTL1 = FWKEY + WRT; // Set Write bit
 
-		for (int i = 0; i < sizeof(test_data); i++) {
+		for (int i = 0; i < size; i++) {
 			if (checkFlashBusy()) {
-				__data20_write_char(addr + i, *(test_data + i));
+				__data20_write_char(addr + i, data[i]);
 			}
 		}
 
@@ -81,8 +88,11 @@ static void writeCode(unsigned long addr)
 			FCTL3 = FWKEY + LOCK;
 		}
 	}
+
+	checkFlashBusy();
 }
 
+#ifdef FOTA_DEBUG
 static void fotaPrint(char *str)
 {
 	while (*str != 0) {
@@ -91,14 +101,19 @@ static void fotaPrint(char *str)
 		UCA1TXBUF = *str++; //Load UCA0TXBUF with current string element
 	}
 }
+#endif
 
-static void modemSend(char *str)
+static void modemRxClear()
 {
 	for (int i = 0; i < sizeof(rxBuf); i++) {
 		rxBuf[i] = 0;
 	}
 	rxLen = 0;
+}
 
+static void modemSend(char *str)
+{
+	modemRxClear();
 	while (*str != 0) {
 		while (!(UCTXIFG & UCA2IFG))
 			; //Ensure that transmit interrupt flag is set
@@ -106,9 +121,11 @@ static void modemSend(char *str)
 	}
 }
 
-static void fotaModemPrint(char *p, int len)
+#ifdef FOTA_DEBUG
+static void fotaModemPrint(char *p)
 {
-	for (int i = 0; i < len; i++) {
+	fotaPrint("[RX] ");
+	for (int i = 0; i < strlen(p); i++) {
 		char ch = *(p + i);
 		if (ch == '\r' || ch == '\n') {
 			fotaPrint(".");
@@ -118,33 +135,133 @@ static void fotaModemPrint(char *p, int len)
 	}
 	fotaPrint("\n\r");
 }
+#endif
 
 static void fotaSend(char *str)
 {
-	fotaPrint(str);
-	fotaPrint("\n\r");
-
 	modemSend(str);
+#ifdef FOTA_DEBUG
+	fotaPrint("[TX] ");
+	fotaPrint(str);
+#endif
+}
+
+int testatoi(char *cdata)
+{
+	int data = 0;
+
+	while (*cdata) {
+		if (*cdata >= '0' && *cdata <= '9') {
+			if (data != 0) {
+				int mulData = data;
+				for (int i = 0; i < 9; i++) {
+					data += mulData;
+				}
+			}
+			data = data + *cdata;
+			data = data - '0';
+		} else {
+			return data;
+		}
+
+		cdata++;
+	}
+
+	return data;
 }
 
 static void fotaRecv()
 {
-	int len = 0;
+#define AT_MODEM_RX "+NSONMI:"
+#define AT_DFOTA_PORT "18099,"
 
-	for (int i = 0; i < 20; i++) {
-		MISC_delayMs(500);
-		if (len != rxLen) {
-			len = rxLen;
+	while (1) {
+		volatile int len = 0;
+		volatile int count = 0;
+		for (; count < 600; count++) {
+			MISC_delayMs(FOTA_DELAY);
+			if (len != rxLen) {
+				len = rxLen;
+			} else if (len > 0) {
+				break;
+			}
+		}
+
+		if (len > 0) {
+			char *p = NULL;
+
+			if ((p = strstr(rxBuf, AT_MODEM_RX))) {
+#ifdef FOTA_DEBUG
+				fotaModemPrint(rxBuf);
+#endif
+				fotaSend("AT+NSORF=1,1358\n\r");
+			} else if ((p = strstr(rxBuf, AT_DFOTA_PORT))) {
+				// data len
+				p = strstr(p, ",") + 1;
+				int payloadLen = testatoi(p);
+
+				// payload
+				p = strstr(p, ",") + 1;
+				volatile unsigned char rxData[514];
+				for (int i = 0; i < payloadLen; i++) {
+					rxData[i] = ascii2BCD(*(p + 0), *(p + 1));
+					p += 2;
+				}
+
+				unsigned char checksum =
+					std_checksum((unsigned char *)rxData, payloadLen - 1);
+
+				if (rxData[payloadLen - 1] == checksum) {
+					if (rxData[0] == 0xB1) {
+						send(SEND_ACK);
+						eraseCode(address, SECT_ERASE);
+						writeCode(address, &rxData[1], payloadLen - 2);
+						address += 512;
+					} else if (rxData[0] == 0xB2) {
+						send(SEND_ACK);
+						address = 0;
+						for (int i = 1; i < payloadLen - 1; i++) {
+							if (address) {
+								unsigned long mulData = address;
+								for (int j = 0; j < 255; j++) {
+									address += mulData;
+								}
+							}
+							address |= rxData[i];
+						}
+					} else if (rxData[0] == 0xB3) {
+						send(SEND_FINISH);
+#ifdef FOTA_DEBUG
+						fotaPrint("FOTA Finish\n\r");
+#endif
+						__disable_interrupt();
+						eraseCode(address, SECT_ERASE);
+						writeCode(address, &rxData[1], payloadLen - 2);
+						MISC_delayMs(5000);
+						PMMCTL0 = (PMMPW + PMMSWPOR);
+					}
+				} else {
+					send(SEND_REPEAT);
+				}
+			} else {
+				modemRxClear();
+			}
 		} else {
-			break;
+			send(SEND_REPEAT);
 		}
 	}
+}
 
-	if (len > 0) {
-		fotaModemPrint(rxBuf, len);
-	} else {
-		char *str = "no modem response\n\r";
-		fotaPrint(str);
+static void send(int option)
+{
+	if (option == SEND_READY) {
+		fotaSend("AT+NSOSD=1,5,7265616479\n\r");
+	} else if (option == SEND_ACK) {
+		fotaSend("AT+NSOSD=1,3,61636B\n\r");
+	} else if (option == SEND_REPEAT) {
+		fotaSend("AT+NSOSD=1,6,726570656174\n\r");
+	} else if (option == SEND_FINISH) {
+		fotaSend("AT+NSOSD=1,6,66696E697368\n\r");
 	}
 }
 
@@ -152,24 +269,13 @@ void startFota()
 {
 	fotaStatus = 1;
 	WDTCTL = WDTPW | WDTHOLD;
-	__disable_interrupt();
 
-	eraseCode(0x5C00, MASS_ERASE);
-	writeCode(0xffb6);
-	eraseCode(0x10000, MASS_ERASE);
-	eraseCode(0x20000, MASS_ERASE);
-
-	__enable_interrupt();
-
-	char *str = "fota start\n\r";
+#ifdef FOTA_DEBUG
+	char *str = "fota start, send Ready\n\r";
 	fotaPrint(str);
+#endif
+	// fotaSend("AT+NATSPEED=115200,3,1,2,1\n\r");
+	send(SEND_READY);
 
-	fotaSend("AT+NSOSD=1,4,A1323334\n\r");
 	fotaRecv();
-
-	fotaSend("AT+NSOCL=1\n\r");
-	fotaRecv();
-	fotaStep = CONNECT_SERVER;
-	while (1)
-		;
 }

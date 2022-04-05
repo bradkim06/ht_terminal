@@ -235,20 +235,14 @@ void initSystem()
 int main()
 {
 	WDTCTL = WDTPW | WDTHOLD;
-#define ISR_RAM_ADDR 0x1C00
-#define ISR_FLASH_ADDR 0x20000
-#define ISR_SIZE 0x500
-	// isr copy ram (size & addr need to check lnk.cmd)
-	memcpy((void *)ISR_RAM_ADDR, (void *)ISR_FLASH_ADDR, ISR_SIZE);
-
-#define FOTA_RAM_ADDR 0x2100
-#define FOTA_FLASH_ADDR 0x20500
-#define FOTA_SIZE 0xB00
+#define FOTA_RAM_ADDR 0x1C00
+#define FOTA_FLASH_ADDR 0x20000
+#define FOTA_SIZE 0xC00
 	// isr copy ram (size & addr need to check lnk.cmd)
 	memcpy((void *)FOTA_RAM_ADDR, (void *)FOTA_FLASH_ADDR, FOTA_SIZE);
+	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 
 	initSystem();
-	WDTCTL = WDT_VRST_50SEC; // Start watchdog timer(3.2768 sec)
 
 	// 시스템 초기화 및 테스트모드 여부 확인 후 WDT는 16초로 재설정
 	// 1. App level의 코드 구동 시 Console 출력이 포함되어 동작 시간이 유동적으로 변함.
