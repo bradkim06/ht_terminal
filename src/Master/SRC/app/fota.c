@@ -182,7 +182,7 @@ static void fotaRecv()
 			MISC_delayMs(FOTA_DELAY);
 			if (len != rxLen) {
 				len = rxLen;
-			} else if (len > 0) {
+			} else if (len > 5) {
 				break;
 			}
 		}
@@ -244,6 +244,9 @@ static void fotaRecv()
 					send(SEND_REPEAT);
 				}
 			} else {
+#ifdef FOTA_DEBUG
+				fotaModemPrint(rxBuf);
+#endif
 				modemRxClear();
 			}
 		} else {
@@ -268,7 +271,6 @@ static void send(int option)
 void startFota()
 {
 	fotaStatus = 1;
-	WDTCTL = WDTPW | WDTHOLD;
 
 #ifdef FOTA_DEBUG
 	char *str = "fota start, send Ready\n\r";
