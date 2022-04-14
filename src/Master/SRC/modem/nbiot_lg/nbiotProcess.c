@@ -1,6 +1,7 @@
 #include "device.h"
 #include "flashDriver.h"
 #include "stdio.h"
+#include "string.h"
 #include <msp430.h>
 #include <ctype.h>
 #include <time.h>
@@ -920,8 +921,7 @@ static ModemStep_t transfer()
 		if (modemCtx.lwm2m.fotaDownReq && modemCtx.proc.runFota) {
 			nextStep = MODEM_STEP_FOTA;
 		} else {
-			/* nextStep = MODEM_STEP_DETACH_NW; */
-			nextStep = MODEM_STEP_DFOTA;
+			nextStep = MODEM_STEP_DETACH_NW;
 		}
 	} break;
 	}
@@ -1181,15 +1181,18 @@ static ModemStep_t dFota()
 	} break;
 
 	case 3: {
-		int dataLen = (FIRMWARE_VER_LEN * 2) + 1;
-		char version[FIRMWARE_VER_LEN + 1] = FIRMWARE_VER;
+#define FOTA_REQMSG_SIZE 40
+		char msg[FOTA_REQMSG_SIZE + 1];
+		snprintf(msg, FOTA_REQMSG_SIZE + 1, "C1%sU328%s%s", FIRMWARE_VER, modem.imeiStr,
+			 modem.imsiStr);
 		memset(ul_data, 0, sizeof(ul_data));
-
-		for (int i = 0; i < dataLen; i++) {
-			snprintf(ul_data, dataLen, "%s%02X", ul_data, *(version + i));
+		for (int i = 0; i < sizeof(msg); i++) {
+			char data = *(msg + i);
+			snprintf(ul_data, FOTA_REQMSG_SIZE * 2 + 1, "%s%02X", ul_data, data);
 		}
+
 		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdTcpSendUL, "=%d,%d,%s,0x100,101",
-			      modemCtx.socket, FIRMWARE_VER_LEN, ul_data);
+			      modemCtx.socket, FOTA_REQMSG_SIZE, ul_data);
 		StepFlowIndex.dfota++;
 	} break;
 
