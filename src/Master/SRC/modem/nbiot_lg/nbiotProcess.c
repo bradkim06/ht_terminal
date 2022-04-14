@@ -1181,15 +1181,19 @@ static ModemStep_t dFota()
 	} break;
 
 	case 3: {
-#define FOTA_REQMSG_SIZE 40
-		char msg[FOTA_REQMSG_SIZE + 1];
-		snprintf(msg, FOTA_REQMSG_SIZE + 1, "C1%sU328%s%s", FIRMWARE_VER, modem.imeiStr,
+#define FOTA_REQMSG_SIZE 41
+		char msg[FOTA_REQMSG_SIZE];
+		snprintf(msg, FOTA_REQMSG_SIZE, "C1%sU328%s%s", FIRMWARE_VER, modem.imeiStr,
 			 modem.imsiStr);
 		memset(ul_data, 0, sizeof(ul_data));
+
+		char checksum = 0;
 		for (int i = 0; i < sizeof(msg); i++) {
 			char data = *(msg + i);
-			snprintf(ul_data, FOTA_REQMSG_SIZE * 2 + 1, "%s%02X", ul_data, data);
+			checksum += data;
+			snprintf(ul_data, FOTA_REQMSG_SIZE * 2 - 1, "%s%02X", ul_data, data);
 		}
+		snprintf(ul_data, FOTA_REQMSG_SIZE * 2 + 2, "%s%02X", ul_data, checksum);
 
 		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdTcpSendUL, "=%d,%d,%s,0x100,101",
 			      modemCtx.socket, FOTA_REQMSG_SIZE, ul_data);

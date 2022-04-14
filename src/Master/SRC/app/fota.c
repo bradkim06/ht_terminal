@@ -258,13 +258,13 @@ static void fotaRecv()
 static void send(int option)
 {
 	if (option == SEND_READY) {
-		fotaSend("AT+NSOSD=1,5,7265616479\n\r");
+		fotaSend("AT+NSOSD=1,6,726561647915\n\r");
 	} else if (option == SEND_ACK) {
-		fotaSend("AT+NSOSD=1,3,61636B\n\r");
+		fotaSend("AT+NSOSD=1,4,61636B2F\n\r");
 	} else if (option == SEND_REPEAT) {
-		fotaSend("AT+NSOSD=1,6,726570656174\n\r");
+		fotaSend("AT+NSOSD=1,7,72657065617481\n\r");
 	} else if (option == SEND_FINISH) {
-		fotaSend("AT+NSOSD=1,6,66696E697368\n\r");
+		fotaSend("AT+NSOSD=1,7,66696E69736881\n\r");
 	}
 }
 
