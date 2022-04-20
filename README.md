@@ -23,6 +23,63 @@ flowchart TD
     4 --> |Success| 5[End]
 ```
 
+## 단말 기본 동작 Flow
+
+### 검침
+
+```mermaid
+sequenceDiagram
+autonumber
+participant m as 수도미터
+participant t as 단말기
+Note over t: Wake Up
+loop 검침 시도(Retry 3)
+	t->>m: 검침 요청
+  m->>t: 검침 응답
+end
+Note over t: 데이터 저장
+Note over t: Sleep
+```
+
+### 통신
+
+```mermaid
+sequenceDiagram
+autonumber
+participant t as 단말기
+participant m as 모뎀
+participant n as Network
+participant s as Server
+Note over t: 단말 Wake Up
+Note over t: 모뎀 Wake up
+loop 모뎀 초기화
+Note over t,m: 실패시 SIM 정보 읽기 오류[2]
+	t->>m: 모뎀 초기화 동작 요청
+	m->>t: 모뎀 응답
+end
+loop 망 접속 시도
+Note over t,n: 예) U325 120sec, 2회
+Note over t,n: 실패시 망 접속 실패[6]
+	t->>n: 접속 시도
+  n->>t: 접속 허용
+	t->>n: 시간 정보 요청
+	n->>t: 시간 정보 응답
+Note over t: 장비 시간 업데이트
+end
+loop 플랫폼 접속 시도(P/F 모델 한정)
+Note over t,n: 실패시 플랫폼 접속 실패[7]
+	t->>n: 접속 시도
+  n->>t: 접속 허용
+end
+loop 검침 데이터 전송
+Note over t,s: 실패시 서버 접속 실패[4]
+	t->>s: 데이터 전송
+	s->>t: 서버 응답
+end
+Note over t: 모뎀 Sleep
+Note over t: 단말 Sleep
+```
+
 ## Todo List
 
 #### Main
@@ -60,6 +117,8 @@ flowchart TD
 ## NB-IoT
 
 ### NB-IoT P/F 개선
+
+#### Device Fota 개발 [인증용]; (2022-04-20)
 
 #### NB-IoT 통신 절차 개선 (2022-03-16)
 
