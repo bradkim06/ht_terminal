@@ -180,6 +180,16 @@ typedef struct {
 #endif
 
 typedef struct {
+	uchar protocol;
+	uchar len;
+	uchar mtype;
+	uchar ip[4];
+	uchar port[2];
+	uchar fwVer[4];
+	uchar checksum;
+} NbiotCmdChgServer_t;
+
+typedef struct {
 	uchar protocol; // 1 -  1
 	uchar len; // 1 -  2
 	uchar mtype; // 1 -  3

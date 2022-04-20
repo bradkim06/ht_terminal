@@ -26,10 +26,9 @@
 #define SEND_REPEAT 3
 #define SEND_FINISH 4
 
-#define FOTA_DELAY 50
+#define FOTA_DELAY 100
 
-int fotaStep = 0;
-int fotaStatus = 0;
+FotaStatus_t Fota;
 
 char rxBuf[RX_MAX_LEN];
 int rxLen;
@@ -270,7 +269,7 @@ static void send(int option)
 
 void startFota()
 {
-	fotaStatus = 1;
+	Fota.Status = 1;
 
 #ifdef FOTA_DEBUG
 	char *str = "fota start, send Ready\n\r";

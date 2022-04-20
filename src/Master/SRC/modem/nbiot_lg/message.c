@@ -1,3 +1,5 @@
+#include "device.h"
+#include "fota.h"
 #ifndef TDD_TEST
 #include <msp430.h>
 #include "port_desc.h"
@@ -532,6 +534,24 @@ int MODEM_recvAckString(uchar *buf, int len)
 	return 0;
 }
 
+int MODEM_recvFotaReq(uchar *buf, int len)
+{
+	NbiotCmdChgServer_t *pCmd = (NbiotCmdChgServer_t *)buf;
+#define FOTA_REQ 0x32
+	if (buf[0] == FOTA_REQ) {
+		// Copy requested IP & Port
+		sprintf(Fota.Info.ip, "%d.%d.%d.%d", pCmd->ip[3], pCmd->ip[2], pCmd->ip[1],
+			pCmd->ip[0]);
+		memcpy(&Fota.Info.port, pCmd->port, 2);
+		sprintf(Fota.Info.version, "%c%c%c%c", pCmd->fwVer[0], pCmd->fwVer[1],
+			pCmd->fwVer[2], pCmd->fwVer[3]);
+		printf_ts("DL : Fota Req, ip(%s), port(%d), ver(%s)\n", Fota.Info.ip,
+			  Fota.Info.port, Fota.Info.version);
+		return 1;
+	}
+	return 0;
+}
+
 int MODEM_checkDlMessage(uchar *buf, int len)
 {
 	printMessage(buf, len);
@@ -544,6 +564,9 @@ int MODEM_checkDlMessage(uchar *buf, int len)
 		} else if (MODEM_recvResetReq(buf, len)) {
 			resultOK = 1;
 			resetRequired = 1;
+		} else if (MODEM_recvFotaReq(buf, len)) {
+			resultOK = 1;
+			Fota.Req = 1;
 		} else {
 			// 문자열의 경우 정확한 패턴이 아니면 쓰레기일 가능성이 있음
 		}

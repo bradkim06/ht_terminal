@@ -167,7 +167,6 @@ __interrupt void Port_1(void)
 #endif
 
 	if (PORT1_IFG & BM(PORT_NFC_TAG)) {
-		PORT1_IE &= ~BM(PORT_NFC_TAG); // Interrupt diabled
 		NFC_tagDetect();
 		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
 		WAKEUP_DEVICE();
@@ -198,6 +197,7 @@ __interrupt void Port_2(void)
 #if defined(AUX_REPEATER)
 	// CC1200 tx/rx interrupt
 	if (PORT_SENSOR_IFG & BM(PORT_CC1200_GPIO0)) {
+		PORT_SENSOR_IFG &= ~BM(PORT_CC1200_GPIO0);
 		if (SLAVE_getAccessState() == SLAVE_ACCESS_IDLE &&
 		    CC1200_getRfMode() == RF_MODE_RX) {
 			// Rx 동작은 Slave operating이 아닌 경우 쓰레기 값으로 간주하고 그 외에는 모두 처리.

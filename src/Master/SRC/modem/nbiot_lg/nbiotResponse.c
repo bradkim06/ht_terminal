@@ -22,6 +22,7 @@ extern Modem_t modem;
 #include "rtcAlarm.h"
 #include "lcdDriver.h"
 #include "message.h"
+#include "fota.h"
 
 static int parse_imei(char *p)
 {
@@ -225,7 +226,7 @@ static int parse_server_notify(char *p)
 	return valid;
 }
 
-static int parse_udp_downlink(char *p)
+static int parse_fota_downlink(char *p)
 {
 	// 0,211.211.42.30,19001,3,123456,0
 	// socket, ip, portno, len, data, more
@@ -235,7 +236,7 @@ static int parse_udp_downlink(char *p)
 
 	do {
 		// ip address Search (Downlink 응답이 아닌것을 필터링)
-		strncpy(ipAddr, DFOTA_IP, SERVER_IP_STR_LEN);
+		strncpy(ipAddr, Fota.Info.ip, SERVER_IP_STR_LEN);
 		if ((p = strstr(p, ipAddr)) == NULL) {
 			break;
 		}
@@ -737,7 +738,7 @@ void MODEM_response(char *pHead, int len)
 		break;
 
 	case AT_CMD_IDX_SOCKET_RECV_DL:
-		if (parse_udp_downlink(pHead)) {
+		if (parse_fota_downlink(pHead)) {
 			isRleaseBusy = TRUE;
 		}
 		break;

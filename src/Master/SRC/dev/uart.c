@@ -733,7 +733,7 @@ __interrupt void USCI_A1_ISR(void)
 #pragma vector = USCI_A2_VECTOR
 __interrupt void USCI_A2_ISR(void)
 {
-	if (fotaStatus) {
+	if (Fota.Status) {
 		if (UCA2IFG & UCRXIFG) {
 			rxBuf[rxLen++] = UCA2RXBUF;
 		}

@@ -329,8 +329,7 @@ SECTIONS
 /* Errata Flash Read Error and Susceptibility for MSP430F54xxA 
 Manual placement of interrupt service routines into memory locations above 0x008000
 can eliminate the effect on interrupt vector address fetches. */
-    .text:_isr  : {} > FLASHB
-    .cinit      : {} > FLASHC                /* Initialization tables             */
+    .cinit      : {} > FLASHB                /* Initialization tables             */
 #ifndef __LARGE_DATA_MODEL__
     .const      : {} > FLASHC                /* Constant data                     */
 #else

@@ -6,7 +6,21 @@
 #define CHECKSUM_LEN 2
 #define RX_MAX_LEN HEADER_LEN + MAX_DATA_LEN + CHECKSUM_LEN
 
-extern int fotaStatus;
+#define FOTA_IP_ADDR_LEN 16
+#define FOTA_FW_VER_LEN 4
+typedef struct {
+	char ip[FOTA_IP_ADDR_LEN + 1];
+	unsigned int port;
+	char version[FOTA_FW_VER_LEN + 1];
+} FotaReqInfo_t;
+
+typedef struct {
+	char Req;
+	char Status;
+	FotaReqInfo_t Info;
+} FotaStatus_t;
+
+extern FotaStatus_t Fota;
 extern char rxBuf[RX_MAX_LEN];
 extern int rxLen;
 

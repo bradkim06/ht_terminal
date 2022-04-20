@@ -29,7 +29,7 @@
 #define DEREGISTER_DELAY 5000
 
 // FOTA timeout
-#define FOTA_TIMEOUT 30000
+#define FOTA_TIMEOUT 60000
 #define FOTA_RETRY 0
 
 // AT command default timeout/retry
@@ -741,12 +741,11 @@ static ModemStep_t attachNw()
 		    modemCtx.retryStep != MODEM_STEP_ATTACH_NW) {
 			nextStep = MODEM_STEP_CERTIFY;
 		} else {
-			/* if (modemCtx.proc.updateQa) { */
-			/* 	nextStep = MODEM_STEP_UPDATE_QA; */
-			/* } else { */
-			/* nextStep = MODEM_STEP_CERTIFY; */
-			/* } */
-			nextStep = MODEM_STEP_DFOTA;
+			if (modemCtx.proc.updateQa) {
+				nextStep = MODEM_STEP_UPDATE_QA;
+			} else {
+				nextStep = MODEM_STEP_CERTIFY;
+			}
 		}
 	} break;
 	}
@@ -918,7 +917,9 @@ static ModemStep_t transfer()
 
 	case END_STEP_FLOW_INDEX:
 	default: {
-		if (modemCtx.lwm2m.fotaDownReq && modemCtx.proc.runFota) {
+		if (Fota.Req) {
+			nextStep = MODEM_STEP_DFOTA;
+		} else if (modemCtx.lwm2m.fotaDownReq && modemCtx.proc.runFota) {
 			nextStep = MODEM_STEP_FOTA;
 		} else {
 			nextStep = MODEM_STEP_DETACH_NW;
@@ -1169,8 +1170,8 @@ static ModemStep_t dFota()
 	} break;
 
 	case 1: {
-		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdTcpConnect, "=%d,%s,%s",
-			      modemCtx.socket, DFOTA_IP, DFOTA_PORT);
+		sendAtCommand(FOTA_TIMEOUT, FOTA_RETRY, &AtCmdTcpConnect, "=%d,%s,%d",
+			      modemCtx.socket, Fota.Info.ip, Fota.Info.port);
 		StepFlowIndex.dfota++;
 	} break;
 
@@ -1183,8 +1184,8 @@ static ModemStep_t dFota()
 	case 3: {
 #define FOTA_REQMSG_SIZE 41
 		char msg[FOTA_REQMSG_SIZE];
-		snprintf(msg, FOTA_REQMSG_SIZE, "C1%sU328%s%s", FIRMWARE_VER, modem.imeiStr,
-			 modem.imsiStr);
+		snprintf(msg, FOTA_REQMSG_SIZE, "C1%s%s%s%s", FIRMWARE_VER, Fota.Info.version,
+			 modem.imeiStr, modem.imsiStr);
 		memset(ul_data, 0, sizeof(ul_data));
 
 		char checksum = 0;
